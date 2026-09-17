@@ -1,0 +1,128 @@
+---
+title: Grass seed calculator
+description: How many pounds of grass seed a lawn needs, by grass type, for a new lawn from bare soil or for overseeding.
+heading: Grass seed calculator
+updated: 2026-09-17
+faqs:
+  - question: >-
+      How much grass seed do I need for 1,000 square feet?
+    answer: >-
+      It depends entirely on the grass. Tall fescue and perennial ryegrass have large seeds and
+      want around 7 pounds per 1,000 square feet for a new lawn. Kentucky bluegrass has much
+      smaller seed and needs around 2.5 pounds for the same area. Centipedegrass is finer still
+      at under half a pound. Always check the rate for your species rather than using a general
+      figure.
+  - question: >-
+      Why is the overseeding rate lower than the new lawn rate?
+    answer: >-
+      Because you are filling gaps in existing turf rather than covering bare ground. Roughly
+      two thirds of the establishment rate is typical. Sowing a full new-lawn rate into existing
+      grass mostly wastes seed, because the seedlings compete with established plants and with
+      each other.
+  - question: >-
+      Can I use more seed to get a thicker lawn faster?
+    answer: >-
+      No, and it usually backfires. Overseeding at double the rate crowds the seedlings, which
+      then compete for water and light, grow spindly and become vulnerable to damping off. A
+      correctly sown lawn thickens on its own as the plants tiller and spread.
+  - question: >-
+      When is the best time to sow grass seed?
+    answer: >-
+      For cool-season grasses, late summer to early autumn is the best window, with spring
+      second — the soil is warm, the nights are cooling and there is less weed competition.
+      Warm-season grasses want late spring to early summer, once soil temperatures are reliably
+      warm. Sowing outside those windows is the most common reason a lawn fails to establish.
+  - question: >-
+      Do I need to cover the seed with soil?
+    answer: >-
+      Barely. Grass seed needs light contact with soil, not burial. Raking it in lightly so it
+      sits in the top quarter inch, then rolling or treading it down, is enough. A thin scatter
+      of compost or a seed blanket helps keep it damp. Seed buried an inch deep will not come
+      up.
+  - question: >-
+      How long until grass seed germinates?
+    answer: >-
+      Perennial ryegrass is fastest, often in five to seven days. Tall and fine fescues take one
+      to two weeks. Kentucky bluegrass is slow, two to three weeks, which is why it is often
+      blended with ryegrass. Warm-season grasses from seed vary widely. Whatever the species,
+      the top half inch of soil must stay damp throughout, which in warm weather means light
+      watering once or twice a day.
+---
+
+Grass seed rates vary more between species than most people expect — by a factor of
+fifteen across the common ones — because seed size differs so much. This calculator
+uses per-species rates rather than a single average, for either a new lawn from bare
+soil or an overseed of existing turf.
+
+## How to use it
+
+1. **Enter the lawn area.** For an awkward shape, break it into rectangles and add them
+   up, or measure the whole plot and subtract the house, drive and beds.
+2. **Choose your grass.** If you are overseeding and do not know what is there, match
+   the climate: cool-season grasses in the northern US, Canada and the UK; warm-season
+   in the southern US and Australia.
+3. **Say what you are doing.** Bare soil takes the full establishment rate; existing
+   turf takes the lower overseeding rate.
+
+## How it is calculated
+
+```
+pounds of seed = rate (lb per 1,000 sq ft) x (area / 1000)
+```
+
+The whole question is which rate. Rates come from
+`data/grass-seed-rates.ts`, one figure per species for a new lawn and one for
+overseeding, and the note under the result explains anything particular about that
+grass.
+
+### A worked example
+
+A 5,000 square foot lawn, new, in tall fescue:
+
+- Rate: **7 lb per 1,000 sq ft**
+- Seed needed: 7 x (5,000 / 1,000) = **35 pounds**
+
+Overseeding the same lawn instead uses the lower rate of 5 lb per 1,000 sq ft, so
+**25 pounds**. Switch the species to Kentucky bluegrass and the new-lawn figure drops to
+**12.5 pounds**, because bluegrass seed is so much smaller that a pound goes far further.
+
+## Seeding rates by grass type
+
+| Grass                | Season | New lawn | Overseeding |
+| -------------------- | ------ | -------- | ----------- |
+| Kentucky bluegrass   | Cool   | 2.5 lb   | 1.5 lb      |
+| Tall fescue          | Cool   | 7 lb     | 5 lb        |
+| Fine fescue          | Cool   | 4.5 lb   | 3 lb        |
+| Perennial ryegrass   | Cool   | 7 lb     | 5 lb        |
+| Annual ryegrass      | Cool   | 9 lb     | 6 lb        |
+| Creeping bentgrass   | Cool   | 1 lb     | 0.5 lb      |
+| Bermudagrass, hulled | Warm   | 1.5 lb   | 1 lb        |
+| Zoysiagrass          | Warm   | 1.5 lb   | 1 lb        |
+| Centipedegrass       | Warm   | 0.4 lb   | 0.25 lb     |
+| Bahiagrass           | Warm   | 6 lb     | 4 lb        |
+| Buffalograss         | Warm   | 4 lb     | 2 lb        |
+
+All figures are pounds per 1,000 square feet. These are typical published rates and
+worth checking against your own extension service, which will also give the right
+sowing window for your area.
+
+## Tips and common mistakes
+
+**Sow half in one direction and half at right angles.** A single pass always leaves
+stripes. Two passes crossing each other is the simplest way to get even coverage from a
+spreader or by hand.
+
+**Keep the surface damp, not the soil soaked.** Germinating seed dies if the top half
+inch dries out even once. That usually means a light watering once or twice a day for
+two or three weeks, not a deep soak every few days.
+
+**Do not fertilise heavily at sowing.** A starter fertilizer with phosphorus helps root
+development, but a nitrogen-heavy feed encourages the weeds that are competing with
+your seedlings.
+
+**Check the seed label for coating and filler.** Some products are a mix of seed, inert
+matter and mulch, so a given weight contains less actual seed than a bag of pure seed.
+The percentages are on the label.
+
+**Buy fresh seed.** Germination falls off after a couple of years in storage, and a
+bargain bag of old seed is not a bargain.

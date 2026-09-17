@@ -1,0 +1,144 @@
+---
+title: Lime calculator for soil pH
+description: Estimate the ground limestone needed to raise soil pH, by soil texture, with the caveats that matter stated plainly.
+heading: Lime calculator
+updated: 2026-09-17
+faqs:
+  - question: >-
+      How much lime do I need to raise soil pH by 1 point?
+    answer: >-
+      Very roughly, 30 pounds of ground limestone per 1,000 square feet on sandy soil, 60 on
+      loam and 90 on clay. The spread between those numbers is the point: the same pH change
+      needs three times as much lime on clay as on sand, because clay resists a pH change far
+      more strongly. Your own soil could sit outside that range, which is what a soil test is
+      for.
+  - question: >-
+      Why does a soil test beat this calculator?
+    answer: >-
+      Because the thing that actually determines lime requirement, buffering capacity, cannot be
+      seen from a pH reading. Two soils both reading pH 5.5 can need substantially different
+      amounts of lime depending on their clay content and organic matter. A test that reports
+      buffer pH, or gives a direct lime recommendation, measures that resistance rather than
+      guessing it from texture.
+  - question: >-
+      How long does lime take to work?
+    answer: >-
+      Months, not days. Finely ground limestone has to dissolve in soil water before it can do
+      anything, so expect six months to a year before the pH has fully moved, and longer on dry
+      or coarse soil. This slowness is the main reason to apply less than you think you need and
+      retest, rather than more.
+  - question: >-
+      Can I add too much lime?
+    answer: >-
+      Yes, and it is harder to undo than under-liming. Pushing pH too high locks up iron,
+      manganese and zinc, causing yellowing between the leaf veins that looks like a feeding
+      problem but is not. Lowering pH again means elemental sulfur and another season of
+      waiting. Under-apply and top up.
+  - question: >-
+      What is the difference between the types of lime?
+    answer: >-
+      Ground agricultural limestone, calcium carbonate, is the standard material and what this
+      calculator assumes. Dolomitic lime also supplies magnesium, useful if a soil test shows
+      magnesium is low. Pelletised lime is the same limestone bound into pellets for easier
+      spreading, at the same rate. Hydrated or quick lime is caustic, acts fast and is easy to
+      overdo — not a good choice for a garden.
+  - question: >-
+      What pH do vegetables want?
+    answer: >-
+      Most vegetables do well between pH 6.0 and 6.8, where the widest range of nutrients stays
+      available. Potatoes prefer it lower, around 5.0 to 6.5, partly because scab is worse in
+      less acid soil. Brassicas tolerate and even appreciate the upper end. Blueberries are a
+      special case and want 4.5 to 5.5, far below anything you would lime for.
+  - question: >-
+      When should I apply lime?
+    answer: >-
+      Autumn is ideal, which gives it the whole winter to dissolve before the growing season.
+      Early spring works too if you missed autumn. Avoid applying lime at the same time as
+      nitrogen fertilizer or manure, which can drive off nitrogen as ammonia; leave several
+      weeks between them.
+---
+
+This is the calculator on SoilSums with the widest real-world error bars, and it is
+worth saying so before the numbers rather than after. It gives a starting figure from
+your soil's texture. What actually decides how much lime a soil needs is its buffering
+capacity, and no online form can see that.
+
+## How to use it
+
+1. **Enter the area** you are treating.
+2. **Choose the soil texture.** Squeeze a handful of damp soil: gritty and falling apart
+   is sandy, holding together but crumbling when poked is loam, sticky and ribboning
+   between finger and thumb is clay. The description under the dropdown describes each
+   one.
+3. **Enter your current pH**, from a soil test or a meter, and the **target** you want.
+   Most vegetables are happy between 6.0 and 6.8, so there is rarely a reason to aim
+   higher.
+
+The calculator will tell you when it is being asked to extrapolate too far, and will
+point you at elemental sulfur instead if the target is below the current reading — lime
+raises pH, it cannot lower it.
+
+## How it is calculated
+
+```
+lb of limestone = rate for texture x pH change x (area / 1000)
+```
+
+The rate is pounds of ground limestone per 1,000 square feet per one pH unit, taken
+from a texture table: 30 for sandy soil, 60 for loam, 90 for clay. Those figures assume
+you are correcting the top six to seven inches, which is the depth a bed gets worked to.
+
+The calculator treats the requirement as **linear in the pH change**, which is an
+approximation. It holds up reasonably over about one unit and gets progressively less
+reliable beyond that, so the tool warns above 1.5 units rather than quietly
+extrapolating.
+
+### A worked example
+
+A 400 square foot bed of loam soil, currently pH 5.5, targeting 6.5:
+
+- pH change: 6.5 − 5.5 = **1.0 unit**
+- Rate for loam: **60 lb per 1,000 sq ft per unit**
+- Per 1,000 sq ft: 60 x 1.0 = **60 lb**
+- Scaled to the bed: 60 x (400 / 1,000) = **24 pounds of ground limestone**
+
+The same bed in sandy soil needs 12 pounds. In clay, 36.
+
+## Lime rates by texture
+
+| Soil texture | Per 1.0 pH unit | 0.5 unit | 1.5 units |
+| ------------ | --------------- | -------- | --------- |
+| Sandy        | 30 lb           | 15 lb    | 45 lb     |
+| Loam         | 60 lb           | 30 lb    | 90 lb     |
+| Clay         | 90 lb           | 45 lb    | 135 lb    |
+
+All figures are pounds of ground agricultural limestone per 1,000 square feet. Check
+them against your own extension service's recommendation table, which will be tuned to
+local soils.
+
+## Tips and common mistakes
+
+**Get a soil test.** For the price of a couple of bags of lime, a test tells you your
+actual pH, usually a direct lime recommendation, and what else the soil is short of. In
+the United States and Canada your county or provincial extension service will do one
+cheaply. It is the single best value purchase in gardening.
+
+**Apply less than you think and retest.** Lime is slow and hard to reverse. Splitting a
+large correction across two seasons, with a test in between, is how to avoid
+overshooting.
+
+**Work it in rather than leaving it on top.** Limestone barely moves through soil on its
+own. Raking or digging it into the top six inches gets it where the roots are; left on
+the surface it can take years.
+
+**Do not lime potato beds to neutral.** Potatoes prefer acid soil and scab gets worse as
+pH rises. If a bed is in rotation, lime it in the year it grows brassicas rather than
+the year it grows potatoes.
+
+**Skip the lime entirely if your pH is already above 6.5.** Most vegetables need nothing
+at that point, and pushing higher causes the micronutrient problems described in the
+questions below.
+
+**Check what your acid-loving plants want first.** Blueberries, rhododendrons and
+azaleas want soil far more acid than a vegetable bed. Liming near them undoes what they
+need.

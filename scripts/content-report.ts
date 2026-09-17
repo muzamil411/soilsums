@@ -51,6 +51,15 @@ const EXEMPT_FROM_WORD_MINIMUM = new Set([
   '/blog/',
 ]);
 
+/**
+ * Dynamic route templates carry no content of their own — the words come from
+ * the MDX file the template renders, which is counted separately. A path
+ * containing a [segment] is a template, not a page.
+ */
+function isRouteTemplate(route: string): boolean {
+  return route.includes('[');
+}
+
 function walk(dir: string): string[] {
   const out: string[] = [];
   for (const entry of readdirSync(dir)) {
@@ -89,6 +98,7 @@ const rows: Row[] = [];
 for (const file of walk(join(process.cwd(), 'app')).sort()) {
   const source = readFileSync(file, 'utf8');
   const route = routeOf(file);
+  if (isRouteTemplate(route)) continue;
   rows.push({
     page: route,
     source: relative(process.cwd(), file),

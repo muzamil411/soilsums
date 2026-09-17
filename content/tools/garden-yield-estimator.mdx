@@ -1,0 +1,134 @@
+---
+title: Garden yield estimator
+description: A realistic low-to-high harvest range for what you have planted, by plant count or by row length.
+heading: Garden yield estimator
+updated: 2026-09-17
+faqs:
+  - question: >-
+      How much food can a small vegetable garden produce?
+    answer: >-
+      Enough to matter, and less than the optimistic numbers online suggest. A well-managed 100
+      square foot bed planted in productive crops can give a meaningful share of a household's
+      summer vegetables, but the figure depends so heavily on what you grow that a general
+      answer is close to useless. Tomatoes and squash produce many pounds per plant; lettuce and
+      radishes produce ounces. Run your actual planting through the calculator rather than
+      trusting a headline figure.
+  - question: >-
+      Why is the estimate a range rather than a number?
+    answer: >-
+      Because a single number would be a false promise. Yield depends on variety, season length,
+      weather, soil, water, pests and how diligently you pick. A two-fold spread between a poor
+      year and a good one is normal for most crops. The honest answer is a range, and even that
+      should be read as a guide.
+  - question: >-
+      What affects yield most?
+    answer: >-
+      Water and picking, in that order, for most crops. Inconsistent watering during fruit set
+      costs more yield than almost anything else, and plants such as beans, cucumbers and
+      zucchini slow down sharply once mature fruit is left on them. After that: enough sun,
+      spacing that is not crowded, and a variety suited to your season length.
+  - question: >-
+      How do you convert row length into plants?
+    answer: >-
+      By dividing the row length by the crop's in-row spacing. A ten foot row is 120 inches, so
+      at three inch carrot spacing it holds 40 plants. Partial plants are rounded down, because
+      two thirds of a carrot position grows nothing. Row spacing is not involved — that is the
+      gap between rows, not within them.
+  - question: >-
+      Are these yields per plant or per season?
+    answer: >-
+      Per plant, for the whole season. A tomato plant's eight to fifteen pounds is the total it
+      produces across all its pickings, not a single harvest. For cut-and-come-again crops the
+      figure covers repeated cutting over the season.
+  - question: >-
+      Why does strawberry carry a warning?
+    answer: >-
+      Because it is a perennial and its first year is not typical. June-bearing strawberries are
+      usually not allowed to fruit in the year they are planted, so the real harvest starts the
+      season after. The figures here describe an established planting, and the calculator flags
+      that rather than quietly overpromising.
+---
+
+Yield figures are the easiest thing in gardening to exaggerate, and the hardest to
+predict. This estimator gives a low-to-high range from published per-plant figures, and
+the range is wide on purpose.
+
+## How to use it
+
+1. **Choose how you are counting.** By the plant, if you know how many you are putting
+   in. By row length, if you are thinking in feet or metres of row.
+2. **Add each crop** and its quantity. The dropdown shows each crop's per-plant range,
+   so you can see where the total is coming from.
+3. **Add as many crops as you like.** The table underneath breaks the total down crop by
+   crop.
+
+## How it is calculated
+
+```
+low  = plants x low yield per plant
+high = plants x high yield per plant
+```
+
+When you are working in row length, the plant count comes from the crop's own in-row
+spacing:
+
+```
+plants = floor(row length in inches / plant spacing in inches)
+```
+
+The rounding down is deliberate: a row that is two and a half plant spacings long holds
+two plants, not two and a half. Row spacing plays no part — that is the gap between
+rows, not within them.
+
+### A worked example
+
+Four tomatoes, two zucchini and twelve lettuces:
+
+- Tomato: 4 x 8 to 15 lb = **32 to 60 lb**
+- Zucchini: 2 x 6 to 12 lb = **12 to 24 lb**
+- Lettuce: 12 x 0.5 to 1 lb = **6 to 12 lb**
+- Total: **50 to 96 pounds**, or 23 to 44 kilograms
+
+Note where that total comes from. Four tomato plants produce more than twelve lettuces
+by a wide margin, which is worth knowing when a small bed has to be allocated.
+
+## Typical yields per plant
+
+| Crop          | Low     | High    | Crop        | Low     | High    |
+| ------------- | ------- | ------- | ----------- | ------- | ------- |
+| Watermelon    | 10 lb   | 30 lb   | Kale        | 1 lb    | 2 lb    |
+| Pumpkin       | 10 lb   | 25 lb   | Okra        | 1 lb    | 2 lb    |
+| Winter squash | 10 lb   | 20 lb   | Cauliflower | 1 lb    | 2 lb    |
+| Tomato        | 8 lb    | 15 lb   | Broccoli    | 0.75 lb | 1.5 lb  |
+| Zucchini      | 6 lb    | 12 lb   | Lettuce     | 0.5 lb  | 1 lb    |
+| Cucumber      | 5 lb    | 10 lb   | Strawberry  | 0.5 lb  | 1 lb    |
+| Eggplant      | 3 lb    | 6 lb    | Onion       | 0.3 lb  | 0.7 lb  |
+| Potato        | 2 lb    | 5 lb    | Spinach     | 0.3 lb  | 0.6 lb  |
+| Cabbage       | 2 lb    | 4 lb    | Bean, bush  | 0.25 lb | 0.5 lb  |
+| Pepper        | 2 lb    | 5 lb    | Pea         | 0.2 lb  | 0.4 lb  |
+| Sweet potato  | 2 lb    | 4 lb    | Carrot      | 0.2 lb  | 0.35 lb |
+| Garlic        | 0.15 lb | 0.25 lb | Radish      | 0.03 lb | 0.06 lb |
+
+Every figure in this table is marked as needing verification against a primary source in
+the site's data files. They are the ranges commonly published for home gardens, and your
+own results will sit somewhere in or near them.
+
+## Tips and common mistakes
+
+**Pick often.** Beans, cucumbers, zucchini and peas slow right down once mature fruit
+sits on the plant. Regular picking is the cheapest yield increase available.
+
+**Water consistently during fruit set.** A dry fortnight while tomatoes and peppers are
+setting costs more than any fertiliser will recover.
+
+**Do not plan a season around the high figure.** The low end is the safer number for
+deciding whether four plants will feed a household. The high end happens in a good year
+with a good variety and attentive care.
+
+**Count the preserving, not just the eating.** A glut is only a problem if you cannot
+store it. Twelve tomato plants is a lot to eat fresh and a reasonable amount to turn
+into sauce.
+
+**Space, sun and water beat plant count.** Six well-spaced plants in full sun reliably
+beat twelve crowded ones in part shade. If your estimate looks too low, the answer is
+rarely to squeeze more in.

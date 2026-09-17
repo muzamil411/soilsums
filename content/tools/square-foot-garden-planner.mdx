@@ -1,0 +1,145 @@
+---
+title: Square foot garden planner
+description: Fill a grid crop by crop, see the plant totals, print the plan, and have it saved in your browser for next time.
+heading: Square foot garden planner
+updated: 2026-09-17
+faqs:
+  - question: >-
+      What is square foot gardening?
+    answer: >-
+      A method of growing in a grid of one-foot squares rather than long rows, with each square
+      planted at a density set by the crop — sixteen radishes in a square, one tomato across a
+      square or more. It suits raised beds, removes the walking space rows need, and makes
+      rotation and succession easy to track because each square is its own small plot.
+  - question: >-
+      How many plants go in a square foot?
+    answer: >-
+      It depends on the crop's mature size. Sixteen for radishes and carrots, nine for beets,
+      spinach and bush beans, four for lettuce, basil and strawberries, one for kale, broccoli
+      or a tomato. Sprawling crops work the other way round: a zucchini needs around nine
+      squares per plant and a pumpkin closer to sixteen. The planner uses each crop's own
+      density and tells you when a crop needs more squares than you have given it.
+  - question: >-
+      Is my plan saved?
+    answer: >-
+      Yes, in two places. It is saved in this browser's local storage, so it is still here next
+      time you open the page on this device. It is also written into the page address, so
+      copying the link and sending it to yourself carries the plan to another device. Nothing is
+      sent to us — there is no account and no server holding your plan.
+  - question: >-
+      How deep does a square foot bed need to be?
+    answer: >-
+      Six inches is the classic minimum and works for shallow-rooted crops, provided the bed
+      sits on open soil that roots can carry on into. Eight to twelve inches is more comfortable
+      and covers most vegetables. If the bed is on a patio or a solid base, go to twelve inches,
+      and deeper still for carrots and parsnips.
+  - question: >-
+      Why does the grid show letters rather than colours?
+    answer: >-
+      So the plan works in print, in greyscale and for readers who cannot distinguish particular
+      colours. Each planted square carries an abbreviation of the crop name, and the table
+      underneath gives the full list. A colour key would look prettier on screen and be useless
+      on the printout you take to the garden.
+  - question: >-
+      Can I plant the same square twice in a season?
+    answer: >-
+      That is one of the method's advantages. As a fast crop such as radishes or lettuce comes
+      out, the square is replanted immediately with something else. Keep separate plans for
+      early, main and late season rather than trying to record all three in one grid, and use
+      the planting date calculator to work out when each round goes in.
+---
+
+Square foot gardening trades rows for a grid, and the arithmetic changes with it. Rather
+than working out how many feet of row a crop needs, you decide how many one-foot squares
+to give it, and the crop's density tells you how many plants that is.
+
+This planner does that bookkeeping. Set a grid size, pick a crop, tap squares to plant
+them, and the totals build underneath.
+
+## How to use it
+
+1. **Set the rows and columns.** A four by four grid is the classic starting bed. Four
+   by eight matches a standard timber-framed raised bed.
+2. **Choose a crop to place.** The dropdown shows each crop's density — how many go in a
+   square, or how many squares one plant needs.
+3. **Tap squares to plant them.** Tapping a square that already holds the selected crop
+   clears it again.
+4. **Print the plan** with the button at the bottom. Grid lines and labels print
+   legibly; the site furniture does not.
+
+The plan is saved in your browser as you work, and also written into the page address,
+so you can send the link to yourself to open on another device.
+
+## How it is calculated
+
+There is no clever geometry here — it is bookkeeping, applied carefully:
+
+```
+plants = squares assigned x plants per square foot
+```
+
+The care is in what happens when that number is less than one. Crops such as zucchini,
+winter squash and pumpkin have a density below 1, meaning they need several squares per
+plant rather than several plants per square:
+
+```
+squares per plant = ceil(1 / plants per square foot)
+```
+
+For those crops the planner rounds down, and says so. Assign a zucchini one square and
+it reports zero plants with a note explaining it needs about ten. Assign it ten and it
+reports one. That is more useful than a cheerful "0.1 plants".
+
+### A worked example
+
+A four by four grid, sixteen squares. Two squares of carrots, one of lettuce, one of
+tomato:
+
+- Carrots: 2 squares x 16 per square = **32 plants**
+- Lettuce: 1 square x 4 = **4 plants**
+- Tomato: 1 square x 1 = **1 plant**
+- Total: **37 plants** in four squares, with twelve squares still free
+
+Replace the tomato square with zucchini and the planner will tell you that one square is
+not enough: at 0.11 plants per square, a zucchini wants around ten.
+
+## Plants per square foot
+
+| Crop       | Per square | Crop          | Per square       |
+| ---------- | ---------- | ------------- | ---------------- |
+| Carrot     | 16         | Broccoli      | 1                |
+| Radish     | 16         | Cabbage       | 1                |
+| Spinach    | 9          | Cauliflower   | 1                |
+| Beet       | 9          | Kale          | 1                |
+| Bush bean  | 9          | Pepper        | 1                |
+| Onion      | 9          | Tomato        | 1                |
+| Garlic     | 9          | Eggplant      | 1                |
+| Cilantro   | 9          | Okra          | 1                |
+| Pea        | 8          | Potato        | 1 per 4 squares  |
+| Lettuce    | 4          | Sweet potato  | 1 per 4 squares  |
+| Basil      | 4          | Zucchini      | 1 per 10 squares |
+| Parsley    | 4          | Winter squash | 1 per 10 squares |
+| Strawberry | 4          | Watermelon    | 1 per 10 squares |
+| Cucumber   | 2          | Pumpkin       | 1 per 17 squares |
+
+Densities that come out as "1 per N squares" are the reciprocal of the published
+plants-per-square-foot figure, rounded up to whole squares.
+
+## Tips and common mistakes
+
+**Put the sprawlers on the edge.** A zucchini or a squash given its ten squares will
+still spill over the frame. Planting it at the edge of the bed, facing out, saves the
+plants next to it.
+
+**Trellis the climbers.** Cucumbers, pole beans and peas cost almost no floor space when
+they go up rather than out, which is what makes them good value in a small grid.
+
+**Do not plan every square for the whole season at once.** Fast crops come and go two or
+three times while a tomato occupies its square from May to October. Plan the early
+round, then replan as squares empty.
+
+**Watch the shade.** In the northern hemisphere, anything tall belongs on the north side
+of the bed, or it will put the shorter crops in shadow from midsummer onwards.
+
+**Check the depth your crops want.** A grid says nothing about depth, and carrots in a
+six inch bed will fork and stunt. Deep-rooted crops want twelve inches of loose soil.

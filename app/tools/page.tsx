@@ -3,7 +3,6 @@ import { Container } from '@/components/layout/Container';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { SectionRule } from '@/components/ui/SectionRule';
 import { SeedPacket } from '@/components/ui/SeedPacket';
-import { Callout } from '@/components/ui/Callout';
 import { pageMetadata } from '@/lib/seo/metadata';
 import { publishedTools, toolCategories, toolsByCategory, type ToolCategory } from '@/data/tools';
 
@@ -32,16 +31,6 @@ export default function ToolsIndexPage() {
         imperial or metric, and keeps your numbers in the page address so you can send a result to
         whoever is holding the wheelbarrow.
       </p>
-
-      {publishedTools.length === 0 ? (
-        <Callout title="Being built">
-          <p>
-            The calculators below are in active development. Each one goes live only once its
-            arithmetic has unit tests and its page has the written guidance to go with it — no
-            placeholder pages.
-          </p>
-        </Callout>
-      ) : null}
 
       {categoryOrder.map((category) => (
         <section key={category}>

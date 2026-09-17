@@ -7,7 +7,7 @@ import { site } from '@/lib/seo/site';
 export function Header() {
   return (
     <header className="bg-kale text-paper relative">
-      <Container className="flex items-center justify-between gap-4 py-2.5">
+      <Container className="flex items-center justify-between gap-4 py-2">
         <div>
           <Link
             href="/"

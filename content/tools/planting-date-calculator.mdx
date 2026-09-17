@@ -1,0 +1,141 @@
+---
+title: Planting date calculator
+description: Sowing, transplanting and direct-sow dates for 30 crops, worked out from your own average last frost date.
+heading: Planting date calculator
+updated: 2026-09-17
+faqs:
+  - question: >-
+      How do I find my last frost date?
+    answer: >-
+      For the United States, the NOAA regional climate centres publish freeze-date probabilities
+      by station, and most state extension services turn those into a local planting calendar.
+      In the UK, the Met Office publishes climate averages by region. In Canada, Environment and
+      Climate Change Canada does the same. A neighbour who has gardened locally for twenty years
+      is also a genuinely good source, often better than a national map for your particular
+      spot.
+  - question: >-
+      Why does the calculator not just use my ZIP code?
+    answer: >-
+      Because a ZIP code is not a climate. Frost dates vary sharply over short distances with
+      elevation, slope, shelter and how much concrete is nearby, and a lookup table would give a
+      confident answer that is wrong for a garden at the bottom of a cold valley. Asking you for
+      the one local fact that matters is more honest and, for the gardener who knows their own
+      site, more accurate.
+  - question: >-
+      Is it safe to plant on the last frost date itself?
+    answer: >-
+      No. An average last frost date is a midpoint, which means roughly half of years have a
+      frost after it. For anything frost-tender — tomatoes, peppers, beans, squash — wait one to
+      two weeks past it, and keep an eye on the forecast. Hardy crops such as peas, spinach and
+      kale can go out well before it.
+  - question: >-
+      Why does garlic not get a date?
+    answer: >-
+      Because no last-frost offset describes it. Garlic goes in during autumn, a few weeks
+      before the ground freezes, and is harvested the following summer. Rather than invent a
+      spring date for it, the calculator shows the crop's own timing note and tells you to work
+      back from your first fall frost instead. Strawberries are similar, being planted as crowns
+      rather than sown.
+  - question: >-
+      What does the harvest window mean?
+    answer: >-
+      It is the crop's days-to-maturity range applied to whichever planting step comes last —
+      direct sowing, or transplanting for crops that are set out as seedlings. It is an
+      estimate, and a cool season will stretch it. If you have entered a first fall frost date,
+      the calculator flags anything that would not finish in time.
+  - question: >-
+      Can I plant more than once in a season?
+    answer: >-
+      Yes, and for fast crops you should. Radishes, lettuce, spinach, bush beans and carrots can
+      be sown every two to three weeks through the season for a continuous supply rather than
+      one glut. Use the dates here for the first sowing and count forward from there.
+---
+
+Almost every planting date in a seed catalogue is expressed relative to your last
+spring frost: "start indoors six weeks before last frost", "direct sow two weeks
+after". This calculator does that arithmetic for thirty crops at once, from the one
+date only you can supply.
+
+There is no ZIP code lookup here, deliberately. Frost dates vary too much over short
+distances for a postcode to be a good answer, and the second question below explains
+why asking you is the more honest approach.
+
+## How to use it
+
+1. **Enter your average last spring frost date.** If you do not know it, the first
+   question below lists where to find it for your country.
+2. **Add your average first fall frost date** if you know it. It is optional, and worth
+   entering: it lets the calculator flag anything that will not ripen before frost, and
+   tells you how long your season actually is.
+3. **Pick your crops.** Tap as many as you like; the calendar builds as you go.
+
+Each row gives a date to start indoors, to transplant out, and to direct sow, plus a
+likely harvest window. Blanks are meaningful — a blank direct-sow date means the crop is
+not normally sown straight into the ground, not that the data is missing.
+
+## How it is calculated
+
+Every crop carries three offsets in weeks, relative to the last frost date, and a
+days-to-maturity range:
+
+```
+start indoors = last frost - (weeks before last frost x 7)
+transplant    = last frost + (weeks after last frost x 7)
+direct sow    = last frost + (weeks relative to last frost x 7)
+harvest       = last planting step + days to maturity
+```
+
+Negative offsets mean before the frost date, which is why cool-season crops such as
+lettuce and kale show transplant dates earlier than the frost date itself — they take a
+light frost without harm.
+
+All of this is computed in UTC and returned as plain calendar dates, so a shared result
+cannot shift by a day depending on the reader's timezone.
+
+### A worked example
+
+A last frost date of 15 May, growing tomatoes:
+
+- Start indoors: six weeks before, so 42 days back from 15 May = **3 April**
+- Transplant out: one week after, so **22 May**
+- Direct sow: **not applicable** — tomatoes are not sown outdoors in a temperate season
+- Harvest: 60 to 85 days from transplanting = **21 July to 15 August**
+
+Radishes from the same frost date are direct sown three weeks early on **24 April** and
+ready in 22 to 30 days, which is **16 to 24 May**.
+
+## Typical offsets, in weeks from last frost
+
+| Crop       | Start indoors | Transplant | Direct sow |
+| ---------- | ------------- | ---------- | ---------- |
+| Tomato     | 6 before      | 1 after    | —          |
+| Pepper     | 8 before      | 2 after    | —          |
+| Broccoli   | 6 before      | 2 before   | —          |
+| Lettuce    | 6 before      | 3 before   | 4 before   |
+| Spinach    | 5 before      | 4 before   | 6 before   |
+| Pea        | —             | —          | 5 before   |
+| Carrot     | —             | —          | 3 before   |
+| Bean       | —             | —          | 1 after    |
+| Cucumber   | 3 before      | 2 after    | 1 after    |
+| Watermelon | 3 before      | 2 after    | 2 after    |
+
+## Tips and common mistakes
+
+**Treat the last frost date as a coin toss, not a deadline.** Half of years are later
+than the average. Anything tender wants a week or two of margin and a look at the
+forecast.
+
+**Soil temperature matters more than air temperature for sowing.** Beans, corn and
+squash rot in cold wet soil rather than germinating. A cheap soil thermometer settles
+the question better than a calendar does.
+
+**Count back from the fall frost for autumn crops.** For a late sowing, the useful
+arithmetic is days to maturity plus a couple of weeks of margin, subtracted from your
+first fall frost date.
+
+**Do not start seeds indoors too early.** A tomato sown ten weeks before it can go out
+becomes a leggy, root-bound plant that never quite recovers. The offsets here are
+deliberately not generous.
+
+**Harden off before transplanting.** A week of increasing time outdoors before planting
+out saves plants that would otherwise stall or scorch.

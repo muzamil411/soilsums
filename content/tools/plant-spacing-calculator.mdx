@@ -1,0 +1,144 @@
+---
+title: Plant spacing calculator
+description: How many plants fit in a bed at any spacing, in a square grid or staggered rows, with the triangular gain computed properly.
+heading: Plant spacing calculator
+updated: 2026-09-17
+faqs:
+  - question: >-
+      Does staggered planting really fit 15% more plants?
+    answer: >-
+      About 15.5% more in theory, and usually less in practice. The theoretical gain comes from
+      rows sitting 0.866 of a spacing apart instead of a full spacing. But rows and plants come
+      in whole numbers, so a bed only benefits if it is deep enough to fit the extra row that
+      tighter pitch makes room for. In a 4 foot wide bed at 12 inch spacing there is no room for
+      a fifth row, and staggering fits fewer plants, not more. The calculator shows both layouts
+      so you can see which wins in your bed.
+  - question: >-
+      What is the difference between plant spacing and row spacing?
+    answer: >-
+      Plant spacing is the gap between plants within a row. Row spacing is the gap between the
+      rows themselves, and on a seed packet it is usually set by the access a person or a hoe
+      needs rather than by what the plant wants. In a raised bed you rarely need to walk between
+      rows, which is why intensive spacing in beds can be much tighter than a packet suggests.
+  - question: >-
+      Can I ignore the spacing on the seed packet?
+    answer: >-
+      Partly, and carefully. Packet spacings often assume field rows with walking room, so
+      closing the row spacing up in a bed is usually fine. The in-row figure is closer to what
+      the plant actually needs for light and air, and crowding it invites mildew and small
+      fruit. Reduce row spacing first, in-row spacing last.
+  - question: >-
+      How do I space plants near the edge of a bed?
+    answer: >-
+      This calculator leaves half a spacing at each edge, so plants are not jammed against the
+      frame. That is the convention that matches how beds are actually planted, and it is why an
+      8 foot row at 12 inch spacing fits 8 plants rather than 9.
+  - question: >-
+      Why does the calculator say fewer plants than area divided by spacing?
+    answer: >-
+      Because it counts whole plants that actually fit, not an area average. Dividing 32 square
+      feet by one square foot per plant gives a tidy 32, but a bed 7 feet 6 inches long fits the
+      same number of plants as one 8 feet long — the leftover 6 inches grows nothing. Counting
+      positions rather than dividing areas is the honest answer.
+  - question: >-
+      Does closer spacing mean a bigger harvest?
+    answer: >-
+      Up to a point, then it reverses. Tighter spacing raises yield per square foot while each
+      plant still gets enough light and water, which is the whole idea behind intensive bed
+      growing. Past that point plants compete, fruit gets smaller, air stops moving through the
+      foliage and disease follows. Crowding is a common cause of a disappointing harvest from a
+      full-looking bed.
+---
+
+Seed packets give a spacing. Beds come in whatever size you built them. This calculator
+turns the two into a plant count, and shows what you gain — or do not gain — by
+staggering the rows instead of planting a square grid.
+
+## How to use it
+
+1. **Pick a crop** to fill in its published spacing, or set the two spacings yourself.
+   Either way both fields stay editable.
+2. **Enter the bed's inside dimensions.**
+3. **Choose a layout.** A square grid lines plants up in both directions. Staggered
+   rows offset every other row by half a spacing, so each plant sits in the gap between
+   two in the row behind.
+4. Read the comparison table underneath. It gives both layouts for your bed, so the
+   choice is made on numbers rather than on a rule of thumb.
+
+## How it is calculated
+
+For a square grid, the calculator counts how many plant positions fit along each
+direction, leaving half a spacing at each edge:
+
+```
+plants per row = floor(bed length in inches / plant spacing)
+rows           = floor(bed width in inches / row spacing)
+total          = rows x plants per row
+```
+
+The staggered layout is where it gets interesting. If every plant must stay at least
+distance `d` from its neighbours, offsetting alternate rows lets the rows sit closer
+together — specifically `d x sqrt(3)/2`, which is about `0.866d`, because the three
+plants around any gap form an equilateral triangle:
+
+```
+row pitch      = plant spacing x 0.866
+rows           = floor(bed width in inches / row pitch)
+full rows      = plants per row
+offset rows    = plants per row, or one fewer when there is no slack at the end
+```
+
+That tighter pitch is where the often-quoted 15% comes from: 1 / 0.866 = 1.155. Note
+that in the staggered layout the **row spacing input is not used** for the plant count —
+the pitch is derived from the plant spacing. The row spacing figure is kept for the
+square-grid comparison.
+
+### A worked example
+
+A twenty by twenty foot plot at twelve inch spacing.
+
+Square grid:
+
+- 240 inches / 12 = **20 plants per row**
+- 240 inches / 12 = **20 rows**
+- Total: **400 plants**
+
+Staggered:
+
+- Row pitch: 12 x 0.866 = **10.39 inches**
+- 240 / 10.39 = **23 rows**
+- Full rows hold 20; offset rows hold 19, since 240 inches leaves no slack for the
+  half-spacing shift
+- 12 full rows x 20 + 11 offset rows x 19 = **449 plants**
+
+That is 12.3% more, not 15.5%. The difference is the plant lost from the end of each
+staggered row, plus the fact that rows only come in whole numbers. A flat 15% would
+have promised 460.
+
+## Plants in a 4 x 8 foot bed
+
+| Spacing | Square grid | Staggered | Crops at this spacing       |
+| ------- | ----------- | --------- | --------------------------- |
+| 3 in    | 1,024       | 960       | Carrot, radish              |
+| 4 in    | 576         | 552       | Beet, spinach, bush bean    |
+| 6 in    | 256         | 238       | Lettuce thinnings, cilantro |
+| 8 in    | 144         | 130       | Lettuce, parsley            |
+| 12 in   | 32          | 30        | Kale, okra, basil           |
+| 18 in   | 10          | 8         | Broccoli, pepper, eggplant  |
+| 24 in   | 8           | 6         | Tomato, zucchini            |
+
+## Tips and common mistakes
+
+**Staggering is worth it in wide beds, not narrow ones.** The gain only appears when the
+tighter row pitch lets an extra row in. Run both numbers before you plan a bed around
+it.
+
+**Leave yourself room to reach.** A bed wider than four feet is hard to work from the
+sides, whatever the spacing says. Plants you cannot reach do not get picked.
+
+**Spacing assumes the plant reaches full size.** Harvesting young — cut-and-come-again
+leaves, baby carrots — lets you plant tighter than any table suggests.
+
+**Tall crops shade short ones.** Put the tomatoes and corn where they will not put the
+lettuce in shadow all afternoon, which in the northern hemisphere usually means the
+north side of the bed.

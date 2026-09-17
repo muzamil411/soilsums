@@ -1,0 +1,131 @@
+---
+title: Fertilizer calculator (N-P-K)
+description: Turn the N-P-K numbers on a fertilizer bag into pounds of product for your plot, and see what else that dose supplies.
+heading: Fertilizer calculator
+updated: 2026-09-17
+faqs:
+  - question: >-
+      What do the three numbers on a fertilizer bag mean?
+    answer: >-
+      They are percentages by weight of nitrogen, phosphate and potash, always in that order. A
+      10-10-10 bag is 10% nitrogen, 10% phosphate and 10% potash, and the remaining 70% is
+      carrier and other nutrients. So a 50 pound bag of 10-10-10 contains five pounds of actual
+      nitrogen.
+  - question: >-
+      Is the second number phosphorus or phosphate?
+    answer: >-
+      Phosphate, written P2O5, and the third is potash, K2O. They are not the elements
+      themselves. This matters less than it sounds, because extension service recommendations
+      are normally written in the same phosphate and potash terms, so the two are consistent and
+      no conversion is needed.
+  - question: >-
+      How much fertilizer does a vegetable garden need?
+    answer: >-
+      A common general figure is one pound of actual nitrogen per 1,000 square feet for a mixed
+      vegetable plot, split across the season rather than given at once. But this varies by crop
+      and by what your soil already holds, and only a soil test can tell you the second part.
+      Legumes such as beans and peas fix their own nitrogen and need none.
+  - question: >-
+      Can I use too much fertilizer?
+    answer: >-
+      Easily. Excess nitrogen gives lush foliage and little fruit, makes plants attractive to
+      aphids, and runs off into groundwater and streams. Excess phosphate accumulates in the
+      soil for years and is a significant water pollutant. Under-applying is a slower problem to
+      fix but a far cheaper mistake.
+  - question: >-
+      Why does the calculator show the other two nutrients?
+    answer: >-
+      Because that is where over-application quietly happens. If you aim at a nitrogen rate
+      using a balanced fertilizer, you are also applying phosphate and potash whether the soil
+      needs them or not. Doing that every year for a decade is how gardens end up with phosphate
+      levels well above anything the plants can use.
+  - question: >-
+      Should I water fertilizer in?
+    answer: >-
+      Yes, for granular products on soil, unless rain is coming. Watering moves the nutrients to
+      the root zone and reduces losses, and it washes granules off leaves where they can scorch.
+      Do not water a foliar feed straight off the leaves, which defeats the point of applying it
+      that way.
+---
+
+Fertilizer recommendations are written in pounds of a nutrient. Fertilizer is sold in
+bags of product with three numbers on the front. This calculator does the conversion
+between them, and — the part most calculators leave out — shows you what else the dose
+you have just worked out is putting on the ground.
+
+## How to use it
+
+1. **Enter the area** you are feeding, in square feet or square metres.
+2. **Enter the target rate** for the nutrient you are aiming at. If a source tells you
+   "one pound of nitrogen per 1,000 square feet", that is a target rate of 1.
+3. **Type the three numbers from the bag** into the N, P and K fields exactly as
+   printed: 10-10-10 goes in as 10, 10, 10.
+4. **Choose which nutrient you are aiming at.** Most vegetable and lawn
+   recommendations are written as nitrogen, which is the default.
+
+The table underneath the result shows the phosphate and potash that come along for the
+ride. Worth a look before you spread.
+
+## How it is calculated
+
+```
+lb of product = (target rate / (nutrient % / 100)) x (area / 1000)
+```
+
+Two steps in one line. First, divide the target rate by the nutrient's fraction to find
+how much product carries that much nutrient per 1,000 square feet. Then scale by your
+actual area.
+
+The other two nutrients follow from the same weight of product:
+
+```
+lb of nutrient supplied = lb of product x (its label % / 100)
+```
+
+### A worked example
+
+You want one pound of nitrogen per 1,000 square feet over a 400 square foot bed, using
+a 10-10-10 fertilizer.
+
+- Nitrogen fraction: 10% = **0.10**
+- Product per 1,000 sq ft: 1 / 0.10 = **10 pounds**
+- Scaled to your bed: 10 x (400 / 1000) = **4 pounds of product**
+- Nitrogen supplied: 4 x 0.10 = **0.4 lb**
+- Phosphate supplied: 4 x 0.10 = **0.4 lb**
+- Potash supplied: 4 x 0.10 = **0.4 lb**
+
+Now the same target with a 24-8-16 instead. Nitrogen is 24%, so you need 1 / 0.24 =
+4.17 pounds per 1,000 sq ft, or **1.67 pounds** over the bed. That also supplies 0.13
+lb of phosphate and 0.27 lb of potash — a third of the phosphate the balanced product
+would have given for the same nitrogen.
+
+## Product needed for 1 lb of nitrogen per 1,000 sq ft
+
+| Fertilizer         | Nitrogen | Product per 1,000 sq ft |
+| ------------------ | -------- | ----------------------- |
+| 5-10-5             | 5%       | 20 lb                   |
+| 10-10-10           | 10%      | 10 lb                   |
+| 12-4-8             | 12%      | 8.3 lb                  |
+| 24-8-16            | 24%      | 4.2 lb                  |
+| 34-0-0             | 34%      | 2.9 lb                  |
+| 46-0-0 (urea)      | 46%      | 2.2 lb                  |
+| Blood meal, 12-0-0 | 12%      | 8.3 lb                  |
+
+## Tips and common mistakes
+
+**Weigh it.** A cup of one granular product is not a cup of another — densities differ
+enough to matter. A cheap kitchen scale removes all the guesswork here.
+
+**Split the season rather than feeding once.** Most vegetables do better with a portion
+at planting and the rest side-dressed as they grow. A single heavy dose is more likely
+to be wasted, and more likely to burn.
+
+**Get a soil test before adding phosphate or potash.** Nitrogen moves and leaches, so
+it needs topping up. Phosphate and potash accumulate, and many long-established gardens
+have plenty of both. A test costs little and can save you years of pointless applying.
+
+**Skip nitrogen for beans and peas.** They fix their own from the air, and a nitrogen
+feed gives you foliage instead of pods.
+
+**Keep it away from stems and out of watercourses.** Granules resting against a stem
+scorch it. Anything spread on a hard surface or a slope before rain ends up in a drain.

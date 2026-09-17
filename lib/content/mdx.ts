@@ -4,13 +4,23 @@ import matter from 'gray-matter';
 
 export type ContentKind = 'tools' | 'crops' | 'blog';
 
+export type Faq = { question: string; answer: string };
+
 export type Frontmatter = {
   title: string;
   description: string;
+  /** Shown as the page's h1 when it should differ from the meta title. */
+  heading?: string;
   /** Anything with draft: true is excluded from the build and the sitemap. */
   draft?: boolean;
   updated?: string;
   published?: string;
+  /**
+   * Questions live in frontmatter rather than in the body so the same text
+   * renders on the page and feeds FAQPage structured data. Answers are plain
+   * prose, no markdown, because structured data cannot carry markup.
+   */
+  faqs?: Faq[];
   [key: string]: unknown;
 };
 
@@ -47,12 +57,18 @@ export function listContent(kind: ContentKind): ContentEntry[] {
     .map((file) => {
       const filePath = join(dir, file);
       const parsed = matter(readFileSync(filePath, 'utf8'));
+      const frontmatter = parsed.data as Frontmatter;
+      // FAQ answers are real page content, so they count towards the total.
+      const faqWords = (frontmatter.faqs ?? []).reduce(
+        (sum, faq) => sum + countWords(`${faq.question} ${faq.answer}`),
+        0,
+      );
       return {
         kind,
         slug: file.replace(/\.mdx$/, ''),
         filePath,
-        frontmatter: parsed.data as Frontmatter,
-        wordCount: countWords(parsed.content),
+        frontmatter,
+        wordCount: countWords(parsed.content) + faqWords,
       };
     })
     .sort((a, b) => a.slug.localeCompare(b.slug));
@@ -65,4 +81,15 @@ export function listPublished(kind: ContentKind): ContentEntry[] {
 
 export function hasContent(kind: ContentKind, slug: string): boolean {
   return existsSync(join(CONTENT_ROOT, kind, `${slug}.mdx`));
+}
+
+/** One entry by slug, or undefined when the file does not exist. */
+export function getContent(kind: ContentKind, slug: string): ContentEntry | undefined {
+  return listContent(kind).find((entry) => entry.slug === slug);
+}
+
+/** True when a page should be built: the content exists and is not a draft. */
+export function isPublishable(kind: ContentKind, slug: string): boolean {
+  const entry = getContent(kind, slug);
+  return entry !== undefined && entry.frontmatter.draft !== true;
 }

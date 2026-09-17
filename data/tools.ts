@@ -42,7 +42,7 @@ export const tools: readonly Tool[] = [
     summary: 'Cubic feet, cubic yards, liters and how many bags',
     category: 'soil-and-beds',
     related: ['mulch-calculator', 'potting-soil-calculator', 'plant-spacing-calculator'],
-    published: false,
+    published: true,
   },
   {
     no: 'No. 02',
@@ -51,7 +51,7 @@ export const tools: readonly Tool[] = [
     summary: 'Turn an N-P-K label into pounds of product for your plot',
     category: 'feeding-and-soil-health',
     related: ['lime-calculator', 'compost-ratio-calculator', 'grass-seed-calculator'],
-    published: false,
+    published: true,
   },
   {
     no: 'No. 03',
@@ -64,7 +64,7 @@ export const tools: readonly Tool[] = [
       'garden-watering-calculator',
       'potting-soil-calculator',
     ],
-    published: false,
+    published: true,
   },
   {
     no: 'No. 04',
@@ -73,7 +73,7 @@ export const tools: readonly Tool[] = [
     summary: 'How many plants fit, in square or triangular layout',
     category: 'timing-and-planning',
     related: ['square-foot-garden-planner', 'garden-yield-estimator', 'planting-date-calculator'],
-    published: false,
+    published: true,
   },
   {
     no: 'No. 05',
@@ -82,7 +82,7 @@ export const tools: readonly Tool[] = [
     summary: 'Seed by the pound for a new lawn or for overseeding',
     category: 'feeding-and-soil-health',
     related: ['fertilizer-calculator', 'lime-calculator', 'garden-watering-calculator'],
-    published: false,
+    published: true,
   },
   {
     no: 'No. 06',
@@ -91,7 +91,7 @@ export const tools: readonly Tool[] = [
     summary: 'Check the carbon to nitrogen balance of your pile',
     category: 'feeding-and-soil-health',
     related: ['fertilizer-calculator', 'raised-bed-soil-calculator', 'lime-calculator'],
-    published: false,
+    published: true,
   },
   {
     no: 'No. 07',
@@ -100,7 +100,7 @@ export const tools: readonly Tool[] = [
     summary: 'Gallons or liters per week, adjusted for rainfall',
     category: 'timing-and-planning',
     related: ['mulch-calculator', 'garden-yield-estimator', 'planting-date-calculator'],
-    published: false,
+    published: true,
   },
   {
     no: 'No. 08',
@@ -109,7 +109,7 @@ export const tools: readonly Tool[] = [
     summary: 'Sow, transplant and direct-sow dates from your frost date',
     category: 'timing-and-planning',
     related: ['square-foot-garden-planner', 'plant-spacing-calculator', 'garden-yield-estimator'],
-    published: false,
+    published: true,
   },
   {
     no: 'No. 09',
@@ -118,7 +118,7 @@ export const tools: readonly Tool[] = [
     summary: 'Fill a grid crop by crop and print the plan',
     category: 'timing-and-planning',
     related: ['plant-spacing-calculator', 'raised-bed-soil-calculator', 'garden-yield-estimator'],
-    published: false,
+    published: true,
   },
   {
     no: 'No. 10',
@@ -127,7 +127,7 @@ export const tools: readonly Tool[] = [
     summary: 'Dry quarts, gallons, cubic feet and liters per pot',
     category: 'soil-and-beds',
     related: ['raised-bed-soil-calculator', 'mulch-calculator', 'garden-watering-calculator'],
-    published: false,
+    published: true,
   },
   {
     no: 'No. 11',
@@ -136,7 +136,7 @@ export const tools: readonly Tool[] = [
     summary: 'Limestone needed to raise soil pH, by soil texture',
     category: 'feeding-and-soil-health',
     related: ['fertilizer-calculator', 'compost-ratio-calculator', 'grass-seed-calculator'],
-    published: false,
+    published: true,
   },
   {
     no: 'No. 12',
@@ -145,7 +145,7 @@ export const tools: readonly Tool[] = [
     summary: 'A realistic harvest range for what you have planted',
     category: 'timing-and-planning',
     related: ['plant-spacing-calculator', 'square-foot-garden-planner', 'planting-date-calculator'],
-    published: false,
+    published: true,
   },
 ];
 

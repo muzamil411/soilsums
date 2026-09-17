@@ -100,6 +100,42 @@ Writing conventions: sentence case for every heading, label and button. No upper
 small-caps section labels. No arrows in link or button text. Seed packet catalogue
 numbers (`No. 01`) are part of the visual identity and stay.
 
+## How a tool page is assembled
+
+`app/tools/[slug]/page.tsx` builds a page only when all three pieces exist: the tool is
+`published` in `data/tools.ts`, it has a component in `components/tools/registry.ts`,
+and it has non-draft content in `content/tools/registry.ts`. Miss any one and the page
+is left out of both the build and the sitemap.
+
+Each calculator is a client component wrapped in `CalculatorFrame`, which owns the
+garden-notebook panel, the unit toggle, the live result, and the copy, print and reset
+buttons. State comes from `useToolState`, which:
+
+- composes values from three layers — defaults for the current unit system, anything a
+  shared link carried, then the reader's own edits — so no effect has to copy the URL
+  into state;
+- mirrors the inputs into the query string with `history.replaceState`, so a result is
+  shareable without pushing history entries on every keystroke;
+- converts values when the units change, using the `kinds` map each tool declares
+  (`span`, `short`, `area`, `volume`, `dry-volume`, `mass`, `rainfall`, `rate`, `none`).
+  Type 8 feet, switch to metric, and you get 2.438 metres rather than 8 metres.
+
+Browser-only values (the query string, the unit preference, a saved plan) are read
+through `useSyncExternalStore` in `lib/hooks/useBrowserValue.ts`, not from an effect.
+The static HTML has no query string, so reading one in an effect would mean rendering
+defaults and correcting them — a cascading render on every page load, and a lint error
+from `react-hooks/set-state-in-effect`.
+
+`CalculatorFrame` takes `resultFirst` for the four tools whose input is a list or a grid
+(compost, yield, planner, planting dates). With rows that can be added there is no
+settled place "after the inputs", and putting the running total at the top keeps it
+visible while the list is edited. It is also what keeps every tool's result above the
+fold on a 375x667 phone.
+
+Calculators cannot read the filesystem, so the page passes them `linkedCrops` — the crop
+guides that actually exist. Crops outside that list render as plain text rather than as
+links to pages that have not been written yet.
+
 ## How to add a new tool
 
 1. Add an entry to `data/tools.ts` with `published: false`, a catalogue number, a
@@ -108,12 +144,34 @@ numbers (`No. 01`) are part of the visual identity and stay.
    types. Reject invalid input by returning an error, never `NaN` or `Infinity`.
 3. Write `lib/calculators/<slug>.test.ts` — at least five cases, including zero,
    negative, very large, and the same calculation in imperial and metric.
-4. Build the client component in `components/tools/<Slug>.tsx`. It calls the pure
-   function, shows the result as a plain-English sentence, and syncs inputs to the URL.
-5. Write `content/tools/<slug>.mdx`: intro, how to use it, how it is calculated with a
-   worked example, a reference table, tips and common mistakes, and 5–6 FAQs. 700–1,000
-   words.
+4. Build the client component in `components/tools/<Slug>.tsx` around
+   `CalculatorFrame`, and register it in `components/tools/registry.ts`.
+5. Write `content/tools/<slug>.mdx` and register it in `content/tools/registry.ts`:
+   intro, how to use it, how it is calculated with a worked example, a reference table,
+   tips and common mistakes, and 5–6 FAQs. 700–1,000 words including the FAQs.
 6. Flip `published: true`. Run `npm run check`.
+
+### MDX frontmatter
+
+```yaml
+---
+title: Mulch calculator # the <title>, 60 characters or fewer
+description: How many bags... # the meta description, 155 or fewer
+heading: Mulch calculator # optional, when the h1 should differ
+updated: 2026-09-17
+faqs:
+  - question: >-
+      How deep should mulch be?
+    answer: >-
+      Two to three inches is right for most beds...
+---
+```
+
+FAQ questions and answers are read from the frontmatter, rendered on the page and used
+for `FAQPage` structured data, so there is one source of truth for all three. Write them
+as YAML block scalars (`>-`): a plain scalar breaks on any `: ` inside the text, which is
+easy to hit when writing about ratios and units. Answers are plain prose with no
+markdown, because structured data cannot carry markup.
 
 ## How to add a crop
 

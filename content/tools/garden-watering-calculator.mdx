@@ -1,0 +1,135 @@
+---
+title: Garden watering calculator
+description: How many gallons or liters a vegetable garden needs this week, adjusted for the rain it has already had.
+heading: Garden watering calculator
+updated: 2026-09-17
+faqs:
+  - question: >-
+      How much water does a vegetable garden need per week?
+    answer: >-
+      One inch a week is the usual figure for an established vegetable garden, rising to an inch
+      and a half in hot, dry or windy weather and on sandy soil. That includes rainfall. It is a
+      guide rather than a rule: check the soil a few inches down before watering, because the
+      same garden can need double one week and nothing the next.
+  - question: >-
+      Where does the 0.623 figure come from?
+    answer: >-
+      It is not a fudge factor. An inch of water over one square foot is 144 cubic inches, and a
+      US gallon is defined as exactly 231 cubic inches. 144 divided by 231 is 0.6234. In metric
+      the equivalent is cleaner still: one millimetre of water over one square metre is exactly
+      one liter.
+  - question: >-
+      Is it better to water deeply or often?
+    answer: >-
+      Deeply and less often, for almost everything in the ground. Deep watering draws roots down
+      to where the soil stays damp longer, which makes the plant far more resilient in a dry
+      spell. Frequent light watering keeps roots shallow and dependent. Containers are the
+      exception: they hold so little water that daily attention in summer is normal.
+  - question: >-
+      What time of day should I water?
+    answer: >-
+      Early morning is best. The soil takes the water up before the heat of the day, and the
+      foliage dries quickly, which matters for fungal disease. Evening is second best and fine
+      if morning is impossible, though leaves staying wet all night raises the risk of mildew
+      and blight. Midday is the least efficient, though watering a wilting plant at noon is
+      still better than not watering it.
+  - question: >-
+      How do I measure rainfall?
+    answer: >-
+      A straight-sided container in the open is all you need: a jam jar, a tin, anything that
+      does not taper. Put it away from walls and overhanging branches, and measure the depth of
+      water in it with a ruler. A purpose-made gauge is more precise but the jar is honest
+      enough for this purpose.
+  - question: >-
+      Does mulch reduce how much I need to water?
+    answer: >-
+      Substantially, by slowing evaporation from the soil surface. Two to three inches of mulch
+      is one of the most effective water-saving measures available to a gardener, and it also
+      keeps soil temperature steadier. It does mean checking under the mulch rather than on top
+      of it when deciding whether a bed is dry.
+---
+
+Watering advice is usually given in inches of water per week, and hoses deliver gallons.
+This calculator converts between them and subtracts the rain you have already had, so
+what comes out is the number of gallons or liters still to give.
+
+## How to use it
+
+1. **Enter the garden area.** Just the planted beds, not the paths between them.
+2. **Set the weekly target.** One inch, or 25 millimetres, suits most established
+   vegetables. Sandy soil, hot weather and windy sites push it up; heavy soil and cool
+   weather pull it down.
+3. **Enter the rain so far this week.** A straight-sided jar left in the open is a
+   perfectly serviceable gauge.
+
+If the rain has already met the target the calculator says so rather than producing a
+number — but check the soil a few inches down before you believe it, because a heavy
+shower on dry ground can run off rather than soak in.
+
+## How it is calculated
+
+In imperial:
+
+```
+gallons = area (sq ft) x net inches x 0.6234
+```
+
+An inch of water over one square foot is 144 cubic inches, and a US gallon is 231 cubic
+inches by definition. 144 / 231 = 0.6234, which is where the familiar 0.623 comes from.
+
+In metric it is simpler, because the units were designed to make this easy:
+
+```
+liters = area (m2) x net millimetres
+```
+
+One millimetre over one square metre is exactly one liter.
+
+The "net" figure is the target minus the rainfall, and never goes below zero — rain in
+excess of the target does not create a negative requirement.
+
+### A worked example
+
+A 100 square foot bed, one inch a week target, 0.4 inches of rain so far:
+
+- Net requirement: 1 − 0.4 = **0.6 inches**
+- Water needed: 100 x 0.6 x 0.6234 = **37.4 gallons**
+- Split over two soakings: **18.7 gallons each**
+
+The same bed with no rain at all needs 62.3 gallons for the week.
+
+## Gallons per week, at one inch
+
+| Garden area          | Full inch | Half inch | Per soaking, twice weekly |
+| -------------------- | --------- | --------- | ------------------------- |
+| 32 sq ft (4 x 8 bed) | 20 gal    | 10 gal    | 10 gal                    |
+| 50 sq ft             | 31 gal    | 16 gal    | 16 gal                    |
+| 100 sq ft            | 62 gal    | 31 gal    | 31 gal                    |
+| 200 sq ft            | 125 gal   | 62 gal    | 62 gal                    |
+| 400 sq ft            | 249 gal   | 125 gal   | 125 gal                   |
+| 1,000 sq ft          | 623 gal   | 312 gal   | 312 gal                   |
+
+## Tips and common mistakes
+
+**Find out what your hose or can actually delivers.** Time how long a watering can takes
+to fill, then how many cans go on a bed. Most people substantially overestimate how much
+water a few minutes with a hose puts down.
+
+**Two long drinks beat seven short ones.** Deep watering pulls roots downward, where the
+soil stays damp longer. Light daily sprinkling keeps them near the surface, where the
+first hot day finds them.
+
+**Check the soil, not the surface.** Push a finger in two or three inches. Dry dust on
+top over damp soil beneath is normal and needs no water; damp crust over dry soil is a
+sign of light watering.
+
+**Mulch before you water more.** Two or three inches of mulch cuts evaporation from the
+soil surface noticeably, and does it every day without your involvement.
+
+**Water the soil, not the leaves.** A watering can with the rose removed, a soaker hose
+or drip line all put water where roots are and keep foliage dry, which matters for
+tomatoes and squash in particular.
+
+**Containers are a different problem.** They hold so little that a large pot in high
+summer can need water daily whatever a weekly figure says. Use the container calculator
+to see how little soil a pot actually holds.

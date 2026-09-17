@@ -1,0 +1,143 @@
+---
+title: Container potting soil calculator
+description: How much potting mix a pot, planter or half barrel holds, in US dry quarts, gallons, cubic feet and liters.
+heading: Container potting soil calculator
+updated: 2026-09-17
+faqs:
+  - question: >-
+      Why does this use dry quarts instead of liquid quarts?
+    answer: >-
+      Because that is what is printed on a bag of potting mix in the United States. Dry and
+      liquid quarts are different units: a cubic foot is 25.71 dry quarts but 29.92 liquid
+      quarts. Quote the liquid figure and you will think a container holds 16% more mix than it
+      does, and buy 16% too few bags.
+  - question: >-
+      How many quarts of soil does a 12 inch pot need?
+    answer: >-
+      About 17 US dry quarts, filled to ten inches deep. A 10 inch pot takes around 10 dry
+      quarts, a 14 inch pot around 26. Those are cylinder figures — real pots taper towards the
+      base, so you will usually get away with slightly less.
+  - question: >-
+      Can I reuse last year's potting mix?
+    answer: >-
+      Partly. Old mix has lost structure and most of its nutrients, and may carry root disease
+      from whatever grew in it. Tipping out the top half, mixing it with an equal volume of
+      fresh mix and compost, and topping up works well for annuals. Start fresh for seedlings
+      and for anything that struggled last year.
+  - question: >-
+      Should I put gravel or crocks in the bottom for drainage?
+    answer: >-
+      No. It is one of the most persistent bits of bad garden advice. A coarse layer under a
+      fine one raises the level at which water sits rather than lowering it, because water will
+      not cross the boundary until the soil above is saturated. A drainage hole and a mix that
+      drains freely is all a pot needs.
+  - question: >-
+      Is potting mix the same as garden soil or topsoil?
+    answer: >-
+      No, and the difference matters more in a pot than anywhere else. Potting mix is mostly
+      peat or coir with bark and perlite, built to hold air as well as water in a confined
+      space. Garden soil compacts into an airless brick inside a pot. Bagged topsoil and garden
+      soil are for beds and borders, not containers.
+  - question: >-
+      How deep does a container need to be?
+    answer: >-
+      Six inches for salad leaves and most herbs. Eight to ten for bush beans, compact peppers
+      and chard. Twelve or more for tomatoes, aubergines and anything that will grow tall enough
+      to need an anchor. Depth matters more than width for most crops, since it is what buys the
+      plant a reserve of water on a hot day.
+---
+
+Containers are sold by the inch and potting mix is sold by the quart, so the sum
+between them is easy to get wrong. This calculator gives you the volume of a pot,
+planter, window box or half barrel in the unit the bag is actually labelled in.
+
+One conversion is worth stating plainly because so much of the internet gets it wrong:
+bagged potting mix in the United States is sold in **US dry quarts**, and a cubic foot
+is **25.71 dry quarts**. The figure 29.92 that appears on many calculator pages is
+liquid quarts, a different unit, and using it overstates what a container holds by
+about 16%.
+
+## How to use it
+
+1. **Start from a common container if one fits** — pot sizes, window boxes, nursery
+   trade sizes and half barrels are all in the dropdown. The measurements fill in and
+   stay editable.
+2. **Or measure your own.** For a round pot, the diameter across the top of the soil.
+   For a square or rectangular planter, the inside width and length.
+3. **Enter the soil depth**, not the full height of the pot. Fill to about an inch
+   below the rim so watering does not wash mix over the edge.
+4. **Set how many containers** you are filling, and the size of the bag you are
+   buying — dry quarts in imperial, liters in metric.
+
+## How it is calculated
+
+A round pot or a half barrel is a cylinder:
+
+```
+cubic inches = pi x (diameter / 2)^2 x depth
+```
+
+A square or rectangular planter is a box:
+
+```
+cubic inches = length x width x depth
+```
+
+Then everything divides by 1,728, the number of cubic inches in a cubic foot, and
+converts from there:
+
+```
+cubic feet    = cubic inches / 1728
+US dry quarts = cubic feet x 25.714
+US gallons    = cubic feet x 7.4805
+liters        = cubic feet x 28.317
+```
+
+The dry quart is exactly 67.200625 cubic inches by definition, which is where 25.714
+comes from: 1,728 / 67.200625.
+
+### A worked example
+
+A twelve inch round pot, filled ten inches deep:
+
+- Radius: 12 / 2 = **6 inches**
+- Volume: pi x 6 x 6 x 10 = **1,131 cubic inches**
+- In cubic feet: 1,131 / 1,728 = **0.654 cubic feet**
+- In dry quarts: 0.654 x 25.714 = **16.8 US dry quarts**
+- In liters: 0.654 x 28.317 = **18.5 liters**
+
+A 25 dry quart bag fills one of those pots with some left over. Four of them need three
+bags.
+
+## Common containers
+
+| Container                   | Soil depth | US dry quarts | Liters |
+| --------------------------- | ---------- | ------------- | ------ |
+| 6 in round pot              | 5 in       | 2.1           | 2.3    |
+| 8 in round pot              | 7 in       | 5.2           | 5.8    |
+| 10 in round pot             | 9 in       | 10.5          | 11.6   |
+| 12 in round pot             | 10 in      | 16.8          | 18.5   |
+| 14 in round pot             | 12 in      | 27.4          | 30.2   |
+| 24 in window box, 7 in wide | 6 in       | 15.0          | 16.5   |
+| Large grow bag, 36 x 14 in  | 9 in       | 67.5          | 74.4   |
+| Half barrel, 26 in across   | 16 in      | 126           | 139    |
+
+## Tips and common mistakes
+
+**Pots taper, so buy for the calculated figure and expect to use a little less.** The
+cylinder maths treats a pot as straight-sided. A typical tapered pot holds ten to
+twenty per cent less than its top diameter suggests.
+
+**Do not fill to the rim.** An inch of freeboard is the difference between watering a
+pot and washing half of it onto the patio.
+
+**Big containers are easier than small ones.** The larger the volume, the longer it
+takes to dry out, and drying out is what kills most container plants. If you are
+choosing between two sizes, take the bigger one.
+
+**Buy mix by volume, not by weight.** Bag weights vary with how wet the mix is. The
+quart or liter figure is the one that tells you whether it will fill your pots.
+
+**Nursery "gallon" sizes are trade sizes, not liquid gallons.** A #1 "one gallon" pot
+holds roughly 0.7 US liquid gallons. The presets above use measured dimensions rather
+than the label.

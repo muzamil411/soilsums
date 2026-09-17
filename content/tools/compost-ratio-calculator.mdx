@@ -1,0 +1,164 @@
+---
+title: Compost ratio calculator (C:N)
+description: Check the carbon to nitrogen balance of a compost pile from what you are putting in, and see what to add to fix it.
+heading: Compost ratio calculator
+updated: 2026-09-17
+faqs:
+  - question: >-
+      What is the ideal C:N ratio for compost?
+    answer: >-
+      Roughly 25 to 30 parts carbon to one part nitrogen. Below that band there is surplus
+      nitrogen with no carbon to build into microbial bodies, so it escapes as ammonia and the
+      pile smells. Above it, the microbes run short of nitrogen and the pile breaks down slowly
+      without heating up. Both piles eventually become compost; the balanced one just does it in
+      weeks rather than a year.
+  - question: >-
+      Why can I not just average the C:N ratios of my materials?
+    answer: >-
+      Because a ratio is not a quantity. Take equal weights of sawdust at 500:1 and coffee
+      grounds at 20:1. Averaging the ratios gives 260:1. But the sawdust carries almost no
+      nitrogen to average with, while the coffee grounds bring ten times as much, so the actual
+      mix comes out around 62:1. Working from masses of carbon and nitrogen is the only way to
+      get this right, and it is what this calculator does.
+  - question: >-
+      What counts as a brown and what counts as a green?
+    answer: >-
+      Browns are dry and carbon-rich: autumn leaves, straw, cardboard, sawdust, woody trimmings.
+      Greens are moist and nitrogen-rich: grass clippings, vegetable scraps, manure, fresh
+      weeds. Coffee grounds are a green despite the name and colour, which catches people out
+      regularly. The material's ratio matters more than its appearance.
+  - question: >-
+      Is the two-parts-brown-to-one-part-green rule wrong?
+    answer: >-
+      Not wrong, just imprecise. It is a volume rule standing in for a mass calculation, and it
+      works because typical browns are light and dry while typical greens are heavy and wet. It
+      breaks down with unusual materials: three buckets of sawdust and one of grass is nowhere
+      near balanced, and neither is two buckets of straw with one of chicken manure.
+  - question: >-
+      Why does my compost smell of ammonia?
+    answer: >-
+      Too much nitrogen relative to carbon. The microbes cannot use it all, so the surplus
+      leaves as ammonia gas, which is both the smell and a waste of the nitrogen you wanted to
+      keep. Mix in a carbon-rich brown such as shredded leaves, straw or cardboard, and turn the
+      pile to get air into it.
+  - question: >-
+      My pile is not heating up. What is wrong?
+    answer: >-
+      Usually one of three things, in this order: too much carbon and not enough nitrogen, too
+      dry, or too small. Run your materials through the calculator first. If the ratio is fine,
+      squeeze a handful — it should be as damp as a wrung-out sponge. If that is fine too, the
+      pile may simply be too small to hold heat; a cubic yard is about the minimum for a hot
+      pile.
+  - question: >-
+      Do I need to weigh everything?
+    answer: >-
+      No. The calculator accepts volume, in buckets or liters, and converts using each
+      material's bulk density, because nobody weighs their compost. Weight is available if you
+      happen to know it, which is sometimes the case for a bought bag of manure or alfalfa meal.
+---
+
+A compost pile that will not heat up, or that smells of ammonia, almost always has a
+carbon to nitrogen problem. This calculator estimates the ratio of a pile from what you
+are putting in it, and works out how much of one material would bring it into range.
+
+It does the arithmetic properly, which matters more here than it sounds. The common
+shortcut — averaging the C:N ratios of the ingredients — gives the wrong answer, often
+wildly wrong. See the second question below for why.
+
+## How to use it
+
+1. **Choose how you are measuring.** Volume is the realistic option for most people:
+   buckets, or liters. Weight is there if you know it.
+2. **Add each material** from the dropdown and enter how much of it is going in. The
+   note under each one flags anything worth knowing about handling it.
+3. **Add as many rows as you need** with the button underneath, and remove any you
+   change your mind about.
+
+The result gives the pile's ratio, a verdict against the 25–30:1 target band, and — when
+the pile is out of range — how much of a suitable green or brown would fix it.
+
+## How it is calculated
+
+Not by averaging ratios. The pile's ratio is the total mass of carbon divided by the
+total mass of nitrogen, so each material has to be resolved into those two masses first:
+
+```
+dry mass = as-is mass x dry matter %
+nitrogen = dry mass x nitrogen % of dry matter
+carbon   = nitrogen x that material's own C:N ratio
+```
+
+Then:
+
+```
+pile C:N = total carbon / total nitrogen
+```
+
+That is why `data/compost-materials.ts` carries a nitrogen percentage and a dry matter
+percentage for every material as well as its C:N ratio. Volume entries are converted to
+weight first, using each material's bulk density — five pounds per cubic foot for dry
+leaves, forty for coffee grounds.
+
+The suggested correction solves for the mass `x` of a chosen material that lands the
+pile on target:
+
+```
+(C + x.cx) / (N + x.nx) = target,  so  x = (C - target.N) / (target.nx - cx)
+```
+
+### A worked example
+
+Thirty pounds of dry leaves and ten pounds of fresh grass clippings.
+
+Leaves: 30 lb as-is, 85% dry matter = 25.5 lb dry. At 0.8% nitrogen that is 0.204 lb of
+nitrogen, and at 60:1 that implies 12.24 lb of carbon.
+
+Grass: 10 lb as-is, 25% dry matter = 2.5 lb dry. At 2.4% nitrogen that is 0.06 lb of
+nitrogen, and at 20:1, 1.2 lb of carbon.
+
+- Total carbon: 12.24 + 1.2 = **13.44 lb**
+- Total nitrogen: 0.204 + 0.06 = **0.264 lb**
+- Ratio: 13.44 / 0.264 = **51:1**
+
+Carbon-heavy, so it will be slow. Grass is three quarters water, which is why ten pounds
+of it contributes so little nitrogen by weight — and why a balanced pile needs a
+surprising amount of it.
+
+## Common materials
+
+| Material                  | Type  | C:N ratio |
+| ------------------------- | ----- | --------- |
+| Sawdust                   | Brown | 500:1     |
+| Wood chips                | Brown | 400:1     |
+| Cardboard                 | Brown | 350:1     |
+| Shredded newspaper        | Brown | 175:1     |
+| Pine needles              | Brown | 80:1      |
+| Straw                     | Brown | 75:1      |
+| Dry autumn leaves         | Brown | 60:1      |
+| Shrub trimmings           | Brown | 50:1      |
+| Fruit waste               | Green | 35:1      |
+| Horse manure with bedding | Green | 25:1      |
+| Grass clippings           | Green | 20:1      |
+| Vegetable scraps          | Green | 20:1      |
+| Coffee grounds            | Green | 20:1      |
+| Cow manure                | Green | 20:1      |
+| Seaweed                   | Green | 19:1      |
+| Alfalfa meal              | Green | 12:1      |
+| Chicken manure            | Green | 7:1       |
+
+## Tips and common mistakes
+
+**Shred the browns.** Whole leaves mat into layers that shed water; a run over with a
+mower first makes a visible difference to how fast a pile works.
+
+**Mix, do not layer.** Neat alternating layers look tidy and compost unevenly. Turning
+the pile once it has cooled is what mixes it properly.
+
+**Aim for a wrung-out sponge.** Moisture matters as much as the ratio. A dry pile stalls
+whatever its chemistry says, and a sodden one goes anaerobic.
+
+**Size matters for heat.** Around a cubic yard is roughly the minimum for a pile to
+hold its own heat. Smaller piles still compost, just cold and slow.
+
+**Keep meat, dairy and oils out**, and keep perennial weed roots and seed heads out
+unless the pile genuinely gets hot — a cool pile will happily propagate them for you.
