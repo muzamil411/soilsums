@@ -150,7 +150,7 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
         </ul>
 
         <div className="border-rule mt-10 border-t pt-4">
-          <LastUpdated date={String(entry.frontmatter.updated ?? '2026-09-17')} />
+          <LastUpdated date={entry.frontmatter.updated} />
           <p className="text-ink/70 text-sm">
             Written and checked by{' '}
             <Link href="/about/" className="font-semibold">

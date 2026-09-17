@@ -6,6 +6,27 @@ export type ContentKind = 'tools' | 'crops' | 'blog';
 
 export type Faq = { question: string; answer: string };
 
+/**
+ * Normalises a frontmatter date to a plain YYYY-MM-DD string.
+ *
+ * YAML parses an unquoted `2026-09-17` into a JavaScript Date, so reading it
+ * as a string gives "Thu Sep 17 2026 00:00:00 GMT+0000 (…)" — which then fails
+ * to parse again downstream and renders as "Invalid Date". Normalising here
+ * means every page gets the same shape whether the file quoted the date or not.
+ */
+export function toIsoDate(value: unknown): string | undefined {
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? undefined : value.toISOString().slice(0, 10);
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+    const parsed = Date.parse(trimmed);
+    return Number.isNaN(parsed) ? undefined : new Date(parsed).toISOString().slice(0, 10);
+  }
+  return undefined;
+}
+
 export type Frontmatter = {
   title: string;
   description: string;
@@ -58,6 +79,9 @@ export function listContent(kind: ContentKind): ContentEntry[] {
       const filePath = join(dir, file);
       const parsed = matter(readFileSync(filePath, 'utf8'));
       const frontmatter = parsed.data as Frontmatter;
+      // Dates arrive from YAML as Date objects; every page wants a string.
+      frontmatter.updated = toIsoDate(frontmatter.updated);
+      frontmatter.published = toIsoDate(frontmatter.published);
       // FAQ answers are real page content, so they count towards the total.
       const faqWords = (frontmatter.faqs ?? []).reduce(
         (sum, faq) => sum + countWords(`${faq.question} ${faq.answer}`),

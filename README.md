@@ -178,20 +178,51 @@ markdown, because structured data cannot carry markup.
 1. Add the crop to `data/crops.ts`. Every agronomic figure needs a `source` string and
    `verified: false` until you have checked it against a primary reference.
 2. Write `content/crops/<slug>.mdx` with 500–800 words of guidance specific to that crop,
-   plus 4–6 crop-specific FAQs.
+   plus 4–6 crop-specific FAQs, and register it in `content/crops/registry.ts`.
 3. Run `npm run verify-data` and work through anything still unverified.
 
-A crop with data but no MDX file does **not** get a page. That is deliberate.
+A crop with data but no registered MDX file does **not** get a page. That is deliberate: a
+quick-facts table with no guidance would be a thin page.
+
+Each crop page pairs `CropFacts` — the quick-facts table, read straight from `data/crops.ts` —
+with `CropCalculators`, three miniature calculators already filled in for that crop: how many
+fit in your bed, when to sow it, and what you will harvest. They call the same pure functions
+in `lib/calculators/` as the full tools, so a crop page and a tool page cannot disagree.
 
 ## How to publish an article
 
-1. Create `content/blog/<slug>.mdx` with frontmatter: `title`, `description`, `draft`,
-   `published`, `updated`.
-2. Draft with `draft: true`. Drafts are excluded from the build, the blog index and the
-   sitemap, so you can commit work in progress safely.
+1. Create `content/blog/<slug>.mdx` and register it in `content/blog/registry.ts`.
+   Frontmatter: `title`, `description`, `draft`, `published`, `updated`, and an optional
+   `tools:` list of tool slugs, which becomes the "Do the sums" links at the foot of the piece.
+2. Draft with `draft: true`. Drafts are excluded from the build, the notebook index and the
+   sitemap, so work in progress can be committed safely. Every article is registered whether
+   or not it is a draft — the route and the sitemap filter on the flag, so publishing is a
+   one-line change.
 3. Check the facts, then set `draft: false`.
 4. Run `npm run content-report`. Articles should reach 900 words; titles must stay within
    60 characters and descriptions within 155, which the script enforces.
+
+### One article has to stay published
+
+`output: 'export'` refuses to build a dynamic route whose `generateStaticParams()` returns an
+empty array, so `/blog/[slug]/` needs at least one published article to exist at all. The
+container-soil piece is published for that reason: its figures are exact unit conversions and
+product conventions, so there is nothing in it awaiting verification.
+
+If you want to unpublish it before anything else goes live, delete `app/blog/[slug]/` and
+`app/blog/page/[page]/` as well, and restore them when you publish your first article. The
+notebook index at `/blog/` is a static route and copes with an empty list on its own.
+
+For the same reason, `/blog/page/[page]/` covers **every** page number including 1, rather
+than page 2 onwards. `/blog/page/1/` duplicates `/blog/`, so it canonicalises there, carries
+`noindex`, and stays out of the sitemap.
+
+### Frontmatter dates
+
+Write dates unquoted (`updated: 2026-09-17`) or quoted — either works. YAML parses an
+unquoted date into a JavaScript `Date`, so `lib/content/mdx.ts` normalises `updated` and
+`published` back to `YYYY-MM-DD` strings on read. Without that step the pages rendered the
+words "Invalid Date".
 
 ## Deploying to Cloudflare Pages
 
@@ -228,7 +259,10 @@ needs to change.
 
 - [ ] Domain live on Cloudflare Pages with HTTPS, and `www` redirecting to the apex.
 - [ ] All twelve tool pages published, each with 700+ words of its own content.
-- [ ] At least a dozen articles published (`draft: false`), each 900+ words.
+- [ ] At least a dozen articles published (`draft: false`), each 900+ words. Twenty are
+      written and sitting as drafts; they need fact-checking before they go live.
+- [ ] The remaining twenty crop guides written, or the crops index left honest about which
+      ones exist.
 - [ ] About, Contact, Privacy policy, Terms, Disclaimer and Cookie policy all reachable
       from the footer on every page.
 - [ ] `npm run check` passes with zero errors.

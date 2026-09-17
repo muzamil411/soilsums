@@ -55,6 +55,36 @@ export function webApplicationSchema({
   };
 }
 
+/** Article structured data for a notebook piece. */
+export function articleSchema({
+  title,
+  description,
+  path,
+  published,
+  updated,
+}: {
+  title: string;
+  description: string;
+  path: string;
+  published?: string;
+  updated?: string;
+}): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description,
+    url: absoluteUrl(path),
+    mainEntityOfPage: { '@type': 'WebPage', '@id': absoluteUrl(path) },
+    inLanguage: site.locale,
+    author: { '@type': 'Person', name: site.author, url: absoluteUrl('/about/') },
+    publisher: { '@id': `${absoluteUrl('/')}#organization` },
+    image: `${site.url}/og-default.png`,
+    ...(published ? { datePublished: published } : {}),
+    ...(updated ? { dateModified: updated } : {}),
+  };
+}
+
 export function faqSchema(faqs: readonly { question: string; answer: string }[]) {
   return {
     '@context': 'https://schema.org',
