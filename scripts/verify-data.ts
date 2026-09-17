@@ -13,6 +13,11 @@ import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+// Piping this script into `head` closes stdout early; that is not an error.
+process.stdout.on('error', (error: NodeJS.ErrnoException) => {
+  if (error.code !== 'EPIPE') throw error;
+});
+
 type Finding = { file: string; path: string; label: string; source: string };
 
 const DATA_DIR = join(process.cwd(), 'data');

@@ -14,6 +14,11 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
+// Piping this script into `head` closes stdout early; that is not an error.
+process.stdout.on('error', (error: NodeJS.ErrnoException) => {
+  if (error.code !== 'EPIPE') throw error;
+});
+
 type Rgb = readonly [number, number, number];
 
 const TOKENS_FILE = 'app/globals.css';

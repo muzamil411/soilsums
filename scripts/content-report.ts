@@ -16,6 +16,11 @@ import { join, relative } from 'node:path';
 import { countWords, listContent, type ContentKind } from '../lib/content/mdx';
 import { DESCRIPTION_MAX, TITLE_MAX } from '../lib/seo/metadata';
 
+// Piping this script into `head` closes stdout early; that is not an error.
+process.stdout.on('error', (error: NodeJS.ErrnoException) => {
+  if (error.code !== 'EPIPE') throw error;
+});
+
 type Row = {
   page: string;
   source: string;
