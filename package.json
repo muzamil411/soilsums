@@ -7,6 +7,7 @@
     "dev": "next dev",
     "prebuild": "tsx scripts/generate-og.tsx",
     "build": "next build",
+    "serve": "node scripts/serve-export.mjs",
     "start": "next start",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -16,7 +17,8 @@
     "contrast-check": "tsx scripts/contrast-check.ts",
     "verify-data": "tsx scripts/verify-data.ts",
     "content-report": "tsx scripts/content-report.ts",
-    "check": "npm run lint && npm run contrast-check && npm run content-report && npm run test && npm run build"
+    "seo-audit": "tsx scripts/seo-audit.ts",
+    "check": "npm run lint && npm run contrast-check && npm run content-report && npm run test && npm run build && npm run seo-audit"
   },
   "dependencies": {
     "next": "^16.3.5",
@@ -44,5 +46,12 @@
     "tsx": "^4.23.13",
     "typescript": "^6.0.3",
     "vitest": "^5.0.1"
-  }
+  },
+  "browserslist": [
+    "chrome >= 111",
+    "edge >= 111",
+    "firefox >= 111",
+    "safari >= 16.4",
+    "not dead"
+  ]
 }

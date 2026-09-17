@@ -78,7 +78,8 @@ export function CropFacts({ crop }: { crop: Crop }) {
   return (
     <div className="border-ink/20 border">
       <div className="bg-kale text-paper flex items-baseline justify-between px-3 py-1.5">
-        <span className="font-display text-sm">Quick facts</span>
+        {/* A heading, so the page runs h1 -> h2 -> h3 without a skip. */}
+        <h2 className="font-display text-sm">Quick facts</h2>
         <span aria-hidden="true" className="bg-radish h-2 w-8" />
       </div>
       <dl className="divide-rule divide-y">

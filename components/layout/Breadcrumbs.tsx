@@ -23,7 +23,7 @@ export function Breadcrumbs({ trail }: { trail: readonly Crumb[] }) {
                     {item.name}
                   </span>
                 ) : (
-                  <Link href={item.href} className="text-kale">
+                  <Link href={item.href} className="text-kale no-underline">
                     {item.name}
                   </Link>
                 )}

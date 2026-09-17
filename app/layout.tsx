@@ -7,15 +7,20 @@ import { AdScript } from '@/components/ads/AdScript';
 import { Analytics } from '@/components/seo/Analytics';
 import { site } from '@/lib/seo/site';
 
+// Two static weights rather than the variable font. Fraunces' variable file
+// carrying the SOFT and opsz axes came to 120 kB, was preloaded, and was the
+// largest-contentful-paint blocker — and neither axis is used anywhere in the
+// stylesheet. 400 covers the small display labels, 600 the headings.
 const fraunces = Fraunces({
   subsets: ['latin'],
+  weight: ['400', '600'],
   display: 'swap',
   variable: '--font-fraunces',
-  axes: ['SOFT', 'opsz'],
 });
 
 const publicSans = Public_Sans({
   subsets: ['latin'],
+  weight: ['400', '600', '700'],
   display: 'swap',
   variable: '--font-public-sans',
 });

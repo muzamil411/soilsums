@@ -100,7 +100,7 @@ export function CropCalculators({ crop }: { crop: Crop }) {
   return (
     <div className="graph-paper border-ink/20 border p-4">
       <div className="mb-4 flex items-center justify-between gap-3">
-        <p className="text-sm font-semibold">Work it out for your garden</p>
+        <h2 className="text-sm font-semibold">Work it out for your garden</h2>
         <UnitToggle units={units} onChange={changeUnits} />
       </div>
 

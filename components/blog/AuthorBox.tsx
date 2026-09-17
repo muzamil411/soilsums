@@ -11,7 +11,7 @@ export function AuthorBox({ published, updated }: { published?: string; updated?
   return (
     <aside className="border-ink/25 bg-paper mt-10 border">
       <div className="bg-kale text-paper flex items-baseline justify-between px-3 py-1.5">
-        <span className="font-display text-sm">About the author</span>
+        <h2 className="font-display text-sm">About the author</h2>
         <span aria-hidden="true" className="bg-radish h-2 w-8" />
       </div>
       <div className="p-4">

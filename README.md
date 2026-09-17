@@ -89,6 +89,12 @@ borders and button outlines use `--color-kale`, or `--color-radish` when focused
 WCAG 1.4.11. `npm run contrast-check` enforces this by scanning the JSX and fails the
 build if a control picks up a rule-coloured border.
 
+Links carry an underline by default in the base layer. That is not decoration: Tailwind's
+preflight removes the browser's own underline, which left inline links in body text
+distinguishable from the surrounding ink only by colour — kale on ink is 1.53:1, well
+under the 3:1 WCAG 1.4.1 requires. Add `no-underline` where a link is a standalone block
+(nav, seed packets, plant labels, breadcrumbs) rather than a word inside a sentence.
+
 Fonts are Fraunces (display) and Public Sans (body and UI), self-hosted via `next/font`.
 Public Sans has true tabular figures, which is why live-updating results do not jitter.
 
@@ -255,29 +261,72 @@ If you use a third-party CMP instead, add it in exactly one place —
 `strategy="beforeInteractive"` so it can gate ad requests. Nothing else in the codebase
 needs to change.
 
-## AdSense go-live checklist
+## Go-live checklist
 
-- [ ] Domain live on Cloudflare Pages with HTTPS, and `www` redirecting to the apex.
-- [ ] All twelve tool pages published, each with 700+ words of its own content.
-- [ ] At least a dozen articles published (`draft: false`), each 900+ words. Twenty are
-      written and sitting as drafts; they need fact-checking before they go live.
-- [ ] The remaining twenty crop guides written, or the crops index left honest about which
-      ones exist.
-- [ ] About, Contact, Privacy policy, Terms, Disclaimer and Cookie policy all reachable
-      from the footer on every page.
+### 1. Content, before anything else
+
+- [ ] Work through `docs/data-to-verify.md` — 63 entries whose figures have not been
+      checked against a primary source. Regenerate it with
+      `npm run verify-data -- --markdown`.
+- [ ] Publish the nineteen drafted articles as you fact-check them
+      (`draft: false` in each file's frontmatter).
+- [ ] Write the remaining twenty crop guides, or leave the crops index as it is —
+      it already names which crops have data but no guide.
 - [ ] `npm run check` passes with zero errors.
 - [ ] `npm run content-report` shows no thin pages.
+
+### 2. Domain and hosting
+
+- [ ] Point `soilsums.com` at Cloudflare (nameservers), if it is not there already.
+- [ ] Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git.
+- [ ] Build command `npm run build`, output directory `out`, framework preset None,
+      `NODE_VERSION=22`.
+- [ ] Add `NEXT_PUBLIC_SITE_URL=https://soilsums.com` for Production and Preview.
+- [ ] Pages → Custom domains → add `soilsums.com` and `www.soilsums.com`, and redirect
+      one to the other so only a single hostname serves the site.
+- [ ] Confirm HTTPS is live and that `http://` redirects to `https://`.
+- [ ] Cloudflare → the domain → Email → Email Routing, forwarding
+      `hello@soilsums.com` to a real inbox. Send yourself a test message.
+- [ ] Check a few pages with `curl -I` and confirm `content-encoding: br`.
+
+### 3. Search Console
+
+- [ ] Add `https://soilsums.com/` as a property and verify it (the DNS TXT method is
+      simplest when the domain is already on Cloudflare).
+- [ ] Submit `https://soilsums.com/sitemap.xml`.
+- [ ] Confirm `https://soilsums.com/robots.txt` resolves and names the sitemap.
+- [ ] Request indexing for the home page and two or three tool pages to start things off.
+- [ ] Check the Core Web Vitals report after a few weeks of real traffic — the
+      Lighthouse numbers above are lab data, not field data.
+
+### 4. Analytics, if you want it
+
+- [ ] Create a GA4 property and set `NEXT_PUBLIC_GA4_ID` in Cloudflare Pages.
+- [ ] Redeploy, then confirm the `calculator_used` event fires (it is debounced to once
+      per tool per page view).
+
+## AdSense go-live checklist
+
+Do this last, after the three sections above.
+
+- [ ] All twelve tool pages published, each with 700+ words of its own content. (Done.)
+- [ ] At least a dozen articles published, each 900+ words. Twenty are written; nineteen
+      are drafts awaiting fact-checking.
+- [ ] About, Contact, Privacy policy, Terms, Disclaimer and Cookie policy all reachable
+      from the footer on every page. (Done.)
 - [ ] `npm run verify-data` is empty, or every remaining entry is one you have decided to
-      accept.
-- [ ] `sitemap.xml` submitted in Google Search Console, and the property verified.
-- [ ] Apply for AdSense. Leave `NEXT_PUBLIC_ADSENSE_ENABLED=false` while under review —
-      the site should show no ad placeholders at all.
+      accept as-is.
+- [ ] Apply for AdSense with `NEXT_PUBLIC_ADSENSE_ENABLED=false`. The site shows no ad
+      markup and reserves no space in that state, so a reviewer sees no empty gaps.
 - [ ] Once approved: put the publisher ID in `NEXT_PUBLIC_ADSENSE_PUB_ID`, uncomment the
       single line in `public/ads.txt` and fill in the same ID, set
       `NEXT_PUBLIC_ADSENSE_ENABLED=true`, and redeploy.
-- [ ] Turn on the GDPR consent message in **Privacy & messaging**.
-- [ ] Confirm `https://soilsums.com/ads.txt` returns the uncommented line, and check for
-      layout shift on a tool page with ads live.
+- [ ] Turn on the GDPR consent message under **Privacy & messaging** in the AdSense
+      dashboard, before serving ads to anyone in the EEA, the UK or Switzerland.
+- [ ] Confirm `https://soilsums.com/ads.txt` returns the uncommented line.
+- [ ] Re-run Lighthouse on a tool page with ads live and confirm CLS is still under 0.1.
+      `AdSlot` reserves a fixed min-height for exactly this reason, but a live ad unit is
+      the only way to be sure.
 
 ## Licence
 
