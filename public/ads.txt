@@ -1,0 +1,7 @@
+# ads.txt for soilsums.com
+#
+# Uncomment the line below and replace pub-XXXXXXXXXXXXXXXX with the publisher
+# ID from your AdSense account (the digits after "ca-pub-" in
+# NEXT_PUBLIC_ADSENSE_PUB_ID). Keep the rest of the line exactly as-is.
+#
+# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
