@@ -41,7 +41,7 @@ function encode(entries: readonly CompostEntry[]): string {
 }
 
 export function CompostRatioCalculator({ toolSlug }: { toolSlug: string }) {
-  const { values, units, setValue, setUnits, reset } = useToolState({
+  const { values, units, setValue, setUnits, reset, shareUrl } = useToolState({
     imperialDefaults: DEFAULTS,
     params: PARAMS,
     kinds: KINDS,
@@ -98,6 +98,7 @@ export function CompostRatioCalculator({ toolSlug }: { toolSlug: string }) {
       toolSlug={toolSlug}
       units={units}
       onUnitsChange={setUnits}
+      shareUrl={shareUrl}
       onReset={reset}
       resultFirst
       inputsLabel="What is going in the pile"

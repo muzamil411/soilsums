@@ -45,7 +45,7 @@ const NUTRIENT_NAMES: Record<Nutrient, string> = {
 };
 
 export function FertilizerCalculator({ toolSlug }: { toolSlug: string }) {
-  const { values, units, setValue, setUnits, reset } = useToolState({
+  const { values, units, setValue, setUnits, reset, shareUrl } = useToolState({
     imperialDefaults: IMPERIAL,
     params: PARAMS,
     kinds: KINDS,
@@ -88,6 +88,7 @@ export function FertilizerCalculator({ toolSlug }: { toolSlug: string }) {
       toolSlug={toolSlug}
       units={units}
       onUnitsChange={setUnits}
+      shareUrl={shareUrl}
       onReset={reset}
       headline={headline === null ? null : String(headline)}
       headlineUnit={imperial ? 'lb of product' : 'kg of product'}

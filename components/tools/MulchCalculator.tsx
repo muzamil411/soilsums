@@ -66,7 +66,7 @@ const METRIC_BAGS = [
 ];
 
 export function MulchCalculator({ toolSlug }: { toolSlug: string }) {
-  const { values, units, setValue, setUnits, reset } = useToolState({
+  const { values, units, setValue, setUnits, reset, shareUrl } = useToolState({
     imperialDefaults: IMPERIAL,
     metricDefaults: METRIC,
     params: PARAMS,
@@ -104,6 +104,7 @@ export function MulchCalculator({ toolSlug }: { toolSlug: string }) {
       toolSlug={toolSlug}
       units={units}
       onUnitsChange={setUnits}
+      shareUrl={shareUrl}
       onReset={reset}
       headline={output ? String(output.bags) : null}
       headlineUnit={output ? (output.bags === 1 ? 'bag' : 'bags') : undefined}

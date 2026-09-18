@@ -29,7 +29,7 @@ function readable(iso: string | null, whyNot?: string | null): string {
 }
 
 export function PlantingDateCalculator({ toolSlug, linkedCrops }: ToolProps) {
-  const { values, units, setValue, setUnits, reset } = useToolState({
+  const { values, units, setValue, setUnits, reset, shareUrl } = useToolState({
     imperialDefaults: DEFAULTS,
     params: PARAMS,
     kinds: KINDS,
@@ -67,6 +67,7 @@ export function PlantingDateCalculator({ toolSlug, linkedCrops }: ToolProps) {
       toolSlug={toolSlug}
       units={units}
       onUnitsChange={setUnits}
+      shareUrl={shareUrl}
       onReset={reset}
       resultFirst
       inputsLabel="Your frost dates and crops"

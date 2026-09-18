@@ -19,6 +19,7 @@ export function CalculatorFrame({
   units,
   onUnitsChange,
   onReset,
+  shareUrl,
   headline,
   headlineUnit,
   sentence,
@@ -34,6 +35,8 @@ export function CalculatorFrame({
   units: UnitSystem;
   onUnitsChange: (units: UnitSystem) => void;
   onReset: () => void;
+  /** Builds a full link carrying the current inputs, when the reader asks. */
+  shareUrl: () => string;
   /** The big number, or null while the input is incomplete or invalid. */
   headline: string | null;
   headlineUnit?: string;
@@ -135,6 +138,7 @@ export function CalculatorFrame({
 
       <div className="no-print mt-6 flex flex-wrap gap-2">
         <CopyButton text={copyText} disabled={!valid} />
+        <CopyButton text={shareUrl} label="Copy link" />
         <button
           type="button"
           onClick={() => window.print()}

@@ -2,8 +2,22 @@
 
 import { useEffect, useState } from 'react';
 
-/** Copies the result text. Falls back silently if the clipboard is blocked. */
-export function CopyButton({ text, disabled = false }: { text: string; disabled?: boolean }) {
+/**
+ * Copies text to the clipboard. Falls back to a "press Ctrl+C" hint when the
+ * clipboard is blocked, which is what a page served over plain http gets.
+ *
+ * `text` may be a function, for text that is only worth building when the
+ * reader actually asks for it — the share link, which reads `window.location`.
+ */
+export function CopyButton({
+  text,
+  label = 'Copy result',
+  disabled = false,
+}: {
+  text: string | (() => string);
+  label?: string;
+  disabled?: boolean;
+}) {
   const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle');
 
   useEffect(() => {
@@ -14,7 +28,7 @@ export function CopyButton({ text, disabled = false }: { text: string; disabled?
 
   async function copy() {
     try {
-      await navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(typeof text === 'function' ? text() : text);
       setState('copied');
     } catch {
       setState('failed');
@@ -29,7 +43,7 @@ export function CopyButton({ text, disabled = false }: { text: string; disabled?
       className="border-kale text-kale border-2 px-3 py-1.5 text-sm font-semibold disabled:opacity-50"
     >
       <span aria-live="polite">
-        {state === 'copied' ? 'Copied' : state === 'failed' ? 'Press Ctrl+C' : 'Copy result'}
+        {state === 'copied' ? 'Copied' : state === 'failed' ? 'Press Ctrl+C' : label}
       </span>
     </button>
   );

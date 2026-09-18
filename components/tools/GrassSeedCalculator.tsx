@@ -15,7 +15,7 @@ const KINDS: Record<string, FieldKind> = { area: 'area' };
 const IMPERIAL = { area: '5000', grass: 'tall-fescue', purpose: 'new-lawn' };
 
 export function GrassSeedCalculator({ toolSlug }: { toolSlug: string }) {
-  const { values, units, setValue, setUnits, reset } = useToolState({
+  const { values, units, setValue, setUnits, reset, shareUrl } = useToolState({
     imperialDefaults: IMPERIAL,
     params: PARAMS,
     kinds: KINDS,
@@ -44,6 +44,7 @@ export function GrassSeedCalculator({ toolSlug }: { toolSlug: string }) {
       toolSlug={toolSlug}
       units={units}
       onUnitsChange={setUnits}
+      shareUrl={shareUrl}
       onReset={reset}
       headline={headline === null ? null : String(headline)}
       headlineUnit={imperial ? 'lb of seed' : 'kg of seed'}

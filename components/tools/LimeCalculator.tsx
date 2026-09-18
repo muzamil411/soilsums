@@ -14,7 +14,7 @@ const KINDS: Record<string, FieldKind> = { area: 'area' };
 const IMPERIAL = { area: '400', currentPh: '5.5', targetPh: '6.5', texture: 'loam' };
 
 export function LimeCalculator({ toolSlug }: { toolSlug: string }) {
-  const { values, units, setValue, setUnits, reset } = useToolState({
+  const { values, units, setValue, setUnits, reset, shareUrl } = useToolState({
     imperialDefaults: IMPERIAL,
     params: PARAMS,
     kinds: KINDS,
@@ -47,6 +47,7 @@ export function LimeCalculator({ toolSlug }: { toolSlug: string }) {
       toolSlug={toolSlug}
       units={units}
       onUnitsChange={setUnits}
+      shareUrl={shareUrl}
       onReset={reset}
       headline={headline === null ? null : String(headline)}
       headlineUnit={imperial ? 'lb of limestone' : 'kg of limestone'}

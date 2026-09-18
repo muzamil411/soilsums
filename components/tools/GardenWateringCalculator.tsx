@@ -20,7 +20,7 @@ const IMPERIAL = { area: '100', waterPerWeek: '1', rainfall: '0' };
 const METRIC = { area: '9.3', waterPerWeek: '25', rainfall: '0' };
 
 export function GardenWateringCalculator({ toolSlug }: { toolSlug: string }) {
-  const { values, units, setValue, setUnits, reset } = useToolState({
+  const { values, units, setValue, setUnits, reset, shareUrl } = useToolState({
     imperialDefaults: IMPERIAL,
     metricDefaults: METRIC,
     params: PARAMS,
@@ -49,6 +49,7 @@ export function GardenWateringCalculator({ toolSlug }: { toolSlug: string }) {
       toolSlug={toolSlug}
       units={units}
       onUnitsChange={setUnits}
+      shareUrl={shareUrl}
       onReset={reset}
       headline={headline === null ? null : String(headline)}
       headlineUnit={imperial ? 'gallons this week' : 'liters this week'}

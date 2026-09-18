@@ -56,7 +56,7 @@ const SIZES = Array.from({ length: MAX_GRID_SIDE }, (_, index) => ({
 }));
 
 export function SquareFootGardenPlanner({ toolSlug, linkedCrops }: ToolProps) {
-  const { values, units, setValue, setUnits, reset, ready } = useToolState({
+  const { values, units, setValue, setUnits, reset, ready, shareUrl } = useToolState({
     imperialDefaults: DEFAULTS,
     params: PARAMS,
     kinds: KINDS,
@@ -127,6 +127,7 @@ export function SquareFootGardenPlanner({ toolSlug, linkedCrops }: ToolProps) {
       toolSlug={toolSlug}
       units={units}
       onUnitsChange={setUnits}
+      shareUrl={shareUrl}
       onReset={() => {
         reset();
         clearPlan();

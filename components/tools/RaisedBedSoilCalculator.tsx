@@ -76,7 +76,7 @@ const METRIC_BAGS = [
 ];
 
 export function RaisedBedSoilCalculator({ toolSlug }: { toolSlug: string }) {
-  const { values, units, setValue, setUnits, reset } = useToolState({
+  const { values, units, setValue, setUnits, reset, shareUrl } = useToolState({
     imperialDefaults: IMPERIAL,
     metricDefaults: METRIC,
     params: PARAMS,
@@ -132,6 +132,7 @@ export function RaisedBedSoilCalculator({ toolSlug }: { toolSlug: string }) {
       toolSlug={toolSlug}
       units={units}
       onUnitsChange={setUnits}
+      shareUrl={shareUrl}
       onReset={reset}
       headline={output ? String(output.cubicFeet) : null}
       headlineUnit={output ? 'cu ft' : undefined}

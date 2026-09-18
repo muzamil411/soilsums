@@ -45,7 +45,7 @@ const METRIC = {
 };
 
 export function PlantSpacingCalculator({ toolSlug }: { toolSlug: string }) {
-  const { values, units, setValue, setUnits, reset } = useToolState({
+  const { values, units, setValue, setUnits, reset, shareUrl } = useToolState({
     imperialDefaults: IMPERIAL,
     metricDefaults: METRIC,
     params: PARAMS,
@@ -86,6 +86,7 @@ export function PlantSpacingCalculator({ toolSlug }: { toolSlug: string }) {
       toolSlug={toolSlug}
       units={units}
       onUnitsChange={setUnits}
+      shareUrl={shareUrl}
       onReset={reset}
       headline={output ? String(output.totalPlants) : null}
       headlineUnit={output ? (output.totalPlants === 1 ? 'plant' : 'plants') : undefined}

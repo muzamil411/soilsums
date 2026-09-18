@@ -20,6 +20,14 @@ import {
 } from '@/lib/calculators/shared/units';
 import { toSignificant } from '@/lib/calculators/shared/round';
 import { readInitialSearch, useCapturedBrowserValue } from './useBrowserValue';
+import {
+  URL_DEBOUNCE_MS,
+  buildQuery,
+  parseQuery,
+  pathWithQuery,
+  type ParamMap,
+  type ToolValues,
+} from './queryState';
 import { useUnits } from './useUnits';
 
 /**
@@ -71,7 +79,7 @@ function convert(value: number, kind: FieldKind, to: UnitSystem): number {
  * Field values are held as strings, because that is what an input holds. An
  * empty string is a genuinely empty field and must not silently become zero.
  */
-export type ToolValues = Record<string, string>;
+export type { ToolValues };
 
 export type ToolStateOptions = {
   /** Defaults for imperial, which is what the tool opens with. */
@@ -79,7 +87,7 @@ export type ToolStateOptions = {
   /** Defaults for metric, so a metric reader gets round numbers too. */
   readonly metricDefaults?: ToolValues;
   /** Short query-string key per field, e.g. { length: 'l', depth: 'd' }. */
-  readonly params: Readonly<Record<string, string>>;
+  readonly params: ParamMap;
   /** What each numeric field measures, for unit conversion. */
   readonly kinds: Readonly<Record<string, FieldKind>>;
 };
@@ -92,6 +100,11 @@ export type ToolState = {
   readonly setValue: (field: string, value: string) => void;
   readonly setUnits: (units: UnitSystem) => void;
   readonly reset: () => void;
+  /**
+   * The current inputs as a full, absolute link, built when the reader asks for
+   * it rather than mirrored into the address bar as they type.
+   */
+  readonly shareUrl: () => string;
 };
 
 /** Reads a field as a number. An empty or non-numeric field reads as NaN. */
@@ -109,13 +122,17 @@ function display(value: number): string {
 }
 
 /**
- * Holds a tool's inputs, keeps them in the page address so a result can be
- * shared, and converts them when the reader switches units.
+ * Holds a tool's inputs, converts them when the reader switches units, and
+ * keeps a shareable link of them.
  *
  * The state is composed rather than copied about: defaults for the current
  * unit system, overlaid with anything the shared link carried, overlaid with
  * what the reader has since typed. That means no effect has to copy the URL
  * into state, which would cost a cascading render on every page load.
+ *
+ * The address bar is written only after the reader changes something, only for
+ * values that differ from the defaults, and only once typing pauses. A page
+ * that has just loaded keeps the clean URL it was opened with.
  */
 export function useToolState(options: ToolStateOptions): ToolState {
   const { imperialDefaults, metricDefaults, params, kinds } = options;
@@ -125,6 +142,9 @@ export function useToolState(options: ToolStateOptions): ToolState {
   // What the reader has typed, and whether Reset has discarded the link values.
   const [edits, setEdits] = useState<ToolValues>({});
   const [ignoreSearch, setIgnoreSearch] = useState(false);
+  // False until the reader changes something, which is what keeps the URL clean
+  // on load. Reset counts as a change, so it can clear the query string again.
+  const [touched, setTouched] = useState(false);
   const appliedUnits = useRef<UnitSystem | null>(null);
 
   const defaultsFor = useCallback(
@@ -147,32 +167,25 @@ export function useToolState(options: ToolStateOptions): ToolState {
   );
 
   /** Values the shared link carried, and the unit system it was shared in. */
-  const fromSearch = useMemo(() => {
-    const query = new URLSearchParams(search);
-    const values: ToolValues = {};
-    for (const [field, key] of Object.entries(params)) {
-      const raw = query.get(key);
-      if (raw !== null) values[field] = raw;
-    }
-    const shared = query.get('u');
-    const sharedUnits: UnitSystem | null =
-      shared === 'metric' || shared === 'imperial' ? shared : null;
-    return { values, units: sharedUnits };
+  const fromSearch = useMemo(
+    () => parseQuery(search, params),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
+    [search],
+  );
 
   // A link shared in metric opens in metric, whatever the local preference.
   const sharedUnits = ignoreSearch ? null : fromSearch.units;
   const effectiveUnits: UnitSystem = sharedUnits ?? units;
 
-  const values = useMemo(
-    () => ({
-      ...defaultsFor(effectiveUnits),
-      ...(ignoreSearch ? {} : fromSearch.values),
-      ...edits,
-    }),
-    [defaultsFor, effectiveUnits, ignoreSearch, fromSearch, edits],
+  const defaults = useMemo(() => defaultsFor(effectiveUnits), [defaultsFor, effectiveUnits]);
+
+  /** Only the fields the reader or the shared link actually set. */
+  const explicit = useMemo(
+    () => ({ ...(ignoreSearch ? {} : fromSearch.values), ...edits }),
+    [ignoreSearch, fromSearch, edits],
   );
+
+  const values = useMemo(() => ({ ...defaults, ...explicit }), [defaults, explicit]);
 
   // Adopt the shared link's unit system as the stored preference, once.
   useEffect(() => {
@@ -182,25 +195,21 @@ export function useToolState(options: ToolStateOptions): ToolState {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sharedUnits]);
 
-  // Mirror the current inputs into the query string. replaceState rather than
-  // the router, so typing neither pushes history entries nor re-renders.
+  // Mirror the changed inputs into the query string, once typing pauses.
+  // replaceState rather than the router, so neither the back button nor a
+  // re-render is involved.
   useEffect(() => {
-    const query = new URLSearchParams();
-    for (const [field, key] of Object.entries(params)) {
-      const value = values[field];
-      if (value !== undefined && value !== '') query.set(key, value);
-    }
-    query.set('u', effectiveUnits);
-    const encoded = query.toString();
-    window.history.replaceState(
-      null,
-      '',
-      `${window.location.pathname}${encoded ? `?${encoded}` : ''}`,
-    );
+    if (!touched) return;
+    const timer = window.setTimeout(() => {
+      const query = buildQuery({ values, defaults, params, units: effectiveUnits });
+      window.history.replaceState(null, '', pathWithQuery(window.location.pathname, query));
+    }, URL_DEBOUNCE_MS);
+    return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values, effectiveUnits]);
+  }, [touched, values, defaults, effectiveUnits]);
 
   const setValue = useCallback((field: string, value: string) => {
+    setTouched(true);
     setEdits((current) => ({ ...current, [field]: value }));
   }, []);
 
@@ -209,11 +218,14 @@ export function useToolState(options: ToolStateOptions): ToolState {
       const from = appliedUnits.current ?? effectiveUnits;
       if (next === from) return;
       appliedUnits.current = next;
+      setTouched(true);
       setUnitsPreference(next);
-      // Every field becomes an edit, converted, so the quantities are unchanged.
+      // Only the fields that were actually set are carried across, converted so
+      // the quantities are unchanged. Untouched fields fall back to the metric
+      // defaults, which keeps a bare unit switch down to `?u=metric`.
       setEdits(() => {
         const converted: ToolValues = {};
-        for (const [field, value] of Object.entries(values)) {
+        for (const [field, value] of Object.entries(explicit)) {
           const kind = kinds[field] ?? 'none';
           if (kind === 'none' || value.trim() === '') {
             converted[field] = value;
@@ -229,13 +241,28 @@ export function useToolState(options: ToolStateOptions): ToolState {
       setIgnoreSearch(true);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [values, effectiveUnits],
+    [explicit, effectiveUnits],
   );
 
   const reset = useCallback(() => {
+    setTouched(true);
     setEdits({});
     setIgnoreSearch(true);
   }, []);
 
-  return { values, units: effectiveUnits, ready: true, setValue, setUnits, reset };
+  // Spelled out in full, unlike the address bar: a link someone keeps should
+  // still mean the same thing if a default changes later.
+  const shareUrl = useCallback(() => {
+    const query = buildQuery({
+      values,
+      defaults,
+      params,
+      units: effectiveUnits,
+      includeAll: true,
+    });
+    return `${window.location.origin}${pathWithQuery(window.location.pathname, query)}`;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values, defaults, effectiveUnits]);
+
+  return { values, units: effectiveUnits, ready: true, setValue, setUnits, reset, shareUrl };
 }

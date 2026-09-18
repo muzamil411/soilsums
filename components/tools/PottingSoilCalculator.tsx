@@ -53,7 +53,7 @@ const SHAPES = [
 ];
 
 export function PottingSoilCalculator({ toolSlug }: { toolSlug: string }) {
-  const { values, units, setValue, setUnits, reset } = useToolState({
+  const { values, units, setValue, setUnits, reset, shareUrl } = useToolState({
     imperialDefaults: IMPERIAL,
     metricDefaults: METRIC,
     params: PARAMS,
@@ -104,6 +104,7 @@ export function PottingSoilCalculator({ toolSlug }: { toolSlug: string }) {
       toolSlug={toolSlug}
       units={units}
       onUnitsChange={setUnits}
+      shareUrl={shareUrl}
       onReset={reset}
       headline={headline === null ? null : String(headline)}
       headlineUnit={imperial ? 'US dry quarts' : 'liters'}

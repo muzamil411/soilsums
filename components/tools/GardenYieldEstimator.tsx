@@ -37,7 +37,7 @@ function encode(entries: readonly YieldEntry[]): string {
 }
 
 export function GardenYieldEstimator({ toolSlug, linkedCrops }: ToolProps) {
-  const { values, units, setValue, setUnits, reset } = useToolState({
+  const { values, units, setValue, setUnits, reset, shareUrl } = useToolState({
     imperialDefaults: DEFAULTS,
     params: PARAMS,
     kinds: KINDS,
@@ -90,6 +90,7 @@ export function GardenYieldEstimator({ toolSlug, linkedCrops }: ToolProps) {
       toolSlug={toolSlug}
       units={units}
       onUnitsChange={setUnits}
+      shareUrl={shareUrl}
       onReset={reset}
       resultFirst
       inputsLabel="What you are growing"
