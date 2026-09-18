@@ -10,7 +10,13 @@
  * amounts. The result carries explicit warnings, and the page says plainly that
  * a soil test giving buffer pH or a direct lime recommendation beats this.
  */
-import { MAX_RELIABLE_PH_CHANGE, PH_RANGE, getLimeRate, type SoilTexture } from '@/data/lime-rates';
+import {
+  MAX_RELIABLE_PH_CHANGE,
+  PH_RANGE,
+  SINGLE_APPLICATION_LIMIT_LB_PER_1000SQFT,
+  getLimeRate,
+  type SoilTexture,
+} from '@/data/lime-rates';
 import {
   areaToSquareFeet,
   lbPer1000SqFtToKgPer100SqM,
@@ -46,8 +52,19 @@ export type LimeOutput = {
   readonly rateLbPer1000SqFtPerPhUnit: number;
   readonly pounds: number;
   readonly kilograms: number;
+  /** The published spread for this texture, scaled to the job. */
+  readonly poundsRange: readonly [number, number];
+  readonly kilogramsRange: readonly [number, number];
   readonly lbPer1000SqFt: number;
   readonly kgPer100SqM: number;
+  /**
+   * How many applications the correction should be split into to stay under
+   * the single-application limit, and what each one comes to. 1 means it can
+   * go down in one go.
+   */
+  readonly applications: number;
+  readonly poundsPerApplication: number;
+  readonly kilogramsPerApplication: number;
   /** Shown alongside the number, not buried in the small print. */
   readonly warnings: readonly string[];
 };
@@ -84,7 +101,19 @@ export function calculateLime(input: LimeInput): Calculation<LimeOutput> {
   const areaSquareFeet = areaToSquareFeet(input.area, units);
   const phChange = input.targetPh - input.currentPh;
   const lbPer1000SqFt = rate.lbPer1000SqFtPerPhUnit * phChange;
-  const pounds = lbPer1000SqFt * (areaSquareFeet / 1000);
+  const perArea = areaSquareFeet / 1000;
+  const pounds = lbPer1000SqFt * perArea;
+  const [lowRate, highRate] = rate.rangeLbPer1000SqFt;
+  const lowPounds = lowRate * phChange * perArea;
+  const highPounds = highRate * phChange * perArea;
+
+  // Penn State's limit is a rate, not a total, so it is the per-1,000 sq ft
+  // figure that decides whether the correction has to be split — a small bed
+  // at a heavy rate still needs splitting.
+  const applications = Math.max(
+    1,
+    Math.ceil(lbPer1000SqFt / SINGLE_APPLICATION_LIMIT_LB_PER_1000SQFT),
+  );
 
   const warnings: string[] = [];
   if (phChange > MAX_RELIABLE_PH_CHANGE) {
@@ -111,8 +140,16 @@ export function calculateLime(input: LimeInput): Calculation<LimeOutput> {
     rateLbPer1000SqFtPerPhUnit: rate.lbPer1000SqFtPerPhUnit,
     pounds: toSignificant(pounds, 4),
     kilograms: toSignificant(poundsToKilograms(pounds), 4),
+    poundsRange: [toSignificant(lowPounds, 3), toSignificant(highPounds, 3)],
+    kilogramsRange: [
+      toSignificant(poundsToKilograms(lowPounds), 3),
+      toSignificant(poundsToKilograms(highPounds), 3),
+    ],
     lbPer1000SqFt: toSignificant(lbPer1000SqFt, 4),
     kgPer100SqM: toSignificant(lbPer1000SqFtToKgPer100SqM(lbPer1000SqFt), 4),
+    applications,
+    poundsPerApplication: toSignificant(pounds / applications, 3),
+    kilogramsPerApplication: toSignificant(poundsToKilograms(pounds / applications), 3),
     warnings,
   });
 }

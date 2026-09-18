@@ -2,16 +2,17 @@
 title: Lime calculator for soil pH
 description: Estimate the ground limestone needed to raise soil pH, by soil texture, with the caveats that matter stated plainly.
 heading: Lime calculator
-updated: 2026-09-17
+updated: 2026-09-18
 faqs:
   - question: >-
       How much lime do I need to raise soil pH by 1 point?
     answer: >-
-      Very roughly, 30 pounds of ground limestone per 1,000 square feet on sandy soil, 60 on
-      loam and 90 on clay. The spread between those numbers is the point: the same pH change
-      needs three times as much lime on clay as on sand, because clay resists a pH change far
-      more strongly. Your own soil could sit outside that range, which is what a soil test is
-      for.
+      Kentucky's lawn liming table puts it at 25 pounds of ground limestone per 1,000 square
+      feet on sandy soil, 60 on loam and 95 on clay, with published spreads of 20-30, 45-75 and
+      90-100. The gap between sand and clay is the point: the same pH change needs close to
+      four times as much lime on clay, because clay resists a pH change far more strongly. Other
+      states publish quite different figures for the same texture names, which is what the
+      soil test is for.
   - question: >-
       Why does a soil test beat this calculator?
     answer: >-
@@ -50,6 +51,23 @@ faqs:
       less acid soil. Brassicas tolerate and even appreciate the upper end. Blueberries are a
       special case and want 4.5 to 5.5, far below anything you would lime for.
   - question: >-
+      Why do different extension services give such different lime rates?
+    answer: >-
+      Because they are describing different soils. A "clay" in Kentucky and a "clay" in western
+      Oregon differ in mineralogy, organic matter and cation exchange capacity, and it is those
+      that set lime requirement rather than the texture name. Oregon expresses its rates against
+      CEC rather than texture at all, and Colorado caps a single turf application at 50 pounds
+      per 1,000 square feet where Penn State allows 100. None of this is disagreement about the
+      chemistry — it is the same chemistry applied to different ground.
+  - question: >-
+      Should I split a large lime application?
+    answer: >-
+      Yes. Penn State advises that no single application to turf exceed 100 pounds per 1,000
+      square feet, splitting anything larger into two or more applications four to six months
+      apart, which in practice means spring and autumn. Colorado is stricter on established turf
+      at 50 pounds per 1,000 square feet. Splitting also gives you a chance to retest in between
+      and stop early if the pH has moved further than expected.
+  - question: >-
       When should I apply lime?
     answer: >-
       Autumn is ideal, which gives it the whole winter to dissolve before the growing season.
@@ -84,9 +102,14 @@ raises pH, it cannot lower it.
 lb of limestone = rate for texture x pH change x (area / 1000)
 ```
 
-The rate is pounds of ground limestone per 1,000 square feet per one pH unit, taken
-from a texture table: 30 for sandy soil, 60 for loam, 90 for clay. Those figures assume
-you are correcting the top six to seven inches, which is the depth a bed gets worked to.
+The rate is pounds of ground limestone per 1,000 square feet per one pH unit, taken from
+the University of Kentucky's lawn liming table: 25 for sandy soil, 60 for loam, 95 for
+clay. Those figures assume ground agricultural limestone, calcitic or dolomitic, worked
+into the top six inches of a mineral soil low in organic matter.
+
+Each texture also carries a published spread, and the calculator shows it next to the
+single figure. A range is the honest shape of this answer: the midpoint is not more
+accurate than the range, it is just easier to put on a bag.
 
 The calculator treats the requirement as **linear in the pH change**, which is an
 approximation. It holds up reasonably over about one unit and gets progressively less
@@ -98,23 +121,68 @@ extrapolating.
 A 400 square foot bed of loam soil, currently pH 5.5, targeting 6.5:
 
 - pH change: 6.5 − 5.5 = **1.0 unit**
-- Rate for loam: **60 lb per 1,000 sq ft per unit**
+- Rate for loam: **60 lb per 1,000 sq ft per unit**, published range 45-75
 - Per 1,000 sq ft: 60 x 1.0 = **60 lb**
 - Scaled to the bed: 60 x (400 / 1,000) = **24 pounds of ground limestone**
+- The same arithmetic on the range: **18 to 30 pounds**
 
-The same bed in sandy soil needs 12 pounds. In clay, 36.
+The same bed in sandy soil needs 10 pounds. In clay, 38.
 
 ## Lime rates by texture
 
-| Soil texture | Per 1.0 pH unit | 0.5 unit | 1.5 units |
-| ------------ | --------------- | -------- | --------- |
-| Sandy        | 30 lb           | 15 lb    | 45 lb     |
-| Loam         | 60 lb           | 30 lb    | 90 lb     |
-| Clay         | 90 lb           | 45 lb    | 135 lb    |
+| Soil texture | Per 1.0 pH unit | Published range | 0.5 unit | 1.5 units |
+| ------------ | --------------- | --------------- | -------- | --------- |
+| Sandy        | 25 lb           | 20-30 lb        | 12.5 lb  | 37.5 lb   |
+| Loam         | 60 lb           | 45-75 lb        | 30 lb    | 90 lb     |
+| Clay         | 95 lb           | 90-100 lb       | 47.5 lb  | 142.5 lb  |
 
-All figures are pounds of ground agricultural limestone per 1,000 square feet. Check
-them against your own extension service's recommendation table, which will be tuned to
-local soils.
+All figures are pounds of ground agricultural limestone per 1,000 square feet, from
+[AGR-214, _Liming Kentucky Lawns_](https://publications.mgcafe.uky.edu/files/AGR214.pdf)
+(University of Kentucky Cooperative Extension, 2014), Table 1.
+
+Note the bottom right cell. Correcting clay by a full 1.5 units comes to 142.5 lb per
+1,000 square feet, which is above what Penn State advises putting down in one go, so the
+calculator splits it for you.
+
+## Why published lime rates differ so much by region
+
+If you look up lime rates from two different extension services you will often find
+numbers that disagree by a factor of two or more for what sounds like the same soil.
+That is not one of them being wrong. It is three separate things at once.
+
+**The texture name is a proxy, not the mechanism.** What sets lime requirement is cation
+exchange capacity and organic matter: how many acidic sites there are to neutralise.
+Texture correlates with CEC but does not determine it, because clay mineralogy varies.
+A smectite clay and a kaolinite clay of identical texture want very different amounts of
+lime.
+
+**The services are describing their own soils.** A state table is tuned to the soils that
+state actually has. Kentucky's is built on limestone-derived soils; western Oregon's on
+leached, high-rainfall soils that are acid to start with.
+
+**They are not even answering the same question.** Some publish a rate per pH unit, some
+a rate to reach a target pH, some a cap on what is safe in one application. Those are
+different quantities and cannot be compared cell for cell.
+
+|                                | Kentucky (AGR-214)                             | Colorado (GardenNotes #222)                           | Oregon (EC 1560)                                                   |
+| ------------------------------ | ---------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------ |
+| **How it is expressed**        | lb per 1,000 sq ft per 1.0 pH unit, by texture | a cap on a single application, plus adjustments       | lb per 100 sq ft, tied to CEC rather than texture                  |
+| **Sandy**                      | 25 lb                                          | not broken out by texture                             | 5-10 lb per 100 sq ft worked in before planting (50-100 per 1,000) |
+| **Loam**                       | 60 lb                                          | not broken out by texture                             | as above; a fine sandy loam at CEC 15 sits at the low end          |
+| **Clay**                       | 95 lb                                          | not broken out by texture                             | a clay at CEC 35 needs about twice a fine sandy loam               |
+| **Single-application limit**   | not stated                                     | 50 lb per 1,000 sq ft on established turf             | 5 lb per 100 sq ft on established lawns or plants                  |
+| **Organic matter**             | assumes low                                    | add about 20% at 4-5% organic matter                  | folded into CEC                                                    |
+| **Hydrated or burned lime**    | not covered                                    | halve the rate, and never above 10 lb per 1,000 sq ft | not recommended for gardens                                        |
+| **Context it was written for** | cool-season lawns on Kentucky soils            | Colorado soils, most of which are alkaline already    | acid, high-rainfall soils of western Oregon                        |
+
+Penn State sits alongside these with a fourth kind of answer again: a soil-test-driven
+recommendation with a flat ceiling of 100 lb per 1,000 square feet on any single turf
+application, splitting larger corrections into two or more four to six months apart.
+
+This calculator uses the Kentucky table because it is the one that states a rate per pH
+unit per texture, which is the shape this tool needs. The practical consequence is worth
+being blunt about: **if you garden outside the mid-South, treat the figure as the middle
+of a wide range and let a soil test settle it.**
 
 ## Tips and common mistakes
 
@@ -125,7 +193,17 @@ cheaply. It is the single best value purchase in gardening.
 
 **Apply less than you think and retest.** Lime is slow and hard to reverse. Splitting a
 large correction across two seasons, with a test in between, is how to avoid
-overshooting.
+overshooting. Above 100 lb per 1,000 square feet you should be splitting it anyway.
+
+**Count your organic matter.** A bed that has had compost worked into it for years is
+buffered by that organic matter as well as by its clay, and needs more lime than the
+texture alone suggests — Colorado puts the uplift at about 20% where organic matter runs
+4 to 5%.
+
+**Do not substitute hydrated or burned lime at these rates.** They are caustic, act fast
+and will burn both skin and foliage. If you use them at all, Colorado advises halving the
+rate and staying under 10 lb per 1,000 square feet. Ground or pelletised limestone is the
+right product for a garden.
 
 **Work it in rather than leaving it on top.** Limestone barely moves through soil on its
 own. Raking or digging it into the top six inches gets it where the roots are; left on
@@ -142,3 +220,18 @@ questions below.
 **Check what your acid-loving plants want first.** Blueberries, rhododendrons and
 azaleas want soil far more acid than a vegetable bed. Liming near them undoes what they
 need.
+
+## Sources
+
+- [AGR-214, _Liming Kentucky Lawns_](https://publications.mgcafe.uky.edu/files/AGR214.pdf)
+  — University of Kentucky Cooperative Extension, 2014. Table 1 is the rate table this
+  calculator uses.
+- [_Liming Turfgrass Areas_](https://extension.psu.edu/liming-turfgrass-areas) — Penn
+  State Extension. Source of the 100 lb per 1,000 sq ft single-application ceiling and the
+  four-to-six-month split.
+- [_Changing Soil pH_, CMG GardenNotes #222](https://extension.colostate.edu/resource/changing-soil-ph/)
+  — Colorado State University Extension. Source of the 50 lb established-turf limit, the
+  20% organic matter uplift, and the hydrated and burned lime figures.
+- [EC 1478, _Soil Test Interpretation Guide_](https://extension.oregonstate.edu/catalog/ec-1478-soil-test-interpretation-guide)
+  and [EM 9057, _Applying Lime to Raise Soil pH for Crop Production (Western Oregon)_](https://extension.oregonstate.edu/catalog/pub/em-9057-applying-lime-raise-soil-ph-crop-production-western-oregon)
+  — Oregon State University Extension, for the CEC-based approach in the comparison above.

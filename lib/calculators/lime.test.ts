@@ -22,11 +22,27 @@ describe('calculateLime', () => {
     expect(result.pounds).toBe(60);
   });
 
+  it('carries the published spread for the texture alongside the figure', () => {
+    const result = value(calculateLime(base));
+    expect(result.poundsRange).toEqual([45, 75]);
+    expect(result.pounds).toBeGreaterThanOrEqual(result.poundsRange[0]);
+    expect(result.pounds).toBeLessThanOrEqual(result.poundsRange[1]);
+  });
+
+  it('scales the range with area and pH change, like the midpoint', () => {
+    const result = value(calculateLime({ ...base, area: 500, targetPh: 7.5 }));
+    // loam 45-75 lb/1,000 sq ft/unit x 2.0 units x 0.5 thousand sq ft
+    expect(result.poundsRange).toEqual([45, 75]);
+    expect(result.pounds).toBe(60);
+  });
+
   it('needs less on sand and more on clay for the same change', () => {
     const sandy = value(calculateLime({ ...base, texture: 'sandy' }));
     const clay = value(calculateLime({ ...base, texture: 'clay' }));
-    expect(sandy.pounds).toBe(30);
-    expect(clay.pounds).toBe(90);
+    expect(sandy.pounds).toBe(25);
+    expect(clay.pounds).toBe(95);
+    expect(sandy.poundsRange).toEqual([20, 30]);
+    expect(clay.poundsRange).toEqual([90, 100]);
     expect(sandy.pounds).toBeLessThan(clay.pounds);
   });
 
@@ -35,10 +51,39 @@ describe('calculateLime', () => {
     expect(result.pounds).toBe(15);
   });
 
+  it('keeps a correction at or under 100 lb per 1,000 sq ft in one application', () => {
+    // clay, 1.0 unit: 95 lb per 1,000 sq ft, just inside Penn State's ceiling.
+    const result = value(calculateLime({ ...base, texture: 'clay' }));
+    expect(result.lbPer1000SqFt).toBe(95);
+    expect(result.applications).toBe(1);
+    expect(result.poundsPerApplication).toBe(95);
+  });
+
+  it('splits a correction that exceeds the single-application limit', () => {
+    // clay, 1.5 units: 142.5 lb per 1,000 sq ft, over the ceiling.
+    const result = value(calculateLime({ ...base, texture: 'clay', targetPh: 7 }));
+    expect(result.lbPer1000SqFt).toBe(142.5);
+    expect(result.applications).toBe(2);
+    expect(result.poundsPerApplication).toBe(71.3);
+  });
+
+  it('splits on the rate, not the total, so a small bed at a heavy rate still splits', () => {
+    const result = value(calculateLime({ ...base, area: 100, texture: 'clay', targetPh: 7 }));
+    expect(result.pounds).toBe(14.25);
+    expect(result.applications).toBe(2);
+  });
+
+  it('needs three applications for a very large correction', () => {
+    const result = value(calculateLime({ ...base, texture: 'clay', currentPh: 4, targetPh: 6.5 }));
+    expect(result.lbPer1000SqFt).toBe(237.5);
+    expect(result.applications).toBe(3);
+  });
+
   it('scales with the size of the pH change', () => {
     const half = value(calculateLime({ ...base, targetPh: 6 }));
     expect(half.phChange).toBe(0.5);
     expect(half.pounds).toBe(30);
+    expect(half.poundsRange).toEqual([22.5, 37.5]);
   });
 
   it('agrees between imperial and metric', () => {
@@ -46,6 +91,8 @@ describe('calculateLime', () => {
     const metric = value(calculateLime({ ...base, units: 'metric', area: 92.903 }));
     expect(metric.pounds).toBeCloseTo(imperial.pounds, 2);
     expect(metric.kilograms).toBeCloseTo(27.22, 1);
+    expect(metric.kilogramsRange[0]).toBeCloseTo(20.41, 1);
+    expect(metric.kilogramsRange[1]).toBeCloseTo(34.02, 1);
   });
 
   it('warns when the requested change is too big to trust', () => {

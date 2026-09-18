@@ -131,6 +131,25 @@
     text-decoration: underline;
   }
 
+  /* Fenced code blocks hold the formula on every tool page. Without an
+     overflow rule a long formula widens the document itself and the whole page
+     scrolls sideways on a phone; scrolling the block instead keeps the page
+     fixed. */
+  .prose-notebook pre {
+    background-color: color-mix(in srgb, var(--color-kale) 6%, var(--color-paper));
+    border: 1px solid var(--color-rule);
+    padding: 0.75rem 0.875rem;
+    overflow-x: auto;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .prose-notebook :not(pre) > code {
+    background-color: color-mix(in srgb, var(--color-kale) 8%, var(--color-paper));
+    padding: 0.1em 0.3em;
+    font-size: 0.9375em;
+  }
+
   .prose-notebook table {
     width: 100%;
     border-collapse: collapse;

@@ -1,21 +1,24 @@
 /**
  * Limestone requirement by soil texture, in pounds of ground agricultural
- * limestone per 1,000 square feet to raise pH by one unit in the top 6–7
- * inches of soil.
+ * limestone per 1,000 square feet to raise pH by one unit.
  *
- * IMPORTANT, and repeated on the calculator page: these are rough guides only.
- * The amount of lime a soil actually needs depends on its buffering capacity —
- * how strongly it resists a pH change — which is driven by clay content and
- * organic matter and cannot be seen from a pH reading. Two soils reading the
- * same pH can need substantially different amounts of lime. A soil test that
- * reports buffer pH or a direct lime recommendation is worth far more than any
- * calculator.
+ * Figures are from the University of Kentucky's lawn liming table (AGR-214,
+ * Table 1). They assume ground agricultural limestone, calcitic or dolomitic,
+ * worked into the top six inches of a mineral soil with low organic matter.
+ *
+ * IMPORTANT, and repeated on the calculator page: a single figure per texture
+ * is a starting point, not an answer. What actually decides how much lime a
+ * soil needs is its buffering capacity — how strongly it resists a pH change —
+ * which is driven by clay content and organic matter and cannot be seen from a
+ * pH reading. Published rates for the same texture differ several-fold between
+ * regions because the soils behind them differ: Kentucky's table, Colorado's
+ * cap on a single turf application and Oregon's CEC-based figures are not
+ * reconcilable into one number. That is why each texture carries a range as
+ * well as a midpoint, and why a soil test reporting buffer pH beats all of it.
  *
  * The calculator treats the requirement as linear in the pH change, which is
  * an approximation. It is reasonable over a change of about one unit and gets
  * progressively less reliable beyond that, so the tool warns above 1.5 units.
- *
- * Every figure is `verified: false`.
  */
 export type SoilTexture = 'sandy' | 'loam' | 'clay';
 
@@ -25,12 +28,18 @@ export type LimeRate = {
   readonly description: string;
   /** Pounds of ground limestone per 1,000 sq ft per 1.0 pH unit increase. */
   readonly lbPer1000SqFtPerPhUnit: number;
+  /**
+   * The published spread for this texture, low and high, in the same units.
+   * Shown alongside the single figure so the result reads as an estimate with
+   * width rather than a precise quantity to go and buy.
+   */
+  readonly rangeLbPer1000SqFt: readonly [number, number];
   readonly source: string;
   readonly verified: boolean;
 };
 
-const CHECK =
-  'Verify against: your state extension service lime recommendation table, and prefer a soil test buffer pH reading';
+const KENTUCKY =
+  'University of Kentucky Cooperative Extension, AGR-214 Liming Kentucky Lawns (2014), Table 1, https://publications.mgcafe.uky.edu/files/AGR214.pdf';
 
 export const limeRates: readonly LimeRate[] = [
   {
@@ -38,9 +47,10 @@ export const limeRates: readonly LimeRate[] = [
     name: 'Sandy',
     description:
       'Gritty, drains fast, does not hold a ball when squeezed damp. Little buffering, so it shifts pH with less lime — and drifts back sooner.',
-    lbPer1000SqFtPerPhUnit: 30,
-    source: CHECK,
-    verified: false,
+    lbPer1000SqFtPerPhUnit: 25,
+    rangeLbPer1000SqFt: [20, 30],
+    source: KENTUCKY,
+    verified: true,
   },
   {
     slug: 'loam',
@@ -48,19 +58,55 @@ export const limeRates: readonly LimeRate[] = [
     description:
       'Holds together when squeezed but crumbles when poked. The middle of the range in both texture and lime requirement.',
     lbPer1000SqFtPerPhUnit: 60,
-    source: CHECK,
-    verified: false,
+    rangeLbPer1000SqFt: [45, 75],
+    source: KENTUCKY,
+    verified: true,
   },
   {
     slug: 'clay',
     name: 'Clay',
     description:
       'Sticky when wet, hard when dry, ribbons between finger and thumb. Strongly buffered, so it needs the most lime and holds the change longest.',
-    lbPer1000SqFtPerPhUnit: 90,
-    source: CHECK,
-    verified: false,
+    lbPer1000SqFtPerPhUnit: 95,
+    rangeLbPer1000SqFt: [90, 100],
+    source: KENTUCKY,
+    verified: true,
   },
 ];
+
+/** The source behind the rate table, for citing on the page itself. */
+export const LIME_RATE_SOURCE = {
+  label: 'University of Kentucky Cooperative Extension, AGR-214',
+  title: 'Liming Kentucky Lawns',
+  year: 2014,
+  detail: 'Table 1',
+  url: 'https://publications.mgcafe.uky.edu/files/AGR214.pdf',
+} as const;
+
+/**
+ * Above this rate, Penn State advises splitting the correction across two or
+ * more applications four to six months apart rather than putting it all down
+ * at once, with no single application exceeding the limit.
+ *
+ * Penn State Extension, Agricultural Analytical Services Lab, turf lime
+ * recommendations: https://extension.psu.edu/liming-turfgrass-areas
+ */
+export const SINGLE_APPLICATION_LIMIT_LB_PER_1000SQFT = 100;
+
+/**
+ * Colorado is stricter again on established turf, and caps hydrated or burned
+ * lime far lower because it is caustic and acts fast. The organic matter
+ * uplift is from the same source.
+ *
+ * Colorado State University Extension, Changing Soil pH (CMG GardenNotes #222):
+ * https://extension.colostate.edu/resource/changing-soil-ph/
+ */
+export const COLORADO = {
+  establishedTurfLimitLbPer1000SqFt: 50,
+  hydratedLimeLimitLbPer1000SqFt: 10,
+  /** Increase the rate by this much where organic matter runs 4–5%. */
+  organicMatterUplift: 0.2,
+} as const;
 
 /**
  * Above this pH change the linear assumption stops being defensible and the
