@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "soilsums",
+  "compatibility_date": "2026-09-18",
+
+  // A static site: no Worker script, just the exported files. Cloudflare's
+  // newer "Workers Builds" flow deploys with `wrangler deploy` and needs this
+  // file; the older Pages flow used a "build output directory" box in the
+  // dashboard instead and needed no config in the repo.
+  "assets": {
+    "directory": "./out",
+
+    // Serve out/404.html for a path that does not exist, rather than a bare
+    // Cloudflare error page.
+    "not_found_handling": "404-page",
+
+    // The site is built with trailingSlash: true, so /tools/ is the canonical
+    // form. This serves /tools/index.html for /tools/ and redirects /tools to
+    // it, which matches every canonical URL the site emits.
+    "html_handling": "auto-trailing-slash",
+  },
+}
