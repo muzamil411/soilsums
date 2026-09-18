@@ -252,30 +252,53 @@ words "Invalid Date".
 The same `out/` directory deploys to Vercel with no changes (framework preset Next.js,
 or Other with output directory `out`).
 
-### Two files Cloudflare Pages reads from the output root
+### Headers, and why there is no `_redirects` file
 
-`public/_headers` and `public/_redirects` are copied into `out/` by the build.
-
-**`_headers`** sets `nosniff`, `X-Frame-Options`, a referrer policy and a narrow
+`public/_headers` is copied into `out/` by the build and is read by both Workers static
+assets and Pages. It sets `nosniff`, `X-Frame-Options`, a referrer policy and a narrow
 permissions policy on every route, and marks the hashed `/_next/static/*` assets
-immutable. It deliberately sets **no Content-Security-Policy**: AdSense and GA4 load
-scripts and frames from a shifting set of Google domains, and a policy written before
-ads are live tends to stop them serving weeks later without an obvious cause. Add one
-after ads are running, and test it with ads enabled.
+immutable.
 
-HSTS is not set here either. Turn it on in the dashboard instead — SSL/TLS → Edge
-Certificates → HSTS — where it is a toggle you control. Setting it in a file on a site
-that has not launched can lock browsers out of the domain if a certificate goes wrong.
+Comments in that file must start at **column 0**. An indented `#` is read as a header
+line, not a comment.
 
-**`_redirects`** sends `www.soilsums.com` to the apex, so one hostname owns the
-rankings. Verify it after the first deploy:
+It deliberately sets **no Content-Security-Policy**: AdSense and GA4 load scripts and
+frames from a shifting set of Google domains, and a policy written before ads are live
+tends to stop them serving weeks later without an obvious cause. Add one after ads are
+running, and test it with ads enabled.
+
+HSTS is not set here either. Turn it on in the dashboard — SSL/TLS → Edge Certificates →
+HSTS — where it is a toggle you control. Setting it in a file on a site that has not
+launched can lock browsers out of the domain if a certificate goes wrong.
+
+There is **no `_redirects` file**, and this is not an oversight. Workers static assets
+validates it and rejects any rule containing a hostname:
+
+```
+Invalid _redirects configuration:
+Line 18: Only relative URLs are allowed. [code: 100324]
+```
+
+Pages accepts absolute URLs there; Workers does not. Since the only redirect this site
+needs is `www` to apex — which is by definition cross-hostname — it has to be done at
+the zone level instead.
+
+### Sending www to the apex
+
+Do this in the dashboard, once, after the site is deployed and the custom domains are
+attached:
+
+1. Cloudflare → your domain → **Rules** → **Redirect Rules** → **Create rule**
+2. **If** — Custom filter expression, Hostname **equals** `www.soilsums.com`
+3. **Then** — Dynamic redirect, expression:
+   `concat("https://soilsums.com", http.request.uri.path)`
+4. Status **301**, and tick **preserve query string**
+
+Verify:
 
 ```bash
 curl -sI https://www.soilsums.com/tools/ | head -3     # expect 301 to the apex
 ```
-
-If it returns 200 instead, the rule is not taking effect — delete it and use a zone-level
-Redirect Rule in the dashboard instead. The file has the exact settings in a comment.
 
 ## Consent for EEA, UK and Swiss visitors
 
@@ -317,7 +340,8 @@ needs to change.
 - [ ] Cloudflare → the domain → Email → Email Routing, forwarding
       `hello@soilsums.com` to a real inbox. Send yourself a test message.
 - [ ] Check a few pages with `curl -I` and confirm `content-encoding: br`.
-- [ ] Confirm `www` redirects to the apex (see the `_redirects` note above).
+- [ ] Create the www-to-apex Redirect Rule (see "Sending www to the apex" above) and
+      confirm it returns 301.
 - [ ] Turn on HSTS under SSL/TLS → Edge Certificates, once you are happy the site is up.
 
 ### 3. Search Console

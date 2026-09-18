@@ -1,29 +1,26 @@
-# Cloudflare Pages response headers.
+# Cloudflare response headers.
 #
-# Syntax: a path pattern on its own line, then indented "Header: value" lines.
-# Pages applies the most specific matching block.
+# Format: a path pattern on its own line, then indented "Header: value" lines.
+# Comments must start at column 0 - an indented "#" is read as a header line.
+#
+# Note on the missing _redirects file: Workers static assets validates that
+# file and rejects any rule with a hostname in it ("Only relative URLs are
+# allowed"), unlike Pages which accepts them. The www-to-apex redirect
+# therefore lives in the dashboard: Rules -> Redirect Rules. See the README.
 
 /*
-  # Stops a browser second-guessing a declared content type.
   X-Content-Type-Options: nosniff
-  # This site is never meant to be framed by another origin.
   X-Frame-Options: DENY
-  # Send the origin to other sites, the full path only to ourselves.
   Referrer-Policy: strict-origin-when-cross-origin
-  # Nothing here uses these, and ad and analytics scripts do not need them.
   Permissions-Policy: camera=(), microphone=(), geolocation=()
 
-  # No Content-Security-Policy is set on purpose. AdSense and GA4 both load
-  # scripts and frames from a moving set of Google domains, and a CSP written
-  # before those are live is the kind of thing that silently stops ads serving
-  # weeks later. Add one once ads are running, and test with ads enabled.
+# No Content-Security-Policy on purpose. AdSense and GA4 load scripts and
+# frames from a shifting set of Google domains, and a policy written before ads
+# are live is the kind that quietly stops them serving weeks later. Add one
+# once ads are running, and test it with ads enabled.
 
-# Hashed filenames, so these can be cached forever.
+# Hashed filenames, so these can be cached indefinitely.
 /_next/static/*
-  Cache-Control: public, max-age=31536000, immutable
-
-# Fonts are hashed too and are fetched on the critical path.
-/_next/static/media/*
   Cache-Control: public, max-age=31536000, immutable
 
 # These change without changing name, so they must revalidate.
