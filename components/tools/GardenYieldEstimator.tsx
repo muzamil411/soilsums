@@ -14,7 +14,8 @@ import {
   type YieldEntry,
   type YieldEntryMode,
 } from '@/lib/calculators/garden-yield';
-import { crops } from '@/data/crops';
+import { crops, getCrop } from '@/data/crops';
+import { CropDataSource } from './DataSource';
 
 const PARAMS = { mode: 'mo', plot: 'pl' } as const;
 const KINDS: Record<string, FieldKind> = {};
@@ -120,29 +121,38 @@ export function GardenYieldEstimator({ toolSlug, linkedCrops }: ToolProps) {
       notes={allNotes}
       extra={
         output && output.lines.length > 0 ? (
-          <ResultTable
-            caption="Crop by crop"
-            columns={[
-              'Crop',
-              'Plants',
-              'Per plant',
-              imperial ? 'Low to high (lb)' : 'Low to high (kg)',
-            ]}
-            rows={output.lines.map((line, index) => ({
-              key: `${line.cropSlug}-${index}`,
-              cells: [
-                <CropLink
-                  key="name"
-                  slug={line.cropSlug}
-                  name={line.name}
-                  linkedCrops={linkedCrops}
-                />,
-                line.plants,
-                `${line.perPlantLowLb}–${line.perPlantHighLb} lb`,
-                imperial ? `${line.lowLb}–${line.highLb}` : `${line.lowKg}–${line.highKg}`,
-              ],
-            }))}
-          />
+          <>
+            <ResultTable
+              caption="Crop by crop"
+              columns={[
+                'Crop',
+                'Plants',
+                'Per plant',
+                imperial ? 'Low to high (lb)' : 'Low to high (kg)',
+              ]}
+              rows={output.lines.map((line, index) => ({
+                key: `${line.cropSlug}-${index}`,
+                cells: [
+                  <CropLink
+                    key="name"
+                    slug={line.cropSlug}
+                    name={line.name}
+                    linkedCrops={linkedCrops}
+                  />,
+                  line.plants,
+                  `${line.perPlantLowLb}–${line.perPlantHighLb} lb`,
+                  imperial ? `${line.lowLb}–${line.highLb}` : `${line.lowKg}–${line.highKg}`,
+                ],
+              }))}
+            />
+            <CropDataSource
+              crops={output.lines.flatMap((line) => {
+                const crop = getCrop(line.cropSlug);
+                return crop ? [crop] : [];
+              })}
+              what="Yields per plant are not extension figures; spacing and planting dates"
+            />
+          </>
         ) : null
       }
     >

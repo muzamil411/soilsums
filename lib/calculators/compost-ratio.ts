@@ -51,6 +51,10 @@ export type CompostContribution = {
   readonly name: string;
   readonly category: 'brown' | 'green';
   readonly cnRatio: number;
+  /** The published spread, so the table never implies the figure is exact. */
+  readonly range: readonly [number, number] | null;
+  /** False where no allowed source lists the material at all. */
+  readonly verified: boolean;
   readonly asIsPounds: number;
   readonly dryPounds: number;
   readonly carbonPounds: number;
@@ -200,6 +204,8 @@ export function calculateCompostRatio(input: CompostRatioInput): Calculation<Com
     name: item.material.name,
     category: item.material.category,
     cnRatio: item.material.cnRatio,
+    range: item.material.range,
+    verified: item.material.verified,
     asIsPounds: toSignificant(item.asIsPounds, 4),
     dryPounds: toSignificant(item.dryPounds, 4),
     carbonPounds: toSignificant(item.carbonPounds, 4),

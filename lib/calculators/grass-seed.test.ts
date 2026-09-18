@@ -23,9 +23,28 @@ describe('calculateGrassSeed', () => {
 
   it('uses the lower rate when overseeding', () => {
     const result = value(calculateGrassSeed({ ...base, purpose: 'overseed' }));
-    expect(result.rateLbPer1000SqFt).toBe(5);
-    expect(result.pounds).toBe(25);
+    expect(result.rateLbPer1000SqFt).toBe(3.5);
+    expect(result.pounds).toBe(17.5);
     expect(result.alternateRateLbPer1000SqFt).toBe(7);
+  });
+
+  it('says whether the rate it used has a source behind it', () => {
+    // Nebraska publishes a tall fescue overseeding rate; nobody publishes one
+    // for bahiagrass, and the page has to be able to say so.
+    const fescue = value(calculateGrassSeed({ ...base, purpose: 'overseed' }));
+    expect(fescue.rateVerified).toBe(true);
+    const bahia = value(
+      calculateGrassSeed({ ...base, grassSlug: 'bahiagrass', purpose: 'overseed' }),
+    );
+    expect(bahia.rateVerified).toBe(false);
+    expect(value(calculateGrassSeed({ ...base, grassSlug: 'bahiagrass' })).rateVerified).toBe(true);
+  });
+
+  it('names the region every rate covers', () => {
+    for (const purpose of ['new-lawn', 'overseed'] as const) {
+      const result = value(calculateGrassSeed({ ...base, purpose }));
+      expect(result.region).toContain('Pennsylvania');
+    }
   });
 
   it('uses each grass type its own rate', () => {

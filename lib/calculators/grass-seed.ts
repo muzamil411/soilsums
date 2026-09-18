@@ -50,6 +50,15 @@ export type GrassSeedOutput = {
   /** The rate for the other purpose, so the choice is easy to sanity-check. */
   readonly alternateRateLbPer1000SqFt: number;
   readonly note: string;
+  /** The state or region the sourced rate covers. */
+  readonly region: string;
+  /**
+   * Whether the rate actually used has a source that could be opened. Most
+   * overseeding rates do not, and the page says so next to the number rather
+   * than in a footnote.
+   */
+  readonly rateVerified: boolean;
+  readonly source: string;
 };
 
 export function calculateGrassSeed(input: GrassSeedInput): Calculation<GrassSeedOutput> {
@@ -89,5 +98,8 @@ export function calculateGrassSeed(input: GrassSeedInput): Calculation<GrassSeed
     grams: toSignificant(poundsToGrams(pounds), 4),
     alternateRateLbPer1000SqFt: alternateRate,
     note: rate.note,
+    region: rate.region,
+    rateVerified: input.purpose === 'new-lawn' ? rate.verified : rate.overseedVerified,
+    source: rate.source,
   });
 }

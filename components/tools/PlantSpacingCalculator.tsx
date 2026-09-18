@@ -9,7 +9,8 @@ import { ResultTable } from '@/components/ui/ResultTable';
 import { SelectField } from '@/components/ui/SelectField';
 import { num, useToolState, type FieldKind } from '@/lib/hooks/useToolState';
 import { calculatePlantSpacing, type SpacingLayout } from '@/lib/calculators/plant-spacing';
-import { crops } from '@/data/crops';
+import { crops, getCrop } from '@/data/crops';
+import { CropDataSource } from './DataSource';
 
 const PARAMS = {
   bedLength: 'l',
@@ -118,30 +119,39 @@ export function PlantSpacingCalculator({ toolSlug }: { toolSlug: string }) {
       notes={output ? output.notes : []}
       extra={
         output ? (
-          <ResultTable
-            caption="The two layouts compared, for this bed"
-            columns={['Layout', 'Plants', 'Row pitch', 'Difference']}
-            rows={[
-              {
-                key: 'square',
-                cells: [
-                  'Square grid',
-                  output.squareLayoutPlants,
-                  `${values.rowSpacing} ${imperial ? 'in' : 'cm'}`,
-                  '—',
-                ],
-              },
-              {
-                key: 'triangular',
-                cells: [
-                  'Staggered (triangular)',
-                  output.triangularLayoutPlants,
-                  `${Math.round(num(values, 'plantSpacing') * 0.866 * 10) / 10} ${imperial ? 'in' : 'cm'}`,
-                  `${output.gainPercent > 0 ? '+' : ''}${output.gainPercent}%`,
-                ],
-              },
-            ]}
-          />
+          <>
+            <ResultTable
+              caption="The two layouts compared, for this bed"
+              columns={['Layout', 'Plants', 'Row pitch', 'Difference']}
+              rows={[
+                {
+                  key: 'square',
+                  cells: [
+                    'Square grid',
+                    output.squareLayoutPlants,
+                    `${values.rowSpacing} ${imperial ? 'in' : 'cm'}`,
+                    '—',
+                  ],
+                },
+                {
+                  key: 'triangular',
+                  cells: [
+                    'Staggered (triangular)',
+                    output.triangularLayoutPlants,
+                    `${Math.round(num(values, 'plantSpacing') * 0.866 * 10) / 10} ${imperial ? 'in' : 'cm'}`,
+                    `${output.gainPercent > 0 ? '+' : ''}${output.gainPercent}%`,
+                  ],
+                },
+              ]}
+            />
+            <CropDataSource
+              crops={(() => {
+                const chosen = getCrop(values.crop ?? '');
+                return chosen ? [chosen] : crops;
+              })()}
+              what="Spacing"
+            />
+          </>
         ) : null
       }
     >

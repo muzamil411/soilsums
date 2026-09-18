@@ -100,10 +100,41 @@ describe('crop data', () => {
   });
 
   it('marks a crop verified only when every applicable field is confirmed', () => {
+    // A null planting offset is a reason rather than a figure, so there is
+    // nothing to check. A null SFG figure is still a claim — "the Cornell page
+    // does not name this crop" — so it stays applicable.
+    const optional = new Set([
+      'sowIndoorsWeeksBeforeLastFrost',
+      'transplantWeeksAfterLastFrost',
+      'directSowWeeksRelativeToLastFrost',
+    ]);
     for (const crop of crops) {
-      const applicable = CHECKED_FIELDS.filter((field) => crop[field] !== null);
+      const applicable = CHECKED_FIELDS.filter(
+        (field) => !optional.has(field) || crop[field] !== null,
+      );
       const complete = applicable.every((field) => crop.verifiedFields.includes(field));
       expect(crop.verified, `${crop.slug}`).toBe(complete);
+    }
+  });
+
+  it('gives a temperature trigger to every warm-season crop the report named', () => {
+    // A frost-date offset alone tells a reader to sow melon seed into 50°F
+    // soil, where it simply rots. These crops need the second condition.
+    const warm = [
+      'pea',
+      'corn',
+      'cucumber',
+      'zucchini',
+      'squash',
+      'watermelon',
+      'pepper',
+      'eggplant',
+      'sweet-potato',
+    ];
+    for (const slug of warm) {
+      const crop = crops.find((entry) => entry.slug === slug);
+      expect(crop, slug).toBeTruthy();
+      expect(crop?.soilOrAirTempNote, slug).toBeTruthy();
     }
   });
 });

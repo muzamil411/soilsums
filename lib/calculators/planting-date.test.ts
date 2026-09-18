@@ -23,7 +23,7 @@ describe('calculatePlantingDates', () => {
     const carrot = result.schedules[0];
     expect(carrot?.sowIndoors).toBeNull();
     expect(carrot?.transplant).toBeNull();
-    expect(carrot?.directSow).toBe('2026-04-24'); // three weeks before
+    expect(carrot?.directSow).toBe('2026-05-01'); // two weeks before
   });
 
   it('puts cool-season transplants out before the last frost', () => {

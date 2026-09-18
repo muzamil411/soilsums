@@ -10,6 +10,7 @@ import { useToolState, type FieldKind } from '@/lib/hooks/useToolState';
 import { MAX_GRID_SIDE, calculateSquareFootGarden } from '@/lib/calculators/square-foot-garden';
 import { crops, getCrop, plantsPerSquareFoot } from '@/data/crops';
 import { perSquare } from '@/lib/content/density';
+import { CropDataSource } from './DataSource';
 
 const PARAMS = { rows: 'r', columns: 'c', grid: 'g', brush: 'br' } as const;
 const KINDS: Record<string, FieldKind> = {};
@@ -193,6 +194,14 @@ export function SquareFootGardenPlanner({ toolSlug, linkedCrops }: ToolProps) {
               that page does not name a crop, the planner falls back to the density its in-row
               spacing implies, which assumes conventional rows.
             </p>
+
+            <CropDataSource
+              crops={output.crops.flatMap((planned) => {
+                const crop = getCrop(planned.slug);
+                return crop ? [crop] : [];
+              })}
+              what="Spacing"
+            />
           </>
         ) : null
       }

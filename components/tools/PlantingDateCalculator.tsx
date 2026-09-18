@@ -9,6 +9,8 @@ import { DateField } from '@/components/ui/DateField';
 import { ResultTable } from '@/components/ui/ResultTable';
 import { useToolState, type FieldKind } from '@/lib/hooks/useToolState';
 import { calculatePlantingDates } from '@/lib/calculators/planting-date';
+import { getCrop } from '@/data/crops';
+import { CropDataSource } from './DataSource';
 
 const PARAMS = { lastFrost: 'lf', fallFrost: 'ff', crops: 'c' } as const;
 const KINDS: Record<string, FieldKind> = {};
@@ -62,6 +64,10 @@ export function PlantingDateCalculator({ toolSlug, linkedCrops }: ToolProps) {
     ? [...new Set(output.schedules.flatMap((schedule) => schedule.notes))]
     : [];
 
+  const tempConditions = (output?.schedules ?? []).filter(
+    (schedule) => schedule.soilOrAirTempNote !== null,
+  );
+
   return (
     <CalculatorFrame
       toolSlug={toolSlug}
@@ -101,27 +107,59 @@ export function PlantingDateCalculator({ toolSlug, linkedCrops }: ToolProps) {
       notes={allNotes}
       extra={
         output && output.schedules.length > 0 ? (
-          <ResultTable
-            caption="Your planting calendar"
-            columns={['Crop', 'Start indoors', 'Transplant out', 'Direct sow', 'Likely harvest']}
-            rows={output.schedules.map((schedule) => ({
-              key: schedule.slug,
-              cells: [
-                <CropLink
-                  key="name"
-                  slug={schedule.slug}
-                  name={schedule.name}
-                  linkedCrops={linkedCrops}
-                />,
-                readable(schedule.sowIndoors, schedule.sowIndoorsWhyNot),
-                readable(schedule.transplant, schedule.transplantWhyNot),
-                readable(schedule.directSow, schedule.directSowWhyNot),
-                schedule.harvestStart
-                  ? `${readable(schedule.harvestStart)} to ${readable(schedule.harvestEnd)}`
-                  : 'No days-to-maturity figure for a perennial',
-              ],
-            }))}
-          />
+          <>
+            <ResultTable
+              caption="Your planting calendar"
+              columns={['Crop', 'Start indoors', 'Transplant out', 'Direct sow', 'Likely harvest']}
+              rows={output.schedules.map((schedule) => ({
+                key: schedule.slug,
+                cells: [
+                  <CropLink
+                    key="name"
+                    slug={schedule.slug}
+                    name={schedule.name}
+                    linkedCrops={linkedCrops}
+                  />,
+                  readable(schedule.sowIndoors, schedule.sowIndoorsWhyNot),
+                  readable(schedule.transplant, schedule.transplantWhyNot),
+                  readable(schedule.directSow, schedule.directSowWhyNot),
+                  schedule.harvestStart
+                    ? `${readable(schedule.harvestStart)} to ${readable(schedule.harvestEnd)}`
+                    : 'No days-to-maturity figure for a perennial',
+                ],
+              }))}
+            />
+
+            {/* A date is only half the instruction for a warm-season crop, so
+                the temperature sits beside the calendar rather than under it. */}
+            {tempConditions.length > 0 ? (
+              <div className="border-ochre mt-4 border-l-4 py-1 pl-3">
+                <p className="text-sm font-semibold">Also wait for the temperature</p>
+                <ul className="mt-2 space-y-2">
+                  {tempConditions.map((schedule) => (
+                    <li key={schedule.slug} className="text-sm">
+                      <strong>{schedule.name}:</strong> {schedule.soilOrAirTempNote}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            <p className="text-ink/75 mt-4 text-sm">
+              These offsets are counted from your average last spring frost, so they transfer
+              reasonably to the UK and Canada. In the Southern Hemisphere the seasons are flipped:
+              enter your own spring frost date and read autumn for fall, or the calendar will be six
+              months out.
+            </p>
+
+            <CropDataSource
+              crops={output.schedules.flatMap((schedule) => {
+                const crop = getCrop(schedule.slug);
+                return crop ? [crop] : [];
+              })}
+              what="Planting offsets"
+            />
+          </>
         ) : null
       }
     >

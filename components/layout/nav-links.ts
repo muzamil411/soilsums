@@ -10,6 +10,7 @@ export const navLinks: readonly NavLink[] = [
 export const footerLinks: readonly NavLink[] = [
   { href: '/about/', label: 'About' },
   { href: '/contact/', label: 'Contact' },
+  { href: '/data-sources/', label: 'How this data is checked' },
   { href: '/privacy-policy/', label: 'Privacy policy' },
   { href: '/terms/', label: 'Terms' },
   { href: '/disclaimer/', label: 'Disclaimer' },

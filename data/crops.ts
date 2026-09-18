@@ -75,8 +75,26 @@ export type Crop = {
    * intensively amended bed — not an extension spacing recommendation, and it
    * is deliberately not derived from `spacingInches`. Null where the Cornell
    * page does not name the crop, which is most herbs and the large vines.
+   *
+   * A null still needs verifying: "the page does not name this crop" is itself
+   * a claim, so it counts as an applicable checked field either way. The three
+   * planting offsets are the opposite — a null there is a reason, not a figure.
    */
   readonly sfgPlantsPerSquare: number | null;
+
+  /**
+   * When the crop actually goes in, where that is not the spring frost window.
+   * Garlic is a fall crop, so no last-frost offset describes it at all.
+   */
+  readonly plantingSeason?: 'fall';
+  /**
+   * The second condition, alongside the date. A frost-date offset on its own
+   * is misleading for warm-season crops: the calendar can say go while the
+   * soil is still too cold for the seed to do anything.
+   */
+  readonly soilOrAirTempNote?: string;
+  /** Anything a reader needs that a number cannot carry. Shown on the page. */
+  readonly notes?: readonly string[];
 
   readonly sowIndoorsWeeksBeforeLastFrost: number | null;
   readonly transplantWeeksAfterLastFrost: number | null;
@@ -159,11 +177,13 @@ export const crops: readonly Crop[] = [
       url: 'https://gardening.cals.cornell.edu/garden-guidance/foodgarden/vegetable-growing-guides/tomato-growing-guide/',
     },
     verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
       'sfgPlantsPerSquare',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
     ],
-    verified: false,
+    verified: true,
   },
   {
     slug: 'pepper',
@@ -173,6 +193,8 @@ export const crops: readonly Crop[] = [
     spacingInches: 18,
     rowSpacingInches: 30,
     sfgPlantsPerSquare: 1,
+    soilOrAirTempNote:
+      'Wait until night temperatures stay reliably above 50°F (10°C). A cold night checks a pepper for weeks.',
     sowIndoorsWeeksBeforeLastFrost: 8,
     transplantWeeksAfterLastFrost: 2,
     directSowWeeksRelativeToLastFrost: null,
@@ -193,11 +215,13 @@ export const crops: readonly Crop[] = [
       url: 'https://extension.umn.edu/vegetables/growing-peppers',
     },
     verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
       'sfgPlantsPerSquare',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
     ],
-    verified: false,
+    verified: true,
   },
   {
     slug: 'cucumber',
@@ -207,6 +231,8 @@ export const crops: readonly Crop[] = [
     spacingInches: 12,
     rowSpacingInches: 48,
     sfgPlantsPerSquare: 2,
+    soilOrAirTempNote:
+      'Wait for soil at about 70°F (21°C). Cucumber seed does nothing useful in cold ground.',
     sowIndoorsWeeksBeforeLastFrost: 3,
     transplantWeeksAfterLastFrost: 0,
     directSowWeeksRelativeToLastFrost: 1,
@@ -225,12 +251,14 @@ export const crops: readonly Crop[] = [
       url: 'https://extension.illinois.edu/gardening/cucumber',
     },
     verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
       'sfgPlantsPerSquare',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
       'directSowWeeksRelativeToLastFrost',
     ],
-    verified: false,
+    verified: true,
   },
   {
     slug: 'zucchini',
@@ -240,6 +268,8 @@ export const crops: readonly Crop[] = [
     spacingInches: 24,
     rowSpacingInches: 48,
     sfgPlantsPerSquare: 0.5,
+    soilOrAirTempNote:
+      'Wait for soil at about 70°F (21°C). Squash sown into cold ground germinates poorly and sulks afterwards.',
     sowIndoorsWeeksBeforeLastFrost: 3,
     transplantWeeksAfterLastFrost: 0,
     directSowWeeksRelativeToLastFrost: 2,
@@ -257,6 +287,8 @@ export const crops: readonly Crop[] = [
       url: 'https://extension.illinois.edu/gardening/summer-squash',
     },
     verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
       'sfgPlantsPerSquare',
       'transplantWeeksAfterLastFrost',
       'directSowWeeksRelativeToLastFrost',
@@ -288,12 +320,14 @@ export const crops: readonly Crop[] = [
       url: 'https://extension.illinois.edu/gardening/lettuce',
     },
     verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
       'sfgPlantsPerSquare',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
       'directSowWeeksRelativeToLastFrost',
     ],
-    verified: false,
+    verified: true,
   },
   {
     slug: 'spinach',
@@ -305,7 +339,7 @@ export const crops: readonly Crop[] = [
     sfgPlantsPerSquare: 9,
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
-    directSowWeeksRelativeToLastFrost: -6,
+    directSowWeeksRelativeToLastFrost: -5,
     noSowIndoorsReason:
       'Not usually started indoors — it goes in as soon as the ground can be worked, weeks before anything needs a windowsill.',
     noTransplantReason: 'Not transplanted — sow where it will grow.',
@@ -322,8 +356,13 @@ export const crops: readonly Crop[] = [
       institution: 'University of Illinois Extension',
       url: 'https://extension.illinois.edu/gardening/spinach',
     },
-    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
-    verified: false,
+    verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
+      'sfgPlantsPerSquare',
+      'directSowWeeksRelativeToLastFrost',
+    ],
+    verified: true,
   },
   {
     slug: 'kale',
@@ -350,6 +389,8 @@ export const crops: readonly Crop[] = [
       url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-collards-and-kale',
     },
     verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
       'sfgPlantsPerSquare',
       'sowIndoorsWeeksBeforeLastFrost',
       'directSowWeeksRelativeToLastFrost',
@@ -366,7 +407,7 @@ export const crops: readonly Crop[] = [
     sfgPlantsPerSquare: 9,
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
-    directSowWeeksRelativeToLastFrost: -3,
+    directSowWeeksRelativeToLastFrost: -2,
     noSowIndoorsReason:
       'Not started indoors — moving a seedling forks the taproot, and the taproot is the crop.',
     noTransplantReason: 'Not transplanted — sow where it will grow.',
@@ -389,8 +430,13 @@ export const crops: readonly Crop[] = [
       institution: 'University of Illinois Extension',
       url: 'https://extension.illinois.edu/gardening/carrots',
     },
-    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
-    verified: false,
+    verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
+      'sfgPlantsPerSquare',
+      'directSowWeeksRelativeToLastFrost',
+    ],
+    verified: true,
   },
   {
     slug: 'radish',
@@ -398,7 +444,7 @@ export const crops: readonly Crop[] = [
     scientificName: 'Raphanus sativus',
     type: 'vegetable',
     spacingInches: 2,
-    rowSpacingInches: 6,
+    rowSpacingInches: 12,
     sfgPlantsPerSquare: 16,
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
@@ -423,8 +469,13 @@ export const crops: readonly Crop[] = [
       institution: 'University of Illinois Extension',
       url: 'https://extension.illinois.edu/gardening/radish',
     },
-    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
-    verified: false,
+    verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
+      'sfgPlantsPerSquare',
+      'directSowWeeksRelativeToLastFrost',
+    ],
+    verified: true,
   },
   {
     slug: 'beet',
@@ -453,8 +504,13 @@ export const crops: readonly Crop[] = [
       institution: 'University of Illinois Extension',
       url: 'https://extension.illinois.edu/gardening/beet',
     },
-    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
-    verified: false,
+    verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
+      'sfgPlantsPerSquare',
+      'directSowWeeksRelativeToLastFrost',
+    ],
+    verified: true,
   },
   {
     slug: 'onion',
@@ -482,6 +538,8 @@ export const crops: readonly Crop[] = [
       url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-onions',
     },
     verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
       'sfgPlantsPerSquare',
       'sowIndoorsWeeksBeforeLastFrost',
       'directSowWeeksRelativeToLastFrost',
@@ -493,9 +551,13 @@ export const crops: readonly Crop[] = [
     name: 'Garlic',
     scientificName: 'Allium sativum',
     type: 'vegetable',
-    spacingInches: 5,
+    spacingInches: 4,
     rowSpacingInches: 12,
     sfgPlantsPerSquare: 9,
+    plantingSeason: 'fall',
+    notes: [
+      'Planted 1 to 2 weeks after the first killing frost in autumn, which is why the spring frost-date fields are empty. It overwinters in the ground and is lifted the following summer.',
+    ],
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: null,
@@ -524,7 +586,7 @@ export const crops: readonly Crop[] = [
       institution: 'University of Minnesota Extension',
       url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-garlic',
     },
-    verifiedFields: ['sfgPlantsPerSquare'],
+    verifiedFields: ['spacingInches', 'sfgPlantsPerSquare'],
     verified: false,
   },
   {
@@ -561,8 +623,13 @@ export const crops: readonly Crop[] = [
       institution: 'University of Illinois Extension',
       url: 'https://extension.illinois.edu/gardening/potato',
     },
-    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
-    verified: false,
+    verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
+      'sfgPlantsPerSquare',
+      'directSowWeeksRelativeToLastFrost',
+    ],
+    verified: true,
   },
   {
     slug: 'sweet-potato',
@@ -572,6 +639,8 @@ export const crops: readonly Crop[] = [
     spacingInches: 12,
     rowSpacingInches: 36,
     sfgPlantsPerSquare: 1,
+    soilOrAirTempNote:
+      'Set slips out only once the soil is thoroughly warm, not merely frost-free.',
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: 3,
     directSowWeeksRelativeToLastFrost: null,
@@ -593,17 +662,25 @@ export const crops: readonly Crop[] = [
       institution: 'University of Illinois Extension',
       url: 'https://extension.illinois.edu/gardening/sweet-potato',
     },
-    verifiedFields: ['sfgPlantsPerSquare', 'transplantWeeksAfterLastFrost'],
-    verified: false,
+    verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
+      'sfgPlantsPerSquare',
+      'transplantWeeksAfterLastFrost',
+    ],
+    verified: true,
   },
   {
     slug: 'bean',
-    name: 'Bean',
+    name: 'Bush bean',
     scientificName: 'Phaseolus vulgaris',
     type: 'vegetable',
     spacingInches: 4,
     rowSpacingInches: 24,
     sfgPlantsPerSquare: 4,
+    notes: [
+      'Pole beans are a different plant to space: roughly 4 to 6 in apart in rows 30 to 36 in, climbing a support. The figures here are for bush beans.',
+    ],
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: 1,
@@ -623,8 +700,13 @@ export const crops: readonly Crop[] = [
       institution: 'University of Illinois Extension',
       url: 'https://extension.illinois.edu/gardening/snap-beans',
     },
-    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
-    verified: false,
+    verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
+      'sfgPlantsPerSquare',
+      'directSowWeeksRelativeToLastFrost',
+    ],
+    verified: true,
   },
   {
     slug: 'pea',
@@ -634,9 +716,11 @@ export const crops: readonly Crop[] = [
     spacingInches: 3,
     rowSpacingInches: 24,
     sfgPlantsPerSquare: 9,
+    soilOrAirTempNote:
+      'Wait for soil at 45°F (7°C) or warmer. Peas will sit unsprouted in colder ground and rot.',
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
-    directSowWeeksRelativeToLastFrost: -5,
+    directSowWeeksRelativeToLastFrost: -4,
     noSowIndoorsReason:
       'Not usually started indoors — peas prefer cold soil and germinate readily in it.',
     noTransplantReason: 'Not transplanted — sow where it will grow.',
@@ -658,8 +742,13 @@ export const crops: readonly Crop[] = [
       institution: 'University of Illinois Extension',
       url: 'https://extension.illinois.edu/gardening/peas',
     },
-    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
-    verified: false,
+    verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
+      'sfgPlantsPerSquare',
+      'directSowWeeksRelativeToLastFrost',
+    ],
+    verified: true,
   },
   {
     slug: 'corn',
@@ -669,6 +758,8 @@ export const crops: readonly Crop[] = [
     spacingInches: 10,
     rowSpacingInches: 30,
     sfgPlantsPerSquare: null,
+    soilOrAirTempNote:
+      'Wait for soil at about 60°F (16°C), or 65°F (18°C) for supersweet varieties, which rot more readily when cold.',
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: 1,
@@ -693,7 +784,7 @@ export const crops: readonly Crop[] = [
       institution: 'University of Illinois Extension',
       url: 'https://extension.illinois.edu/gardening/corn',
     },
-    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
+    verifiedFields: ['spacingInches', 'rowSpacingInches', 'directSowWeeksRelativeToLastFrost'],
     verified: false,
   },
   {
@@ -704,6 +795,8 @@ export const crops: readonly Crop[] = [
     spacingInches: 36,
     rowSpacingInches: 60,
     sfgPlantsPerSquare: null,
+    soilOrAirTempNote:
+      'Wait for soil at about 70°F (21°C). Squash sown into cold ground germinates poorly and sulks afterwards.',
     sowIndoorsWeeksBeforeLastFrost: 3,
     transplantWeeksAfterLastFrost: 0,
     directSowWeeksRelativeToLastFrost: 2,
@@ -726,12 +819,14 @@ export const crops: readonly Crop[] = [
       url: 'https://extension.illinois.edu/gardening/winter-squash',
     },
     verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
       'sfgPlantsPerSquare',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
       'directSowWeeksRelativeToLastFrost',
     ],
-    verified: false,
+    verified: true,
   },
   {
     slug: 'pumpkin',
@@ -764,6 +859,8 @@ export const crops: readonly Crop[] = [
       url: 'https://extension.illinois.edu/gardening/pumpkin',
     },
     verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
       'directSowWeeksRelativeToLastFrost',
@@ -776,7 +873,7 @@ export const crops: readonly Crop[] = [
     scientificName: 'Brassica oleracea var. italica',
     type: 'vegetable',
     spacingInches: 18,
-    rowSpacingInches: 24,
+    rowSpacingInches: 30,
     sfgPlantsPerSquare: 1,
     sowIndoorsWeeksBeforeLastFrost: 8,
     transplantWeeksAfterLastFrost: -2,
@@ -803,11 +900,13 @@ export const crops: readonly Crop[] = [
       url: 'https://extension.illinois.edu/gardening/broccoli',
     },
     verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
       'sfgPlantsPerSquare',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
     ],
-    verified: false,
+    verified: true,
   },
   {
     slug: 'cabbage',
@@ -836,11 +935,13 @@ export const crops: readonly Crop[] = [
       url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-cabbage',
     },
     verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
       'sfgPlantsPerSquare',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
     ],
-    verified: false,
+    verified: true,
   },
   {
     slug: 'cauliflower',
@@ -848,7 +949,7 @@ export const crops: readonly Crop[] = [
     scientificName: 'Brassica oleracea var. botrytis',
     type: 'vegetable',
     spacingInches: 18,
-    rowSpacingInches: 24,
+    rowSpacingInches: 30,
     sfgPlantsPerSquare: 1,
     sowIndoorsWeeksBeforeLastFrost: 8,
     transplantWeeksAfterLastFrost: -2,
@@ -875,11 +976,13 @@ export const crops: readonly Crop[] = [
       url: 'https://extension.illinois.edu/gardening/cauliflower',
     },
     verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
       'sfgPlantsPerSquare',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
     ],
-    verified: false,
+    verified: true,
   },
   {
     slug: 'eggplant',
@@ -889,6 +992,8 @@ export const crops: readonly Crop[] = [
     spacingInches: 18,
     rowSpacingInches: 30,
     sfgPlantsPerSquare: 0.5,
+    soilOrAirTempNote:
+      'Wait until night temperatures stay reliably above 50°F (10°C). Eggplant is even less tolerant of cold nights than pepper.',
     sowIndoorsWeeksBeforeLastFrost: 8,
     transplantWeeksAfterLastFrost: 2,
     directSowWeeksRelativeToLastFrost: null,
@@ -913,11 +1018,13 @@ export const crops: readonly Crop[] = [
       url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-eggplant',
     },
     verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
       'sfgPlantsPerSquare',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
     ],
-    verified: false,
+    verified: true,
   },
   {
     slug: 'okra',
@@ -925,7 +1032,7 @@ export const crops: readonly Crop[] = [
     scientificName: 'Abelmoschus esculentus',
     type: 'vegetable',
     spacingInches: 12,
-    rowSpacingInches: 36,
+    rowSpacingInches: 24,
     sfgPlantsPerSquare: null,
     sowIndoorsWeeksBeforeLastFrost: 1,
     transplantWeeksAfterLastFrost: 2,
@@ -950,6 +1057,8 @@ export const crops: readonly Crop[] = [
       url: 'https://extension.illinois.edu/gardening/okra',
     },
     verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
       'sfgPlantsPerSquare',
       'sowIndoorsWeeksBeforeLastFrost',
       'directSowWeeksRelativeToLastFrost',
@@ -987,7 +1096,7 @@ export const crops: readonly Crop[] = [
       url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/yard-and-garden-problems/growing-basil',
     },
     verifiedFields: [
-      'sfgPlantsPerSquare',
+      'spacingInches',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
       'directSowWeeksRelativeToLastFrost',
@@ -1002,6 +1111,9 @@ export const crops: readonly Crop[] = [
     spacingInches: 6,
     rowSpacingInches: 12,
     sfgPlantsPerSquare: null,
+    notes: [
+      'Cilantro does not transplant well — it bolts when its root is disturbed — so direct sowing is the method. Sow a short row every two or three weeks rather than one big patch.',
+    ],
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: -2,
@@ -1026,20 +1138,25 @@ export const crops: readonly Crop[] = [
       institution: 'University of Wisconsin-Madison Extension',
       url: 'https://hort.extension.wisc.edu/articles/cilantro-coriander-coriandrum-sativum/',
     },
-    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
-    verified: false,
+    verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
+      'sfgPlantsPerSquare',
+      'directSowWeeksRelativeToLastFrost',
+    ],
+    verified: true,
   },
   {
     slug: 'parsley',
     name: 'Parsley',
     scientificName: 'Petroselinum crispum',
     type: 'herb',
-    spacingInches: 8,
+    spacingInches: 10,
     rowSpacingInches: 12,
     sfgPlantsPerSquare: null,
     sowIndoorsWeeksBeforeLastFrost: 8,
-    transplantWeeksAfterLastFrost: -2,
-    directSowWeeksRelativeToLastFrost: -1,
+    transplantWeeksAfterLastFrost: 0,
+    directSowWeeksRelativeToLastFrost: 0,
     daysToMaturity: [70, 90],
     sunHours: 5,
     waterInchesPerWeek: 1,
@@ -1060,6 +1177,7 @@ export const crops: readonly Crop[] = [
       url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-parsley',
     },
     verifiedFields: [
+      'spacingInches',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
       'directSowWeeksRelativeToLastFrost',
@@ -1072,8 +1190,11 @@ export const crops: readonly Crop[] = [
     scientificName: 'Anethum graveolens',
     type: 'herb',
     spacingInches: 10,
-    rowSpacingInches: 18,
+    rowSpacingInches: 24,
     sfgPlantsPerSquare: null,
+    notes: [
+      'Dill does not transplant well — it has a taproot that resents being moved — so direct sowing is the method.',
+    ],
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: 0,
@@ -1097,7 +1218,7 @@ export const crops: readonly Crop[] = [
       institution: 'University of Minnesota Extension',
       url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-dill',
     },
-    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
+    verifiedFields: ['spacingInches', 'rowSpacingInches', 'directSowWeeksRelativeToLastFrost'],
     verified: false,
   },
   {
@@ -1108,6 +1229,10 @@ export const crops: readonly Crop[] = [
     spacingInches: 15,
     rowSpacingInches: 36,
     sfgPlantsPerSquare: null,
+    notes: [
+      'Dormant bare-root plants and potted plants have different planting dates: bare-root goes in early, while the ground is still cold, and potted plants go in once growth has started.',
+      'June-bearing and day-neutral strawberries are grown as different systems. June-bearers are set in matted rows and allowed to fill in with runners; day-neutrals are grown in hills with runners removed.',
+    ],
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: -2,
     directSowWeeksRelativeToLastFrost: null,
@@ -1130,8 +1255,13 @@ export const crops: readonly Crop[] = [
       institution: 'University of Minnesota Extension',
       url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-strawberries-in-the-home-garden',
     },
-    verifiedFields: ['sfgPlantsPerSquare', 'transplantWeeksAfterLastFrost'],
-    verified: false,
+    verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
+      'sfgPlantsPerSquare',
+      'transplantWeeksAfterLastFrost',
+    ],
+    verified: true,
   },
   {
     slug: 'watermelon',
@@ -1139,8 +1269,10 @@ export const crops: readonly Crop[] = [
     scientificName: 'Citrullus lanatus',
     type: 'fruit',
     spacingInches: 36,
-    rowSpacingInches: 72,
+    rowSpacingInches: 84,
     sfgPlantsPerSquare: null,
+    soilOrAirTempNote:
+      'Wait for soil above 65°F (18°C). Watermelon is the least forgiving of a cold start.',
     sowIndoorsWeeksBeforeLastFrost: 3,
     transplantWeeksAfterLastFrost: 0,
     directSowWeeksRelativeToLastFrost: 2,
@@ -1164,6 +1296,8 @@ export const crops: readonly Crop[] = [
       url: 'https://extension.illinois.edu/gardening/watermelon',
     },
     verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
       'directSowWeeksRelativeToLastFrost',

@@ -12,6 +12,7 @@ import {
   type AmountMode,
   type CompostEntry,
 } from '@/lib/calculators/compost-ratio';
+import { Estimate } from '@/components/ui/Estimate';
 import { compostMaterials } from '@/data/compost-materials';
 import { poundsToKilograms } from '@/lib/calculators/shared/units';
 import { toSignificant } from '@/lib/calculators/shared/round';
@@ -133,23 +134,41 @@ export function CompostRatioCalculator({ toolSlug }: { toolSlug: string }) {
       }
       extra={
         output ? (
-          <ResultTable
-            caption="What each material contributes"
-            columns={['Material', 'Own C:N', 'Weight', 'Carbon', 'Nitrogen', 'Share of N']}
-            rows={output.contributions.map((entry, index) => ({
-              key: `${entry.materialSlug}-${index}`,
-              cells: [
-                `${entry.name} (${entry.category})`,
-                `${entry.cnRatio}:1`,
-                imperial
-                  ? `${entry.asIsPounds} lb`
-                  : `${toSignificant(poundsToKilograms(entry.asIsPounds), 3)} kg`,
-                `${entry.carbonPounds} lb`,
-                `${entry.nitrogenPounds} lb`,
-                `${entry.shareOfNitrogenPercent}%`,
-              ],
-            }))}
-          />
+          <>
+            <ResultTable
+              caption="What each material contributes"
+              columns={['Material', 'Own C:N', 'Weight', 'Carbon', 'Nitrogen', 'Share of N']}
+              rows={output.contributions.map((entry, index) => ({
+                key: `${entry.materialSlug}-${index}`,
+                cells: [
+                  `${entry.name} (${entry.category})`,
+                  <span key="cn">
+                    {entry.range ? `${entry.range[0]}–${entry.range[1]}:1` : `${entry.cnRatio}:1`}
+                    {entry.verified ? null : <Estimate what={entry.name.toLowerCase()} />}
+                  </span>,
+                  imperial
+                    ? `${entry.asIsPounds} lb`
+                    : `${toSignificant(poundsToKilograms(entry.asIsPounds), 3)} kg`,
+                  `${entry.carbonPounds} lb`,
+                  `${entry.nitrogenPounds} lb`,
+                  `${entry.shareOfNitrogenPercent}%`,
+                ],
+              }))}
+            />
+            <p className="text-ink/75 mt-2 text-sm">
+              The C:N column shows the published spread, not a single value. Cornell&rsquo;s own
+              wording is that its figures &ldquo;should be viewed as representative ranges, not as
+              universal values&rdquo;, and Nebraska calls its table &ldquo;only guidelines&rdquo;.
+              The arithmetic above uses the middle of each range; a pile built from the top of one
+              range and the bottom of another will land somewhere else, which is why the target is a
+              band rather than a number.
+            </p>
+            <p className="text-ink/70 mt-2 text-xs">
+              Ratios from the Cornell Waste Management Institute composting tables and the
+              University of Nebraska-Lincoln, Garden Compost G2222. Materials marked as estimates
+              appear in no allowed source.
+            </p>
+          </>
         ) : null
       }
     >
@@ -175,7 +194,11 @@ export function CompostRatioCalculator({ toolSlug }: { toolSlug: string }) {
                 onChange={(value) => update(index, { materialSlug: value })}
                 options={compostMaterials.map((material) => ({
                   value: material.slug,
-                  label: `${material.name} — ${material.cnRatio}:1`,
+                  label: `${material.name} — ${
+                    material.range
+                      ? `${material.range[0]}–${material.range[1]}:1`
+                      : `${material.cnRatio}:1 (estimate)`
+                  }`,
                 }))}
               />
               <NumberField

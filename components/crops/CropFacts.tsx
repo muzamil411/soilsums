@@ -1,5 +1,7 @@
-import { plantsPerSquareFoot, type Crop } from '@/data/crops';
+import Link from 'next/link';
+import { CHECKED_FIELDS, plantsPerSquareFoot, type Crop } from '@/data/crops';
 import { DENSITY_NOTE, perSquare } from '@/lib/content/density';
+import { Estimate } from '@/components/ui/Estimate';
 import { inchesToCentimeters, poundsToKilograms } from '@/lib/calculators/shared/units';
 import { toSignificant } from '@/lib/calculators/shared/round';
 
@@ -36,14 +38,27 @@ function weeks(
  * page carries a note saying so.
  */
 export function CropFacts({ crop }: { crop: Crop }) {
-  const rows: { label: string; value: string; isReason?: boolean; second?: string }[] = [
+  const unverified = new Set(
+    CHECKED_FIELDS.filter((field) => !crop.verifiedFields.includes(field)),
+  );
+
+  const rows: {
+    label: string;
+    value: string;
+    isReason?: boolean;
+    second?: string;
+    /** A checked field, so the row can carry an estimate marker when unconfirmed. */
+    field?: (typeof CHECKED_FIELDS)[number];
+  }[] = [
     {
       label: 'Spacing between plants',
       value: `${crop.spacingInches} in (${cm(crop.spacingInches)})`,
+      field: 'spacingInches' as const,
     },
     {
       label: 'Spacing between rows',
       value: `${crop.rowSpacingInches} in (${cm(crop.rowSpacingInches)})`,
+      field: 'rowSpacingInches' as const,
     },
     {
       // The spacing-derived figure leads, because it follows from the row above
@@ -55,6 +70,7 @@ export function CropFacts({ crop }: { crop: Crop }) {
         crop.sfgPlantsPerSquare === null
           ? undefined
           : `${perSquare(crop.sfgPlantsPerSquare)}, square foot gardening method`,
+      field: 'sfgPlantsPerSquare' as const,
     },
     { label: 'Sun', value: `${crop.sunHours}+ hours a day` },
     {
@@ -109,6 +125,7 @@ export function CropFacts({ crop }: { crop: Crop }) {
               <dt className="text-ink/80">{row.label}</dt>
               <dd className="tabular font-semibold">
                 {row.value}
+                {row.field && unverified.has(row.field) ? <Estimate /> : null}
                 {row.second ? (
                   <span className="text-ink/75 block font-normal">{row.second}</span>
                 ) : null}
@@ -117,11 +134,36 @@ export function CropFacts({ crop }: { crop: Crop }) {
           ),
         )}
       </dl>
+      {crop.soilOrAirTempNote ? (
+        <div className="border-rule border-ochre border-t border-l-4 px-3 py-2">
+          <p className="text-sm font-semibold">Also wait for the temperature</p>
+          <p className="text-ink/90 mt-1 text-sm">{crop.soilOrAirTempNote}</p>
+        </div>
+      ) : null}
+
+      {crop.notes && crop.notes.length > 0 ? (
+        <ul className="border-rule space-y-2 border-t px-3 py-2 text-sm">
+          {crop.notes.map((note) => (
+            <li key={note}>{note}</li>
+          ))}
+        </ul>
+      ) : null}
+
       <p className="border-rule text-ink/70 border-t px-3 py-2 text-xs">{DENSITY_NOTE}</p>
+
       <p className="border-rule text-ink/70 border-t px-3 py-2 text-xs">
-        Scientific name: <em>{crop.scientificName}</em>. Figures are typical published ranges
-        awaiting verification against a primary source — see{' '}
-        <span className="whitespace-nowrap">the note below</span>.
+        Scientific name: <em>{crop.scientificName}</em>.{' '}
+        {crop.source ? (
+          <>
+            Spacing and planting dates checked against{' '}
+            <a href={crop.source.url} rel="nofollow">
+              {crop.source.institution}
+            </a>
+            .{' '}
+          </>
+        ) : null}
+        Yields, days to maturity and companion lists were never systematically checked — see{' '}
+        <Link href="/data-sources/">how this data is checked</Link>.
       </p>
     </div>
   );

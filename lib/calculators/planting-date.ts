@@ -44,6 +44,12 @@ export type CropSchedule = {
   readonly harvestStart: string | null;
   readonly harvestEnd: string | null;
   readonly timingNote: string | null;
+  /**
+   * The temperature the crop actually waits on, where a date alone would
+   * mislead. Shown next to the date rather than under it: a frost-free
+   * calendar can say "go" while the soil is still at 50°F.
+   */
+  readonly soilOrAirTempNote: string | null;
   readonly notes: readonly string[];
 };
 
@@ -149,6 +155,7 @@ function scheduleFor(crop: Crop, lastFrost: Date, firstFallFrost: Date | null): 
     harvestStart: harvestStart ? formatUtcDate(harvestStart) : null,
     harvestEnd: harvestEnd ? formatUtcDate(harvestEnd) : null,
     timingNote: crop.timingNote ?? null,
+    soilOrAirTempNote: crop.soilOrAirTempNote ?? null,
     notes,
   };
 }
