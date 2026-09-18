@@ -1,0 +1,37 @@
+# Cloudflare Pages response headers.
+#
+# Syntax: a path pattern on its own line, then indented "Header: value" lines.
+# Pages applies the most specific matching block.
+
+/*
+  # Stops a browser second-guessing a declared content type.
+  X-Content-Type-Options: nosniff
+  # This site is never meant to be framed by another origin.
+  X-Frame-Options: DENY
+  # Send the origin to other sites, the full path only to ourselves.
+  Referrer-Policy: strict-origin-when-cross-origin
+  # Nothing here uses these, and ad and analytics scripts do not need them.
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+  # No Content-Security-Policy is set on purpose. AdSense and GA4 both load
+  # scripts and frames from a moving set of Google domains, and a CSP written
+  # before those are live is the kind of thing that silently stops ads serving
+  # weeks later. Add one once ads are running, and test with ads enabled.
+
+# Hashed filenames, so these can be cached forever.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Fonts are hashed too and are fetched on the critical path.
+/_next/static/media/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# These change without changing name, so they must revalidate.
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+
+/robots.txt
+  Cache-Control: public, max-age=3600
+
+/ads.txt
+  Cache-Control: public, max-age=3600

@@ -239,7 +239,9 @@ words "Invalid Date".
    - Framework preset: **None**
    - Build command: `npm run build`
    - Build output directory: `out`
-   - Node version: set `NODE_VERSION` to `22`
+   - Node version: `.nvmrc` pins 22, which Pages reads automatically. If a build
+     still picks an older Node, set `NODE_VERSION=22` as an environment variable —
+     Next 16 will not build on Pages' older default.
 4. Add the environment variables you need from the table above, for both Production and
    Preview.
 5. Custom domain: Pages → Custom domains → add `soilsums.com` and `www.soilsums.com`, and
@@ -249,6 +251,31 @@ words "Invalid Date".
 
 The same `out/` directory deploys to Vercel with no changes (framework preset Next.js,
 or Other with output directory `out`).
+
+### Two files Cloudflare Pages reads from the output root
+
+`public/_headers` and `public/_redirects` are copied into `out/` by the build.
+
+**`_headers`** sets `nosniff`, `X-Frame-Options`, a referrer policy and a narrow
+permissions policy on every route, and marks the hashed `/_next/static/*` assets
+immutable. It deliberately sets **no Content-Security-Policy**: AdSense and GA4 load
+scripts and frames from a shifting set of Google domains, and a policy written before
+ads are live tends to stop them serving weeks later without an obvious cause. Add one
+after ads are running, and test it with ads enabled.
+
+HSTS is not set here either. Turn it on in the dashboard instead — SSL/TLS → Edge
+Certificates → HSTS — where it is a toggle you control. Setting it in a file on a site
+that has not launched can lock browsers out of the domain if a certificate goes wrong.
+
+**`_redirects`** sends `www.soilsums.com` to the apex, so one hostname owns the
+rankings. Verify it after the first deploy:
+
+```bash
+curl -sI https://www.soilsums.com/tools/ | head -3     # expect 301 to the apex
+```
+
+If it returns 200 instead, the rule is not taking effect — delete it and use a zone-level
+Redirect Rule in the dashboard instead. The file has the exact settings in a comment.
 
 ## Consent for EEA, UK and Swiss visitors
 
@@ -279,6 +306,8 @@ needs to change.
 
 - [ ] Point `soilsums.com` at Cloudflare (nameservers), if it is not there already.
 - [ ] Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git.
+      Authorise the repository; no API token needs to be created or shared for this.
+- [ ] Set the production branch to `main`.
 - [ ] Build command `npm run build`, output directory `out`, framework preset None,
       `NODE_VERSION=22`.
 - [ ] Add `NEXT_PUBLIC_SITE_URL=https://soilsums.com` for Production and Preview.
@@ -288,6 +317,8 @@ needs to change.
 - [ ] Cloudflare → the domain → Email → Email Routing, forwarding
       `hello@soilsums.com` to a real inbox. Send yourself a test message.
 - [ ] Check a few pages with `curl -I` and confirm `content-encoding: br`.
+- [ ] Confirm `www` redirects to the apex (see the `_redirects` note above).
+- [ ] Turn on HSTS under SSL/TLS → Edge Certificates, once you are happy the site is up.
 
 ### 3. Search Console
 
