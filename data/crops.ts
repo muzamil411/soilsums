@@ -2,12 +2,17 @@
  * Crop data for the spacing, planting date, square foot planner and yield
  * calculators, and for the /crops/ guides.
  *
- * EVERY agronomic figure in this file is marked `verified: false` and carries a
- * `source` naming where to check it. The numbers are the ranges commonly
- * published in US extension-service home-garden guides and by the RHS, but
- * none has yet been confirmed against a primary document — `npm run
- * verify-data` lists them all. Treat them as placeholders with a sensible
- * default, not as facts.
+ * Verification is per field, not per crop. The September 2026 verification
+ * report checked six fields against a named US extension page for each crop:
+ * the two spacings, the square-foot-gardening figure, and the three planting
+ * offsets. `verifiedFields` lists the ones confirmed for that crop, `source` is
+ * the page they were confirmed against, and `verified` is true only once every
+ * applicable checked field is in that list. Everything else in the entry —
+ * yields, days to maturity, companions, problems — was never systematically
+ * checked and still renders as an estimate.
+ *
+ * A field that is null needs no verification: it is not a figure but a
+ * statement that the step does not apply, and it carries a reason saying so.
  *
  * Nulls are meaningful, not missing data:
  *  - `sowIndoorsWeeksBeforeLastFrost: null` means a crop is not normally
@@ -22,8 +27,37 @@
  *
  * Offsets are in weeks relative to the average LAST SPRING FROST date.
  * Negative is before that date, positive is after it.
+ *
+ * Plants per square foot is NOT stored. There are two different quantities and
+ * storing one number conflated them: the density implied by the row spacing,
+ * which is arithmetic, and the square-foot-gardening figure, which is a
+ * convention from Mel Bartholomew's method rather than a research finding. The
+ * first is computed by `plantsPerSquareFoot()`; the second is
+ * `sfgPlantsPerSquare`, null wherever the Cornell CALS page does not name the
+ * crop.
  */
 export type CropType = 'vegetable' | 'herb' | 'fruit';
+
+/** The extension page a crop's checked fields were confirmed against. */
+export type CropSource = {
+  readonly institution: string;
+  readonly url: string;
+};
+
+/**
+ * The fields the verification report checked. Anything outside this list was
+ * never systematically checked, whatever `verified` says.
+ */
+export const CHECKED_FIELDS = [
+  'spacingInches',
+  'rowSpacingInches',
+  'sfgPlantsPerSquare',
+  'sowIndoorsWeeksBeforeLastFrost',
+  'transplantWeeksAfterLastFrost',
+  'directSowWeeksRelativeToLastFrost',
+] as const;
+
+export type CheckedField = (typeof CHECKED_FIELDS)[number];
 
 export type Crop = {
   readonly slug: string;
@@ -35,8 +69,14 @@ export type Crop = {
   readonly spacingInches: number;
   /** Spacing between rows, inches. */
   readonly rowSpacingInches: number;
-  /** Square-foot-gardening density. Below 1 means the plant needs several squares. */
-  readonly plantsPerSquareFoot: number;
+  /**
+   * Plants per square under the square foot gardening METHOD, as described by
+   * Cornell CALS. This is Mel Bartholomew's convention — a way of laying out an
+   * intensively amended bed — not an extension spacing recommendation, and it
+   * is deliberately not derived from `spacingInches`. Null where the Cornell
+   * page does not name the crop, which is most herbs and the large vines.
+   */
+  readonly sfgPlantsPerSquare: number | null;
 
   readonly sowIndoorsWeeksBeforeLastFrost: number | null;
   readonly transplantWeeksAfterLastFrost: number | null;
@@ -64,16 +104,31 @@ export type Crop = {
   readonly avoidPlanting: readonly string[];
   readonly commonProblems: readonly string[];
 
-  readonly source: string;
+  /** The page the checked fields were confirmed against, null if none was found. */
+  readonly source: CropSource | null;
+  /** Which of CHECKED_FIELDS are confirmed against `source`. */
+  readonly verifiedFields: readonly CheckedField[];
+  /** True only when every applicable checked field is in `verifiedFields`. */
   readonly verified: boolean;
 };
 
-const CHECK_US =
-  'Verify against: Cornell Vegetable Growing Guides and your state extension service planting calendar';
-const CHECK_HERB =
-  'Verify against: your state extension service herb guide and RHS grow-your-own pages';
-const CHECK_FRUIT =
-  'Verify against: your state extension service small-fruit guide and RHS grow-your-own pages';
+/**
+ * Plants per square foot implied by the in-row spacing, which is arithmetic
+ * rather than a recommendation: a plant every 6 inches is four to the square
+ * foot whatever anyone publishes.
+ *
+ * It ignores row spacing, so it describes a bed planted on a square grid. A
+ * crop grown in widely spaced rows occupies more ground than this suggests,
+ * which is why the crop pages show the row spacing next to it.
+ */
+export function plantsPerSquareFoot(crop: Pick<Crop, 'spacingInches'>): number {
+  return Math.round((144 / (crop.spacingInches * crop.spacingInches)) * 100) / 100;
+}
+
+/** Whether one checked field is confirmed, for the estimate markers on a page. */
+export function isFieldVerified(crop: Crop, field: CheckedField): boolean {
+  return crop.verifiedFields.includes(field);
+}
 
 export const crops: readonly Crop[] = [
   {
@@ -83,7 +138,7 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 24,
     rowSpacingInches: 36,
-    plantsPerSquareFoot: 1,
+    sfgPlantsPerSquare: 0.5,
     sowIndoorsWeeksBeforeLastFrost: 6,
     transplantWeeksAfterLastFrost: 1,
     directSowWeeksRelativeToLastFrost: null,
@@ -99,7 +154,15 @@ export const crops: readonly Crop[] = [
     companionPlants: ['Basil', 'Marigold', 'Onion', 'Parsley'],
     avoidPlanting: ['Potato', 'Corn', 'Fennel'],
     commonProblems: ['Blossom end rot', 'Early blight', 'Hornworms', 'Cracking after heavy rain'],
-    source: CHECK_US,
+    source: {
+      institution: 'Cornell Garden-Based Learning',
+      url: 'https://gardening.cals.cornell.edu/garden-guidance/foodgarden/vegetable-growing-guides/tomato-growing-guide/',
+    },
+    verifiedFields: [
+      'sfgPlantsPerSquare',
+      'sowIndoorsWeeksBeforeLastFrost',
+      'transplantWeeksAfterLastFrost',
+    ],
     verified: false,
   },
   {
@@ -109,7 +172,7 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 18,
     rowSpacingInches: 30,
-    plantsPerSquareFoot: 1,
+    sfgPlantsPerSquare: 1,
     sowIndoorsWeeksBeforeLastFrost: 8,
     transplantWeeksAfterLastFrost: 2,
     directSowWeeksRelativeToLastFrost: null,
@@ -125,7 +188,15 @@ export const crops: readonly Crop[] = [
     companionPlants: ['Basil', 'Onion', 'Carrot', 'Spinach'],
     avoidPlanting: ['Fennel', 'Kohlrabi'],
     commonProblems: ['Blossom drop in heat', 'Sunscald', 'Aphids', 'Bacterial leaf spot'],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Minnesota Extension',
+      url: 'https://extension.umn.edu/vegetables/growing-peppers',
+    },
+    verifiedFields: [
+      'sfgPlantsPerSquare',
+      'sowIndoorsWeeksBeforeLastFrost',
+      'transplantWeeksAfterLastFrost',
+    ],
     verified: false,
   },
   {
@@ -135,9 +206,9 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 12,
     rowSpacingInches: 48,
-    plantsPerSquareFoot: 2,
+    sfgPlantsPerSquare: 2,
     sowIndoorsWeeksBeforeLastFrost: 3,
-    transplantWeeksAfterLastFrost: 2,
+    transplantWeeksAfterLastFrost: 0,
     directSowWeeksRelativeToLastFrost: 1,
     daysToMaturity: [50, 70],
     sunHours: 8,
@@ -149,7 +220,16 @@ export const crops: readonly Crop[] = [
     companionPlants: ['Bean', 'Corn', 'Radish', 'Dill'],
     avoidPlanting: ['Potato', 'Sage'],
     commonProblems: ['Powdery mildew', 'Cucumber beetles', 'Bitter fruit from drought stress'],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/cucumber',
+    },
+    verifiedFields: [
+      'sfgPlantsPerSquare',
+      'sowIndoorsWeeksBeforeLastFrost',
+      'transplantWeeksAfterLastFrost',
+      'directSowWeeksRelativeToLastFrost',
+    ],
     verified: false,
   },
   {
@@ -159,10 +239,10 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 24,
     rowSpacingInches: 48,
-    plantsPerSquareFoot: 0.11,
+    sfgPlantsPerSquare: 0.5,
     sowIndoorsWeeksBeforeLastFrost: 3,
-    transplantWeeksAfterLastFrost: 2,
-    directSowWeeksRelativeToLastFrost: 1,
+    transplantWeeksAfterLastFrost: 0,
+    directSowWeeksRelativeToLastFrost: 2,
     daysToMaturity: [45, 60],
     sunHours: 8,
     waterInchesPerWeek: 1.5,
@@ -172,7 +252,15 @@ export const crops: readonly Crop[] = [
     companionPlants: ['Nasturtium', 'Corn', 'Bean', 'Marigold'],
     avoidPlanting: ['Potato'],
     commonProblems: ['Squash vine borer', 'Powdery mildew', 'Poor pollination in wet weather'],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/summer-squash',
+    },
+    verifiedFields: [
+      'sfgPlantsPerSquare',
+      'transplantWeeksAfterLastFrost',
+      'directSowWeeksRelativeToLastFrost',
+    ],
     verified: false,
   },
   {
@@ -182,8 +270,8 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 8,
     rowSpacingInches: 12,
-    plantsPerSquareFoot: 4,
-    sowIndoorsWeeksBeforeLastFrost: 6,
+    sfgPlantsPerSquare: 4,
+    sowIndoorsWeeksBeforeLastFrost: 8,
     transplantWeeksAfterLastFrost: -3,
     directSowWeeksRelativeToLastFrost: -4,
     daysToMaturity: [45, 65],
@@ -195,7 +283,16 @@ export const crops: readonly Crop[] = [
     companionPlants: ['Carrot', 'Radish', 'Onion', 'Strawberry'],
     avoidPlanting: ['Broccoli'],
     commonProblems: ['Bolting in heat', 'Slugs', 'Aphids', 'Tip burn'],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/lettuce',
+    },
+    verifiedFields: [
+      'sfgPlantsPerSquare',
+      'sowIndoorsWeeksBeforeLastFrost',
+      'transplantWeeksAfterLastFrost',
+      'directSowWeeksRelativeToLastFrost',
+    ],
     verified: false,
   },
   {
@@ -205,10 +302,13 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 4,
     rowSpacingInches: 12,
-    plantsPerSquareFoot: 9,
-    sowIndoorsWeeksBeforeLastFrost: 5,
-    transplantWeeksAfterLastFrost: -4,
+    sfgPlantsPerSquare: 9,
+    sowIndoorsWeeksBeforeLastFrost: null,
+    transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: -6,
+    noSowIndoorsReason:
+      'Not usually started indoors — it goes in as soon as the ground can be worked, weeks before anything needs a windowsill.',
+    noTransplantReason: 'Not transplanted — sow where it will grow.',
     daysToMaturity: [37, 50],
     sunHours: 4,
     waterInchesPerWeek: 1,
@@ -218,7 +318,11 @@ export const crops: readonly Crop[] = [
     companionPlants: ['Strawberry', 'Radish', 'Pea', 'Cabbage'],
     avoidPlanting: [],
     commonProblems: ['Bolting once days lengthen', 'Leaf miners', 'Downy mildew'],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/spinach',
+    },
+    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
     verified: false,
   },
   {
@@ -228,8 +332,8 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 12,
     rowSpacingInches: 24,
-    plantsPerSquareFoot: 1,
-    sowIndoorsWeeksBeforeLastFrost: 6,
+    sfgPlantsPerSquare: null,
+    sowIndoorsWeeksBeforeLastFrost: 8,
     transplantWeeksAfterLastFrost: -3,
     directSowWeeksRelativeToLastFrost: -3,
     daysToMaturity: [50, 65],
@@ -241,7 +345,15 @@ export const crops: readonly Crop[] = [
     companionPlants: ['Onion', 'Beet', 'Nasturtium', 'Dill'],
     avoidPlanting: ['Tomato', 'Strawberry'],
     commonProblems: ['Cabbage worms', 'Aphids', 'Flea beetles', 'Clubroot in acid soil'],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Minnesota Extension',
+      url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-collards-and-kale',
+    },
+    verifiedFields: [
+      'sfgPlantsPerSquare',
+      'sowIndoorsWeeksBeforeLastFrost',
+      'directSowWeeksRelativeToLastFrost',
+    ],
     verified: false,
   },
   {
@@ -251,7 +363,7 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 3,
     rowSpacingInches: 12,
-    plantsPerSquareFoot: 16,
+    sfgPlantsPerSquare: 9,
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: -3,
@@ -273,7 +385,11 @@ export const crops: readonly Crop[] = [
       'Green shoulders',
       'Slow, patchy germination',
     ],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/carrots',
+    },
+    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
     verified: false,
   },
   {
@@ -283,7 +399,7 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 2,
     rowSpacingInches: 6,
-    plantsPerSquareFoot: 16,
+    sfgPlantsPerSquare: 16,
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: -4,
@@ -303,7 +419,11 @@ export const crops: readonly Crop[] = [
       'Flea beetles',
       'Splitting after uneven watering',
     ],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/radish',
+    },
+    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
     verified: false,
   },
   {
@@ -313,7 +433,7 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 4,
     rowSpacingInches: 12,
-    plantsPerSquareFoot: 9,
+    sfgPlantsPerSquare: 9,
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: -3,
@@ -329,7 +449,11 @@ export const crops: readonly Crop[] = [
     companionPlants: ['Onion', 'Kale', 'Lettuce', 'Bush bean'],
     avoidPlanting: ['Pole bean'],
     commonProblems: ['Small roots from crowding', 'Leaf miners', 'Scab', 'Cercospora leaf spot'],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/beet',
+    },
+    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
     verified: false,
   },
   {
@@ -339,9 +463,9 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 4,
     rowSpacingInches: 12,
-    plantsPerSquareFoot: 9,
-    sowIndoorsWeeksBeforeLastFrost: 10,
-    transplantWeeksAfterLastFrost: -4,
+    sfgPlantsPerSquare: 9,
+    sowIndoorsWeeksBeforeLastFrost: 12,
+    transplantWeeksAfterLastFrost: -2,
     directSowWeeksRelativeToLastFrost: -2,
     daysToMaturity: [90, 120],
     sunHours: 8,
@@ -353,7 +477,15 @@ export const crops: readonly Crop[] = [
     companionPlants: ['Carrot', 'Beet', 'Lettuce', 'Tomato'],
     avoidPlanting: ['Pea', 'Bean', 'Asparagus'],
     commonProblems: ['Thrips', 'Onion maggot', 'Downy mildew', 'Splitting bulbs'],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Minnesota Extension',
+      url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-onions',
+    },
+    verifiedFields: [
+      'sfgPlantsPerSquare',
+      'sowIndoorsWeeksBeforeLastFrost',
+      'directSowWeeksRelativeToLastFrost',
+    ],
     verified: false,
   },
   {
@@ -363,7 +495,7 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 5,
     rowSpacingInches: 12,
-    plantsPerSquareFoot: 9,
+    sfgPlantsPerSquare: 9,
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: null,
@@ -388,7 +520,11 @@ export const crops: readonly Crop[] = [
       'Rust',
       'Splitting from over-mature harvest',
     ],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Minnesota Extension',
+      url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-garlic',
+    },
+    verifiedFields: ['sfgPlantsPerSquare'],
     verified: false,
   },
   {
@@ -398,7 +534,7 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 12,
     rowSpacingInches: 30,
-    plantsPerSquareFoot: 0.25,
+    sfgPlantsPerSquare: 1,
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: -2,
@@ -421,7 +557,11 @@ export const crops: readonly Crop[] = [
       'Late blight',
       'Green tubers from shallow planting',
     ],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/potato',
+    },
+    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
     verified: false,
   },
   {
@@ -431,7 +571,7 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 12,
     rowSpacingInches: 36,
-    plantsPerSquareFoot: 0.25,
+    sfgPlantsPerSquare: 1,
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: 3,
     directSowWeeksRelativeToLastFrost: null,
@@ -449,7 +589,11 @@ export const crops: readonly Crop[] = [
     companionPlants: ['Bush bean', 'Dill', 'Thyme'],
     avoidPlanting: ['Squash'],
     commonProblems: ['Cold soil stalling growth', 'Wireworms', 'Cracked roots from uneven water'],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/sweet-potato',
+    },
+    verifiedFields: ['sfgPlantsPerSquare', 'transplantWeeksAfterLastFrost'],
     verified: false,
   },
   {
@@ -459,7 +603,7 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 4,
     rowSpacingInches: 24,
-    plantsPerSquareFoot: 9,
+    sfgPlantsPerSquare: 4,
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: 1,
@@ -475,7 +619,11 @@ export const crops: readonly Crop[] = [
     companionPlants: ['Corn', 'Cucumber', 'Squash', 'Marigold'],
     avoidPlanting: ['Onion', 'Garlic', 'Fennel'],
     commonProblems: ['Rotting seed in cold soil', 'Mexican bean beetle', 'Rust', 'Anthracnose'],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/snap-beans',
+    },
+    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
     verified: false,
   },
   {
@@ -485,7 +633,7 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 3,
     rowSpacingInches: 24,
-    plantsPerSquareFoot: 8,
+    sfgPlantsPerSquare: 9,
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: -5,
@@ -506,7 +654,11 @@ export const crops: readonly Crop[] = [
       'Pea moth',
       'Root rot in wet soil',
     ],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/peas',
+    },
+    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
     verified: false,
   },
   {
@@ -516,7 +668,7 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 10,
     rowSpacingInches: 30,
-    plantsPerSquareFoot: 4,
+    sfgPlantsPerSquare: null,
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: 1,
@@ -537,7 +689,11 @@ export const crops: readonly Crop[] = [
       'Raccoons',
       'Smut',
     ],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/corn',
+    },
+    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
     verified: false,
   },
   {
@@ -547,10 +703,10 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 36,
     rowSpacingInches: 60,
-    plantsPerSquareFoot: 0.11,
+    sfgPlantsPerSquare: null,
     sowIndoorsWeeksBeforeLastFrost: 3,
-    transplantWeeksAfterLastFrost: 2,
-    directSowWeeksRelativeToLastFrost: 1,
+    transplantWeeksAfterLastFrost: 0,
+    directSowWeeksRelativeToLastFrost: 2,
     daysToMaturity: [85, 110],
     sunHours: 8,
     waterInchesPerWeek: 1.5,
@@ -565,7 +721,16 @@ export const crops: readonly Crop[] = [
       'Squash bugs',
       'Immature fruit at frost',
     ],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/winter-squash',
+    },
+    verifiedFields: [
+      'sfgPlantsPerSquare',
+      'sowIndoorsWeeksBeforeLastFrost',
+      'transplantWeeksAfterLastFrost',
+      'directSowWeeksRelativeToLastFrost',
+    ],
     verified: false,
   },
   {
@@ -575,10 +740,10 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 48,
     rowSpacingInches: 72,
-    plantsPerSquareFoot: 0.06,
+    sfgPlantsPerSquare: null,
     sowIndoorsWeeksBeforeLastFrost: 3,
-    transplantWeeksAfterLastFrost: 2,
-    directSowWeeksRelativeToLastFrost: 1,
+    transplantWeeksAfterLastFrost: 0,
+    directSowWeeksRelativeToLastFrost: 3,
     daysToMaturity: [90, 120],
     sunHours: 8,
     waterInchesPerWeek: 1.5,
@@ -594,7 +759,15 @@ export const crops: readonly Crop[] = [
       'Powdery mildew',
       'Rot where fruit sits on wet soil',
     ],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/pumpkin',
+    },
+    verifiedFields: [
+      'sowIndoorsWeeksBeforeLastFrost',
+      'transplantWeeksAfterLastFrost',
+      'directSowWeeksRelativeToLastFrost',
+    ],
     verified: false,
   },
   {
@@ -604,8 +777,8 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 18,
     rowSpacingInches: 24,
-    plantsPerSquareFoot: 1,
-    sowIndoorsWeeksBeforeLastFrost: 6,
+    sfgPlantsPerSquare: 1,
+    sowIndoorsWeeksBeforeLastFrost: 8,
     transplantWeeksAfterLastFrost: -2,
     directSowWeeksRelativeToLastFrost: null,
     noDirectSowReason:
@@ -625,7 +798,15 @@ export const crops: readonly Crop[] = [
       'Aphids',
       'Clubroot in acid soil',
     ],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/broccoli',
+    },
+    verifiedFields: [
+      'sfgPlantsPerSquare',
+      'sowIndoorsWeeksBeforeLastFrost',
+      'transplantWeeksAfterLastFrost',
+    ],
     verified: false,
   },
   {
@@ -635,8 +816,8 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 15,
     rowSpacingInches: 24,
-    plantsPerSquareFoot: 1,
-    sowIndoorsWeeksBeforeLastFrost: 6,
+    sfgPlantsPerSquare: 1,
+    sowIndoorsWeeksBeforeLastFrost: 9,
     transplantWeeksAfterLastFrost: -3,
     directSowWeeksRelativeToLastFrost: null,
     noDirectSowReason:
@@ -650,7 +831,15 @@ export const crops: readonly Crop[] = [
     companionPlants: ['Onion', 'Dill', 'Beet', 'Nasturtium'],
     avoidPlanting: ['Tomato', 'Strawberry'],
     commonProblems: ['Split heads after heavy rain', 'Cabbage worms', 'Root maggots', 'Clubroot'],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Minnesota Extension',
+      url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-cabbage',
+    },
+    verifiedFields: [
+      'sfgPlantsPerSquare',
+      'sowIndoorsWeeksBeforeLastFrost',
+      'transplantWeeksAfterLastFrost',
+    ],
     verified: false,
   },
   {
@@ -660,8 +849,8 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 18,
     rowSpacingInches: 24,
-    plantsPerSquareFoot: 1,
-    sowIndoorsWeeksBeforeLastFrost: 6,
+    sfgPlantsPerSquare: 1,
+    sowIndoorsWeeksBeforeLastFrost: 8,
     transplantWeeksAfterLastFrost: -2,
     directSowWeeksRelativeToLastFrost: null,
     noDirectSowReason:
@@ -681,7 +870,15 @@ export const crops: readonly Crop[] = [
       'Cabbage worms',
       'Boron deficiency',
     ],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/cauliflower',
+    },
+    verifiedFields: [
+      'sfgPlantsPerSquare',
+      'sowIndoorsWeeksBeforeLastFrost',
+      'transplantWeeksAfterLastFrost',
+    ],
     verified: false,
   },
   {
@@ -691,7 +888,7 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 18,
     rowSpacingInches: 30,
-    plantsPerSquareFoot: 1,
+    sfgPlantsPerSquare: 0.5,
     sowIndoorsWeeksBeforeLastFrost: 8,
     transplantWeeksAfterLastFrost: 2,
     directSowWeeksRelativeToLastFrost: null,
@@ -711,7 +908,15 @@ export const crops: readonly Crop[] = [
       'Slow start in cold soil',
       'Spider mites',
     ],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Minnesota Extension',
+      url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-eggplant',
+    },
+    verifiedFields: [
+      'sfgPlantsPerSquare',
+      'sowIndoorsWeeksBeforeLastFrost',
+      'transplantWeeksAfterLastFrost',
+    ],
     verified: false,
   },
   {
@@ -721,8 +926,8 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     spacingInches: 12,
     rowSpacingInches: 36,
-    plantsPerSquareFoot: 1,
-    sowIndoorsWeeksBeforeLastFrost: 4,
+    sfgPlantsPerSquare: null,
+    sowIndoorsWeeksBeforeLastFrost: 1,
     transplantWeeksAfterLastFrost: 2,
     directSowWeeksRelativeToLastFrost: 2,
     daysToMaturity: [50, 65],
@@ -740,7 +945,15 @@ export const crops: readonly Crop[] = [
       'Root-knot nematodes',
       'Poor germination in cold soil',
     ],
-    source: CHECK_US,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/okra',
+    },
+    verifiedFields: [
+      'sfgPlantsPerSquare',
+      'sowIndoorsWeeksBeforeLastFrost',
+      'directSowWeeksRelativeToLastFrost',
+    ],
     verified: false,
   },
   {
@@ -750,7 +963,7 @@ export const crops: readonly Crop[] = [
     type: 'herb',
     spacingInches: 10,
     rowSpacingInches: 18,
-    plantsPerSquareFoot: 4,
+    sfgPlantsPerSquare: null,
     sowIndoorsWeeksBeforeLastFrost: 6,
     transplantWeeksAfterLastFrost: 1,
     directSowWeeksRelativeToLastFrost: 1,
@@ -769,7 +982,16 @@ export const crops: readonly Crop[] = [
       'Bolting if not pinched',
       'Fusarium wilt',
     ],
-    source: CHECK_HERB,
+    source: {
+      institution: 'University of Minnesota Extension',
+      url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/yard-and-garden-problems/growing-basil',
+    },
+    verifiedFields: [
+      'sfgPlantsPerSquare',
+      'sowIndoorsWeeksBeforeLastFrost',
+      'transplantWeeksAfterLastFrost',
+      'directSowWeeksRelativeToLastFrost',
+    ],
     verified: false,
   },
   {
@@ -779,7 +1001,7 @@ export const crops: readonly Crop[] = [
     type: 'herb',
     spacingInches: 6,
     rowSpacingInches: 12,
-    plantsPerSquareFoot: 9,
+    sfgPlantsPerSquare: null,
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: -2,
@@ -800,7 +1022,11 @@ export const crops: readonly Crop[] = [
       'Aphids',
       'Damping off in wet soil',
     ],
-    source: CHECK_HERB,
+    source: {
+      institution: 'University of Wisconsin-Madison Extension',
+      url: 'https://hort.extension.wisc.edu/articles/cilantro-coriander-coriandrum-sativum/',
+    },
+    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
     verified: false,
   },
   {
@@ -810,7 +1036,7 @@ export const crops: readonly Crop[] = [
     type: 'herb',
     spacingInches: 8,
     rowSpacingInches: 12,
-    plantsPerSquareFoot: 4,
+    sfgPlantsPerSquare: null,
     sowIndoorsWeeksBeforeLastFrost: 8,
     transplantWeeksAfterLastFrost: -2,
     directSowWeeksRelativeToLastFrost: -1,
@@ -829,7 +1055,15 @@ export const crops: readonly Crop[] = [
       'Bolts in its second year',
       'Leaf spot',
     ],
-    source: CHECK_HERB,
+    source: {
+      institution: 'University of Minnesota Extension',
+      url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-parsley',
+    },
+    verifiedFields: [
+      'sowIndoorsWeeksBeforeLastFrost',
+      'transplantWeeksAfterLastFrost',
+      'directSowWeeksRelativeToLastFrost',
+    ],
     verified: false,
   },
   {
@@ -839,7 +1073,7 @@ export const crops: readonly Crop[] = [
     type: 'herb',
     spacingInches: 10,
     rowSpacingInches: 18,
-    plantsPerSquareFoot: 4,
+    sfgPlantsPerSquare: null,
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: 0,
@@ -859,7 +1093,11 @@ export const crops: readonly Crop[] = [
       'Aphids',
       'Bolts fast in heat',
     ],
-    source: CHECK_HERB,
+    source: {
+      institution: 'University of Minnesota Extension',
+      url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-dill',
+    },
+    verifiedFields: ['sfgPlantsPerSquare', 'directSowWeeksRelativeToLastFrost'],
     verified: false,
   },
   {
@@ -869,7 +1107,7 @@ export const crops: readonly Crop[] = [
     type: 'fruit',
     spacingInches: 15,
     rowSpacingInches: 36,
-    plantsPerSquareFoot: 4,
+    sfgPlantsPerSquare: null,
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: -2,
     directSowWeeksRelativeToLastFrost: null,
@@ -888,7 +1126,11 @@ export const crops: readonly Crop[] = [
     companionPlants: ['Spinach', 'Lettuce', 'Onion', 'Thyme'],
     avoidPlanting: ['Cabbage', 'Broccoli', 'Tomato'],
     commonProblems: ['Grey mould on fruit', 'Slugs', 'Birds', 'Declining yield from old plants'],
-    source: CHECK_FRUIT,
+    source: {
+      institution: 'University of Minnesota Extension',
+      url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-strawberries-in-the-home-garden',
+    },
+    verifiedFields: ['sfgPlantsPerSquare', 'transplantWeeksAfterLastFrost'],
     verified: false,
   },
   {
@@ -898,9 +1140,9 @@ export const crops: readonly Crop[] = [
     type: 'fruit',
     spacingInches: 36,
     rowSpacingInches: 72,
-    plantsPerSquareFoot: 0.11,
+    sfgPlantsPerSquare: null,
     sowIndoorsWeeksBeforeLastFrost: 3,
-    transplantWeeksAfterLastFrost: 2,
+    transplantWeeksAfterLastFrost: 0,
     directSowWeeksRelativeToLastFrost: 2,
     daysToMaturity: [70, 100],
     sunHours: 8,
@@ -917,7 +1159,15 @@ export const crops: readonly Crop[] = [
       'Anthracnose',
       'Hard to judge ripeness',
     ],
-    source: CHECK_FRUIT,
+    source: {
+      institution: 'University of Illinois Extension',
+      url: 'https://extension.illinois.edu/gardening/watermelon',
+    },
+    verifiedFields: [
+      'sowIndoorsWeeksBeforeLastFrost',
+      'transplantWeeksAfterLastFrost',
+      'directSowWeeksRelativeToLastFrost',
+    ],
     verified: false,
   },
 ];

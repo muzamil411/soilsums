@@ -88,8 +88,8 @@ describe('calculatePlantingDates', () => {
     const result = value(
       calculatePlantingDates({ lastFrostDate: '2026-01-20', cropSlugs: ['onion'] }),
     );
-    // Onions start ten weeks before, which lands in the previous year.
-    expect(result.schedules[0]?.sowIndoors).toBe('2025-11-11');
+    // Onions start twelve weeks before, which lands in the previous year.
+    expect(result.schedules[0]?.sowIndoors).toBe('2025-10-28');
   });
 
   it('handles a leap day without drifting', () => {

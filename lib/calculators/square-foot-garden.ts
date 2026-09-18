@@ -4,13 +4,19 @@
  * The pure part of the planner: given a grid and a crop assigned to each
  * square, work out how many plants that comes to.
  *
- * Square foot gardening densities come from data/crops.ts. A density below 1 —
- * zucchini at 0.11, pumpkin at 0.06 — means the crop needs several squares per
- * plant rather than several plants per square, so the planner reports the
- * squares-per-plant figure and says plainly when too few squares have been
- * assigned to grow even one.
+ * Density comes from one of two places, and the planner says which it used.
+ * Where the Cornell CALS square foot gardening page names the crop, that
+ * figure is used: it is the convention the whole method rests on, so a planner
+ * that ignored it would not be planning a square foot garden. Where it does
+ * not — kale, sweet corn, the winter vines, most herbs — the planner falls back
+ * to the density implied by the crop's in-row spacing.
+ *
+ * A density below 1 means the crop needs several squares per plant rather than
+ * several plants per square, so the planner reports the squares-per-plant
+ * figure and says plainly when too few squares have been assigned to grow even
+ * one.
  */
-import { crops, getCrop } from '@/data/crops';
+import { crops, getCrop, plantsPerSquareFoot } from '@/data/crops';
 import { round } from './shared/round';
 import {
   collect,
@@ -39,6 +45,12 @@ export type PlannedCrop = {
   readonly name: string;
   readonly squares: number;
   readonly plantsPerSquare: number;
+  /**
+   * Where that density came from: the square foot gardening method, or the
+   * crop's own row spacing. Shown on the page, because they are different
+   * kinds of claim.
+   */
+  readonly densityBasis: 'sfg' | 'spacing';
   /** Whole plants those squares will grow. */
   readonly plants: number;
   /** Set when the crop needs more than one square per plant. */
@@ -103,7 +115,9 @@ export function calculateSquareFootGarden(
     .map(([slug, squares]) => {
       // Already validated above, so the crop is certain to exist.
       const crop = getCrop(slug) as (typeof crops)[number];
-      const density = crop.plantsPerSquareFoot;
+      const sfg = crop.sfgPlantsPerSquare;
+      const density = sfg ?? plantsPerSquareFoot(crop);
+      const densityBasis: 'sfg' | 'spacing' = sfg === null ? 'spacing' : 'sfg';
       const squaresPerPlant = density < 1 ? Math.ceil(1 / density) : null;
       const plants = density >= 1 ? Math.round(squares * density) : Math.floor(squares * density);
 
@@ -119,6 +133,7 @@ export function calculateSquareFootGarden(
         name: crop.name,
         squares,
         plantsPerSquare: round(density, 2),
+        densityBasis,
         plants,
         squaresPerPlant,
         note,

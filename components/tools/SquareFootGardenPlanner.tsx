@@ -8,7 +8,8 @@ import { ResultTable } from '@/components/ui/ResultTable';
 import { SelectField } from '@/components/ui/SelectField';
 import { useToolState, type FieldKind } from '@/lib/hooks/useToolState';
 import { MAX_GRID_SIDE, calculateSquareFootGarden } from '@/lib/calculators/square-foot-garden';
-import { crops, getCrop } from '@/data/crops';
+import { crops, getCrop, plantsPerSquareFoot } from '@/data/crops';
+import { perSquare } from '@/lib/content/density';
 
 const PARAMS = { rows: 'r', columns: 'c', grid: 'g', brush: 'br' } as const;
 const KINDS: Record<string, FieldKind> = {};
@@ -165,19 +166,34 @@ export function SquareFootGardenPlanner({ toolSlug, linkedCrops }: ToolProps) {
       notes={output ? output.crops.flatMap((crop) => (crop.note ? [crop.note] : [])) : []}
       extra={
         output && output.crops.length > 0 ? (
-          <ResultTable
-            caption="What is in the plan"
-            columns={['Crop', 'Squares', 'Per square', 'Plants']}
-            rows={output.crops.map((crop) => ({
-              key: crop.slug,
-              cells: [
-                <CropLink key="name" slug={crop.slug} name={crop.name} linkedCrops={linkedCrops} />,
-                crop.squares,
-                crop.squaresPerPlant ? `1 per ${crop.squaresPerPlant} sq` : crop.plantsPerSquare,
-                crop.plants,
-              ],
-            }))}
-          />
+          <>
+            <ResultTable
+              caption="What is in the plan"
+              columns={['Crop', 'Squares', 'Per square', 'From', 'Plants']}
+              rows={output.crops.map((crop) => ({
+                key: crop.slug,
+                cells: [
+                  <CropLink
+                    key="name"
+                    slug={crop.slug}
+                    name={crop.name}
+                    linkedCrops={linkedCrops}
+                  />,
+                  crop.squares,
+                  crop.squaresPerPlant ? `1 per ${crop.squaresPerPlant} sq` : crop.plantsPerSquare,
+                  crop.densityBasis === 'sfg' ? 'SFG method' : 'row spacing',
+                  crop.plants,
+                ],
+              }))}
+            />
+            <p className="text-ink/75 mt-2 text-sm">
+              &ldquo;SFG method&rdquo; is the per-square figure from Mel Bartholomew&rsquo;s square
+              foot gardening method, as listed by Cornell CALS. It assumes an intensive bed of
+              amended soil, and it is a convention rather than an extension recommendation. Where
+              that page does not name a crop, the planner falls back to the density its in-row
+              spacing implies, which assumes conventional rows.
+            </p>
+          </>
         ) : null
       }
     >
@@ -201,10 +217,8 @@ export function SquareFootGardenPlanner({ toolSlug, linkedCrops }: ToolProps) {
           onChange={(value) => setValue('brush', value)}
           options={crops.map((crop) => ({
             value: crop.slug,
-            label: `${crop.name} — ${
-              crop.plantsPerSquareFoot >= 1
-                ? `${crop.plantsPerSquareFoot} per square`
-                : `1 per ${Math.ceil(1 / crop.plantsPerSquareFoot)} squares`
+            label: `${crop.name} — ${perSquare(crop.sfgPlantsPerSquare ?? plantsPerSquareFoot(crop))}${
+              crop.sfgPlantsPerSquare === null ? ' (from row spacing)' : ' (SFG method)'
             }`,
           }))}
           hint="Tap a square to plant it, again to clear it"

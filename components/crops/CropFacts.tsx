@@ -1,4 +1,5 @@
-import type { Crop } from '@/data/crops';
+import { plantsPerSquareFoot, type Crop } from '@/data/crops';
+import { DENSITY_NOTE, perSquare } from '@/lib/content/density';
 import { inchesToCentimeters, poundsToKilograms } from '@/lib/calculators/shared/units';
 import { toSignificant } from '@/lib/calculators/shared/round';
 
@@ -35,7 +36,7 @@ function weeks(
  * page carries a note saying so.
  */
 export function CropFacts({ crop }: { crop: Crop }) {
-  const rows: { label: string; value: string; isReason?: boolean }[] = [
+  const rows: { label: string; value: string; isReason?: boolean; second?: string }[] = [
     {
       label: 'Spacing between plants',
       value: `${crop.spacingInches} in (${cm(crop.spacingInches)})`,
@@ -45,11 +46,15 @@ export function CropFacts({ crop }: { crop: Crop }) {
       value: `${crop.rowSpacingInches} in (${cm(crop.rowSpacingInches)})`,
     },
     {
-      label: 'Square foot gardening',
-      value:
-        crop.plantsPerSquareFoot >= 1
-          ? `${crop.plantsPerSquareFoot} per square`
-          : `1 plant per ${Math.ceil(1 / crop.plantsPerSquareFoot)} squares`,
+      // The spacing-derived figure leads, because it follows from the row above
+      // it. The square foot gardening figure is a different kind of claim and
+      // is labelled as one rather than being blended into the same number.
+      label: 'Plants per square foot',
+      value: perSquare(plantsPerSquareFoot(crop)),
+      second:
+        crop.sfgPlantsPerSquare === null
+          ? undefined
+          : `${perSquare(crop.sfgPlantsPerSquare)}, square foot gardening method`,
     },
     { label: 'Sun', value: `${crop.sunHours}+ hours a day` },
     {
@@ -102,11 +107,17 @@ export function CropFacts({ crop }: { crop: Crop }) {
           ) : (
             <div key={row.label} className="grid grid-cols-2 gap-2 px-3 py-2 text-sm">
               <dt className="text-ink/80">{row.label}</dt>
-              <dd className="tabular font-semibold">{row.value}</dd>
+              <dd className="tabular font-semibold">
+                {row.value}
+                {row.second ? (
+                  <span className="text-ink/75 block font-normal">{row.second}</span>
+                ) : null}
+              </dd>
             </div>
           ),
         )}
       </dl>
+      <p className="border-rule text-ink/70 border-t px-3 py-2 text-xs">{DENSITY_NOTE}</p>
       <p className="border-rule text-ink/70 border-t px-3 py-2 text-xs">
         Scientific name: <em>{crop.scientificName}</em>. Figures are typical published ranges
         awaiting verification against a primary source — see{' '}

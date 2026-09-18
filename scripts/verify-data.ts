@@ -42,6 +42,7 @@ const NON_FIGURE_KEYS = new Set([
   'type',
   'source',
   'verified',
+  'verifiedFields',
   'note',
   'description',
   'timingNote',
@@ -50,6 +51,20 @@ const NON_FIGURE_KEYS = new Set([
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
+}
+
+/**
+ * A source is either the old "verify against ..." string or, since the crop
+ * data was checked field by field, a { institution, url } pair.
+ */
+function describeSource(source: unknown): string {
+  if (typeof source === 'string' && source) return source;
+  if (isRecord(source)) {
+    const institution = typeof source.institution === 'string' ? source.institution : '';
+    const url = typeof source.url === 'string' ? source.url : '';
+    if (institution || url) return [institution, url].filter(Boolean).join(' — ');
+  }
+  return '(no source given)';
 }
 
 function label(value: Record<string, unknown>): string {
@@ -75,7 +90,7 @@ function collect(value: unknown, file: string, path: string, out: Finding[], see
       file,
       path,
       label: label(value),
-      source: typeof value.source === 'string' && value.source ? value.source : '(no source given)',
+      source: describeSource(value.source),
       values,
     });
   }

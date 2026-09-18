@@ -20,10 +20,20 @@ describe('calculateSquareFootGarden', () => {
     const cells = grid(4, 4, ['carrot', 'carrot', 'lettuce', 'tomato']);
     const result = value(calculateSquareFootGarden({ rows: 4, columns: 4, cells }));
     const byCrop = Object.fromEntries(result.crops.map((crop) => [crop.slug, crop.plants]));
-    expect(byCrop.carrot).toBe(32); // 2 squares x 16 per square
+    expect(byCrop.carrot).toBe(18); // 2 squares x 9 per square, the SFG figure
     expect(byCrop.lettuce).toBe(4);
-    expect(byCrop.tomato).toBe(1);
-    expect(result.totalPlants).toBe(37);
+    // Square foot gardening gives a tomato two squares, so one square grows none.
+    expect(byCrop.tomato).toBe(0);
+    expect(result.totalPlants).toBe(22);
+  });
+
+  it('says whether a density came from the SFG method or from row spacing', () => {
+    const cells = grid(4, 4, ['carrot', 'kale']);
+    const result = value(calculateSquareFootGarden({ rows: 4, columns: 4, cells }));
+    const basis = Object.fromEntries(result.crops.map((crop) => [crop.slug, crop.densityBasis]));
+    // Carrot is on the Cornell SFG page at 3x3; kale is not on it at all.
+    expect(basis.carrot).toBe('sfg');
+    expect(basis.kale).toBe('spacing');
   });
 
   it('reports filled and empty squares', () => {
@@ -51,23 +61,26 @@ describe('calculateSquareFootGarden', () => {
   });
 
   it('treats a sprawling crop as squares per plant, not plants per square', () => {
+    // Winter squash is not on the SFG page, so its 36 in spacing decides: 0.11
+    // per square foot, a plant per 10 squares.
     const cells = grid(
       4,
       4,
-      Array.from({ length: 9 }, () => 'zucchini'),
+      Array.from({ length: 9 }, () => 'squash'),
     );
     const result = value(calculateSquareFootGarden({ rows: 4, columns: 4, cells }));
-    const zucchini = result.crops[0];
-    expect(zucchini?.squaresPerPlant).toBe(10);
-    expect(zucchini?.plants).toBe(0);
-    expect(zucchini?.note).toContain('is not enough for one');
+    const squash = result.crops[0];
+    expect(squash?.densityBasis).toBe('spacing');
+    expect(squash?.squaresPerPlant).toBe(10);
+    expect(squash?.plants).toBe(0);
+    expect(squash?.note).toContain('is not enough for one');
   });
 
   it('grows one sprawling plant once enough squares are given to it', () => {
     const cells = grid(
       4,
       4,
-      Array.from({ length: 10 }, () => 'zucchini'),
+      Array.from({ length: 10 }, () => 'squash'),
     );
     const result = value(calculateSquareFootGarden({ rows: 4, columns: 4, cells }));
     expect(result.crops[0]?.plants).toBe(1);
@@ -125,6 +138,6 @@ describe('calculateSquareFootGarden', () => {
     const cells = Array.from({ length: 576 }, () => 'carrot');
     const result = value(calculateSquareFootGarden({ rows: 24, columns: 24, cells }));
     expect(result.totalSquares).toBe(576);
-    expect(result.totalPlants).toBe(9216);
+    expect(result.totalPlants).toBe(5184); // 576 squares x 9 carrots
   });
 });
