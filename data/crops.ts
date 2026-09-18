@@ -43,6 +43,14 @@ export type Crop = {
   readonly directSowWeeksRelativeToLastFrost: number | null;
   /** Explains any crop whose timing cannot be expressed as a frost offset. */
   readonly timingNote?: string;
+  /**
+   * Why a planting step does not apply, for each of the three that can be
+   * null. A quick-facts table saying "Direct sow: —" tells the reader nothing;
+   * these turn each blank into a short reason.
+   */
+  readonly noSowIndoorsReason?: string;
+  readonly noTransplantReason?: string;
+  readonly noDirectSowReason?: string;
 
   readonly daysToMaturity: readonly [number, number] | null;
   readonly sunHours: number;
@@ -79,6 +87,8 @@ export const crops: readonly Crop[] = [
     sowIndoorsWeeksBeforeLastFrost: 6,
     transplantWeeksAfterLastFrost: 1,
     directSowWeeksRelativeToLastFrost: null,
+    noDirectSowReason:
+      'Not usually direct sown — it needs a head start indoors to ripen in a temperate season.',
     daysToMaturity: [60, 85],
     sunHours: 8,
     waterInchesPerWeek: 1.5,
@@ -103,6 +113,8 @@ export const crops: readonly Crop[] = [
     sowIndoorsWeeksBeforeLastFrost: 8,
     transplantWeeksAfterLastFrost: 2,
     directSowWeeksRelativeToLastFrost: null,
+    noDirectSowReason:
+      'Not usually direct sown — it germinates slowly and needs the indoor head start.',
     daysToMaturity: [60, 90],
     sunHours: 8,
     waterInchesPerWeek: 1,
@@ -243,6 +255,9 @@ export const crops: readonly Crop[] = [
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: -3,
+    noSowIndoorsReason:
+      'Not started indoors — moving a seedling forks the taproot, and the taproot is the crop.',
+    noTransplantReason: 'Not transplanted — sow where it will grow.',
     daysToMaturity: [60, 80],
     sunHours: 6,
     waterInchesPerWeek: 1,
@@ -272,6 +287,9 @@ export const crops: readonly Crop[] = [
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: -4,
+    noSowIndoorsReason:
+      'Not started indoors — it is ready in about four weeks, so a transplant only sets it back.',
+    noTransplantReason: 'Not transplanted — sow where it will grow.',
     daysToMaturity: [22, 30],
     sunHours: 6,
     waterInchesPerWeek: 1,
@@ -299,6 +317,8 @@ export const crops: readonly Crop[] = [
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: -3,
+    noSowIndoorsReason: 'Not usually started indoors — the root resents being moved.',
+    noTransplantReason: 'Not transplanted — sow where it will grow.',
     daysToMaturity: [50, 65],
     sunHours: 6,
     waterInchesPerWeek: 1,
@@ -349,6 +369,10 @@ export const crops: readonly Crop[] = [
     directSowWeeksRelativeToLastFrost: null,
     timingNote:
       'Garlic is planted in autumn, a few weeks before the ground freezes, and harvested the following summer — so no last-frost offset describes it. Work back from your first fall frost date instead.',
+    noSowIndoorsReason: 'Not sown at all — cloves go straight into the ground in autumn.',
+    noTransplantReason: 'Not transplanted — cloves are planted where they will grow.',
+    noDirectSowReason:
+      'Planted in autumn — cloves go in a few weeks before the ground freezes, so no last-frost offset applies.',
     daysToMaturity: [240, 270],
     sunHours: 6,
     waterInchesPerWeek: 1,
@@ -379,6 +403,9 @@ export const crops: readonly Crop[] = [
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: -2,
     timingNote: 'Grown from seed potatoes, not seed — plant pieces once soil is workable.',
+    noSowIndoorsReason:
+      'Not started indoors — seed potatoes are chitted in a cool, bright place instead.',
+    noTransplantReason: 'Not transplanted — seed potatoes go straight into the ground.',
     daysToMaturity: [70, 120],
     sunHours: 8,
     waterInchesPerWeek: 1.5,
@@ -409,6 +436,9 @@ export const crops: readonly Crop[] = [
     transplantWeeksAfterLastFrost: 3,
     directSowWeeksRelativeToLastFrost: null,
     timingNote: 'Planted as rooted slips once soil is thoroughly warm, not from seed.',
+    noSowIndoorsReason: 'Not sown from seed — it is grown from rooted slips.',
+    noDirectSowReason:
+      'Not sown from seed — set out rooted slips about three weeks after your last frost.',
     daysToMaturity: [90, 120],
     sunHours: 8,
     waterInchesPerWeek: 1,
@@ -433,6 +463,8 @@ export const crops: readonly Crop[] = [
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: 1,
+    noSowIndoorsReason: 'Not started indoors — beans grow fast and dislike root disturbance.',
+    noTransplantReason: 'Not transplanted — sow where it will grow.',
     daysToMaturity: [50, 65],
     sunHours: 8,
     waterInchesPerWeek: 1,
@@ -457,6 +489,9 @@ export const crops: readonly Crop[] = [
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: -5,
+    noSowIndoorsReason:
+      'Not usually started indoors — peas prefer cold soil and germinate readily in it.',
+    noTransplantReason: 'Not transplanted — sow where it will grow.',
     daysToMaturity: [55, 70],
     sunHours: 6,
     waterInchesPerWeek: 1,
@@ -485,6 +520,9 @@ export const crops: readonly Crop[] = [
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: 1,
+    noSowIndoorsReason:
+      'Not started indoors — corn resents root disturbance and catches up quickly outdoors.',
+    noTransplantReason: 'Not transplanted — sow where it will grow.',
     daysToMaturity: [60, 95],
     sunHours: 8,
     waterInchesPerWeek: 1.5,
@@ -570,6 +608,8 @@ export const crops: readonly Crop[] = [
     sowIndoorsWeeksBeforeLastFrost: 6,
     transplantWeeksAfterLastFrost: -2,
     directSowWeeksRelativeToLastFrost: null,
+    noDirectSowReason:
+      'Not usually direct sown — transplants get ahead of spring weeds and of the heat that ruins heads.',
     daysToMaturity: [55, 80],
     sunHours: 6,
     waterInchesPerWeek: 1.5,
@@ -599,6 +639,8 @@ export const crops: readonly Crop[] = [
     sowIndoorsWeeksBeforeLastFrost: 6,
     transplantWeeksAfterLastFrost: -3,
     directSowWeeksRelativeToLastFrost: null,
+    noDirectSowReason:
+      'Not usually direct sown — transplants get ahead of spring weeds and of the heat that splits heads.',
     daysToMaturity: [60, 90],
     sunHours: 6,
     waterInchesPerWeek: 1.5,
@@ -622,6 +664,8 @@ export const crops: readonly Crop[] = [
     sowIndoorsWeeksBeforeLastFrost: 6,
     transplantWeeksAfterLastFrost: -2,
     directSowWeeksRelativeToLastFrost: null,
+    noDirectSowReason:
+      'Not usually direct sown — it needs an unbroken start that a seedbed rarely provides.',
     daysToMaturity: [55, 80],
     sunHours: 6,
     waterInchesPerWeek: 1.5,
@@ -651,6 +695,8 @@ export const crops: readonly Crop[] = [
     sowIndoorsWeeksBeforeLastFrost: 8,
     transplantWeeksAfterLastFrost: 2,
     directSowWeeksRelativeToLastFrost: null,
+    noDirectSowReason:
+      'Not usually direct sown — it wants a long warm run that an outdoor sowing rarely gives it.',
     daysToMaturity: [65, 85],
     sunHours: 8,
     waterInchesPerWeek: 1,
@@ -737,6 +783,8 @@ export const crops: readonly Crop[] = [
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: -2,
+    noSowIndoorsReason: 'Not started indoors — it bolts almost immediately after being moved.',
+    noTransplantReason: 'Not transplanted — sow where it will grow, and sow again every few weeks.',
     daysToMaturity: [45, 70],
     sunHours: 4,
     waterInchesPerWeek: 1,
@@ -795,6 +843,8 @@ export const crops: readonly Crop[] = [
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: 0,
+    noSowIndoorsReason: 'Not started indoors — the taproot resents being moved.',
+    noTransplantReason: 'Not transplanted — sow where it will grow.',
     daysToMaturity: [40, 60],
     sunHours: 6,
     waterInchesPerWeek: 1,
@@ -825,6 +875,9 @@ export const crops: readonly Crop[] = [
     directSowWeeksRelativeToLastFrost: null,
     timingNote:
       'Planted as bare-root crowns or runners, not seed. June-bearing varieties are usually not allowed to fruit in their first year, so the first real harvest is the season after planting.',
+    noSowIndoorsReason: 'Not usually grown from seed — plant bare-root crowns or runners instead.',
+    noDirectSowReason:
+      'Not sown from seed — set bare-root crowns out about two weeks before your last frost.',
     daysToMaturity: null,
     sunHours: 8,
     waterInchesPerWeek: 1,

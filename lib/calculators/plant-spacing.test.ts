@@ -118,6 +118,72 @@ describe('calculatePlantSpacing', () => {
     }
   });
 
+  it('names the row spacing as the limit when only one row fits', () => {
+    // A tomato bed 8 x 4 ft: four plants looks like a bug until the result
+    // says that 36 inch rows only fit once across a 4 foot width.
+    const result = value(calculatePlantSpacing({ ...base, plantSpacing: 24, rowSpacing: 36 }));
+    expect(result.totalPlants).toBe(4);
+    expect(result.limit.axis).toBe('width');
+    expect(result.limit.explanation).toBe(
+      'Rows need 36 in, so 1 fits across a 4 ft width, leaving 12 in spare.',
+    );
+    expect(result.limit.suggestion).toBe(
+      'Narrowing the row spacing to 24 in would fit 2 rows of 4.',
+    );
+  });
+
+  it('says the bed is fully used when the spacing divides evenly', () => {
+    const result = value(calculatePlantSpacing({ ...base, plantSpacing: 8, rowSpacing: 12 }));
+    expect(result.limit.axis).toBe('none');
+    expect(result.limit.explanation).toContain('fully used');
+    expect(result.limit.suggestion).toBeNull();
+  });
+
+  it('names the plant spacing when the length is what wastes room', () => {
+    const result = value(
+      calculatePlantSpacing({
+        ...base,
+        bedLength: 9,
+        bedWidth: 4,
+        plantSpacing: 24,
+        rowSpacing: 12,
+      }),
+    );
+    // 108 in of length at 24 in spacing leaves 12 in over; 48 in of width at
+    // 12 in rows leaves none.
+    expect(result.limit.axis).toBe('length');
+    expect(result.limit.explanation).toContain('Plants need 24 in');
+    expect(result.limit.suggestion).toContain('plants a row');
+  });
+
+  it('points at the plant spacing for a staggered layout, since rows follow it', () => {
+    const result = value(
+      calculatePlantSpacing({ ...base, plantSpacing: 24, rowSpacing: 36, layout: 'triangular' }),
+    );
+    expect(result.limit.suggestion).toContain('staggered rows take their pitch from it');
+  });
+
+  it('explains an empty bed rather than leaving the reader guessing', () => {
+    const result = value(calculatePlantSpacing({ ...base, plantSpacing: 200, rowSpacing: 200 }));
+    expect(result.limit.axis).toBe('none');
+    expect(result.limit.explanation).toContain('smaller than a single plant');
+  });
+
+  it('describes the limit in metric when the reader is in metric', () => {
+    const result = value(
+      calculatePlantSpacing({
+        ...base,
+        units: 'metric',
+        bedLength: 2.4,
+        bedWidth: 1.2,
+        plantSpacing: 60,
+        rowSpacing: 90,
+      }),
+    );
+    expect(result.limit.explanation).toContain('cm');
+    expect(result.limit.explanation).not.toContain(' in,');
+  });
+
   it('stays finite for an enormous field', () => {
     const result = value(calculatePlantSpacing({ ...base, bedLength: 1e6, bedWidth: 1e6 }));
     expect(Number.isFinite(result.totalPlants)).toBe(true);

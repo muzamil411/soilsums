@@ -1,10 +1,11 @@
 'use client';
 
-import { useId, useMemo } from 'react';
+import { useMemo } from 'react';
 import { CalculatorFrame } from './CalculatorFrame';
 import { CropLink } from './CropLink';
 import { CropPicker } from './CropPicker';
 import type { ToolProps } from './registry';
+import { DateField } from '@/components/ui/DateField';
 import { ResultTable } from '@/components/ui/ResultTable';
 import { useToolState, type FieldKind } from '@/lib/hooks/useToolState';
 import { calculatePlantingDates } from '@/lib/calculators/planting-date';
@@ -14,8 +15,9 @@ const KINDS: Record<string, FieldKind> = {};
 const DEFAULTS = { lastFrost: '', fallFrost: '', crops: 'tomato,lettuce,carrot' };
 
 /** Formats an ISO date for reading: 3 April 2026 becomes "Fri 3 Apr". */
-function readable(iso: string | null): string {
-  if (!iso) return '—';
+function readable(iso: string | null, whyNot?: string | null): string {
+  // A blank cell reads as missing data. Every crop that skips a step says why.
+  if (!iso) return whyNot ?? 'Not used for this crop';
   const date = new Date(`${iso}T00:00:00Z`);
   return date.toLocaleDateString('en-US', {
     weekday: 'short',
@@ -32,8 +34,6 @@ export function PlantingDateCalculator({ toolSlug, linkedCrops }: ToolProps) {
     params: PARAMS,
     kinds: KINDS,
   });
-  const lastFrostId = useId();
-  const fallFrostId = useId();
 
   const selected = (values.crops ?? '').split(',').filter(Boolean);
 
@@ -82,8 +82,8 @@ export function PlantingDateCalculator({ toolSlug, linkedCrops }: ToolProps) {
             {output.growingSeasonDays
               ? `, and a first fall frost of ${readable(output.firstFallFrostDate)} — a ${output.growingSeasonDays} day season`
               : ''}
-            . Treat these as a starting point: an average last frost date is a midpoint, so about
-            half of years are later than it. Watch the forecast before anything tender goes out.
+            . An average last frost date is a midpoint, so roughly half of years have a frost after
+            it — give anything tender a week or two beyond the dates below, and keep fleece to hand.
           </p>
         ) : null
       }
@@ -112,59 +112,33 @@ export function PlantingDateCalculator({ toolSlug, linkedCrops }: ToolProps) {
                   name={schedule.name}
                   linkedCrops={linkedCrops}
                 />,
-                readable(schedule.sowIndoors),
-                readable(schedule.transplant),
-                readable(schedule.directSow),
+                readable(schedule.sowIndoors, schedule.sowIndoorsWhyNot),
+                readable(schedule.transplant, schedule.transplantWhyNot),
+                readable(schedule.directSow, schedule.directSowWhyNot),
                 schedule.harvestStart
                   ? `${readable(schedule.harvestStart)} to ${readable(schedule.harvestEnd)}`
-                  : '—',
+                  : 'No days-to-maturity figure for a perennial',
               ],
             }))}
           />
         ) : null
       }
     >
-      <div>
-        <label htmlFor={lastFrostId} className="block text-sm font-semibold">
-          Average last spring frost
-        </label>
-        <input
-          id={lastFrostId}
-          type="date"
-          value={values.lastFrost ?? ''}
-          onChange={(event) => setValue('lastFrost', event.target.value)}
-          aria-invalid={dateError ? true : undefined}
-          className={`bg-paper text-ink mt-1 w-full border-2 px-2 py-2 text-base focus:outline-none ${
-            dateError ? 'border-radish' : 'border-kale focus:border-radish'
-          }`}
-        />
-        <p className="text-ink/70 mt-1 text-xs">
-          Not sure? <a href="#faq">Where to find your frost date</a>
-        </p>
-        {dateError && (values.lastFrost ?? '') !== '' ? (
-          <p className="text-radish mt-1 text-sm font-semibold">{dateError}</p>
-        ) : null}
-      </div>
+      <DateField
+        label="Average last spring frost"
+        value={values.lastFrost ?? ''}
+        onChange={(value) => setValue('lastFrost', value)}
+        error={(values.lastFrost ?? '') !== '' ? dateError : undefined}
+        hint={<a href="#faq">Not sure? Where to find your frost date</a>}
+      />
 
-      <div>
-        <label htmlFor={fallFrostId} className="block text-sm font-semibold">
-          Average first fall frost (optional)
-        </label>
-        <input
-          id={fallFrostId}
-          type="date"
-          value={values.fallFrost ?? ''}
-          onChange={(event) => setValue('fallFrost', event.target.value)}
-          aria-invalid={fallError ? true : undefined}
-          className={`bg-paper text-ink mt-1 w-full border-2 px-2 py-2 text-base focus:outline-none ${
-            fallError ? 'border-radish' : 'border-kale focus:border-radish'
-          }`}
-        />
-        <p className="text-ink/70 mt-1 text-xs">
-          Adding it flags anything that will not ripen in time
-        </p>
-        {fallError ? <p className="text-radish mt-1 text-sm font-semibold">{fallError}</p> : null}
-      </div>
+      <DateField
+        label="Average first fall frost (optional)"
+        value={values.fallFrost ?? ''}
+        onChange={(value) => setValue('fallFrost', value)}
+        error={fallError}
+        hint="Adding it flags anything that will not ripen in time"
+      />
 
       <div className="col-span-2">
         <CropPicker

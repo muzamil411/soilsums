@@ -17,10 +17,10 @@ export function CropLink({
 }) {
   if (linkedCrops?.includes(slug)) {
     return (
-      <Link href={`/crops/${slug}/`} className="font-semibold">
+      <Link href={`/crops/${slug}/`} className="text-kale underline decoration-1">
         {name}
       </Link>
     );
   }
-  return <span className="font-semibold">{name}</span>;
+  return <span>{name}</span>;
 }

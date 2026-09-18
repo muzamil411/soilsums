@@ -9,7 +9,7 @@ export default defineConfig({
     },
   },
   test: {
-    include: ['lib/**/*.test.ts', 'scripts/**/*.test.ts'],
+    include: ['lib/**/*.test.ts', 'data/**/*.test.ts', 'scripts/**/*.test.ts'],
     environment: 'node',
     globals: false,
     // Every test here exercises a pure function, so workers can be reused.

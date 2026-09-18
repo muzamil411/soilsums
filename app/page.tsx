@@ -42,7 +42,7 @@ export default function HomePage() {
           plants fit, when to sow. Answers in imperial or metric, with the formula shown.
         </p>
 
-        <div className="graph-paper border-ink/20 mt-8 border p-4">
+        <div className="panel mt-8">
           <h2 className="font-display text-xl">Start here</h2>
           <p className="text-ink/80 mt-1 text-sm">The four people reach for most.</p>
           <ul className="mt-4 grid grid-cols-2 gap-3">

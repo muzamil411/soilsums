@@ -28,8 +28,8 @@ export function SeedPacket({
 }) {
   return (
     <article
-      // The background is always solid: a packet must read as paper stock even
-      // when it sits on the graph-paper panel.
+      // The background is always solid, so a packet reads as paper stock
+      // wherever it sits.
       className={`bg-paper relative flex h-full flex-col border ${
         href ? 'border-ink/25' : 'border-ink/15'
       }`}

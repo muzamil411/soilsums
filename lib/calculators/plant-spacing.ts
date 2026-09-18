@@ -66,8 +66,105 @@ export type PlantSpacingOutput = {
   /** Percentage more (or fewer) plants than the square layout gives. */
   readonly gainPercent: number;
   readonly squareFeetPerPlant: number | null;
+  /**
+   * Why the count is what it is. A bed that fits four plants when it looks big
+   * enough for more reads like a bug unless the binding constraint is named,
+   * so every result carries this.
+   */
+  readonly limit: SpacingLimit;
   readonly notes: readonly string[];
 };
+
+export type SpacingLimit = {
+  /** The dimension wasting the most room at the current spacing. */
+  readonly axis: 'width' | 'length' | 'none';
+  /** Plain sentence naming the constraint, e.g. why only one row fits. */
+  readonly explanation: string;
+  /**
+   * The spacing along that axis that would fit one more row or plant, in the
+   * reader's own units. Null when the bed is already fully used, or when the
+   * change needed is too small to be worth making.
+   */
+  readonly suggestion: string | null;
+};
+
+/** Spans in feet read better than spans in inches once they pass a foot. */
+function describeSpan(inches: number, units: UnitSystem): string {
+  if (units === 'metric') {
+    const centimeters = inches * 2.54;
+    return centimeters >= 100 ? `${round(centimeters / 100, 2)} m` : `${round(centimeters, 0)} cm`;
+  }
+  return inches >= 24 ? `${round(inches / 12, 2)} ft` : `${round(inches, 1)} in`;
+}
+
+/** A spacing figure in whichever short unit the reader is working in. */
+function describeSpacing(inches: number, units: UnitSystem): string {
+  return units === 'metric' ? `${Math.floor(inches * 2.54)} cm` : `${Math.floor(inches)} in`;
+}
+
+/**
+ * Works out which dimension is actually holding the count down, and what
+ * spacing along it would gain one more row or one more plant.
+ *
+ * Both axes constrain a bed to some degree; the useful one to report is
+ * whichever is leaving the most unused space, because that is where the
+ * gardener is losing plants they could have had.
+ */
+function findLimit(
+  lengthInches: number,
+  widthInches: number,
+  plantSpacing: number,
+  rowPitch: number,
+  rows: number,
+  plantsPerRow: number,
+  units: UnitSystem,
+  rowSpacingIsDerived: boolean,
+): SpacingLimit {
+  const widthWaste = widthInches - rows * rowPitch;
+  const lengthWaste = lengthInches - plantsPerRow * plantSpacing;
+
+  if (rows === 0 || plantsPerRow === 0) {
+    return {
+      axis: 'none',
+      explanation: 'The bed is smaller than a single plant needs at this spacing.',
+      suggestion: null,
+    };
+  }
+
+  // Under an inch of slack either way means the bed is being used fully.
+  if (widthWaste < 1 && lengthWaste < 1) {
+    return {
+      axis: 'none',
+      explanation: `The spacing divides evenly into both dimensions, so the bed is fully used.`,
+      suggestion: null,
+    };
+  }
+
+  const widthLimits = widthWaste >= lengthWaste;
+  const axis = widthLimits ? ('width' as const) : ('length' as const);
+  const span = widthLimits ? widthInches : lengthInches;
+  const spacing = widthLimits ? rowPitch : plantSpacing;
+  const count = widthLimits ? rows : plantsPerRow;
+  const waste = widthLimits ? widthWaste : lengthWaste;
+
+  const explanation = widthLimits
+    ? `Rows need ${describeSpacing(rowPitch, units)}, so ${count} fit${count === 1 ? 's' : ''} across a ${describeSpan(widthInches, units)} width, leaving ${describeSpan(waste, units)} spare.`
+    : `Plants need ${describeSpacing(plantSpacing, units)}, so ${count} fit along a ${describeSpan(lengthInches, units)} length, leaving ${describeSpan(waste, units)} spare.`;
+
+  // What spacing fits one more? Only worth saying if it is a real change.
+  const needed = span / (count + 1);
+  const meaningful = needed >= 1 && spacing - needed >= 0.5;
+  const suggestion =
+    meaningful && !(widthLimits && rowSpacingIsDerived)
+      ? widthLimits
+        ? `Narrowing the row spacing to ${describeSpacing(needed, units)} would fit ${count + 1} rows of ${plantsPerRow}.`
+        : `Narrowing the plant spacing to ${describeSpacing(needed, units)} would fit ${count + 1} plants a row.`
+      : meaningful && widthLimits && rowSpacingIsDerived
+        ? `A plant spacing of ${describeSpacing(needed / TRIANGULAR_ROW_FACTOR, units)} would fit ${count + 1} rows, since staggered rows take their pitch from it.`
+        : null;
+
+  return { axis, explanation, suggestion };
+}
 
 /** The sqrt(3)/2 row-pitch factor that makes triangular packing tighter. */
 export const TRIANGULAR_ROW_FACTOR = Math.sqrt(3) / 2;
@@ -159,6 +256,17 @@ export function calculatePlantSpacing(input: PlantSpacingInput): Calculation<Pla
   const gainPercent =
     square.total === 0 ? 0 : ((triangular.total - square.total) / square.total) * 100;
 
+  const limit = findLimit(
+    lengthInches,
+    widthInches,
+    plantSpacing,
+    chosen.rowPitch,
+    chosen.rows,
+    chosen.plantsPerRow,
+    units,
+    layout === 'triangular',
+  );
+
   return ok({
     layout,
     areaSquareFeet: toSignificant(areaSquareFeet, 4),
@@ -172,6 +280,7 @@ export function calculatePlantSpacing(input: PlantSpacingInput): Calculation<Pla
     triangularLayoutPlants: triangular.total,
     gainPercent: round(gainPercent, 1),
     squareFeetPerPlant: chosen.total === 0 ? null : toSignificant(areaSquareFeet / chosen.total, 3),
+    limit,
     notes,
   });
 }

@@ -68,8 +68,8 @@ export function GardenWateringCalculator({ toolSlug }: { toolSlug: string }) {
               {imperial
                 ? `${output.gallonsPerSession} gallons`
                 : `${output.litersPerSession} liters`}{' '}
-              in each of two deep soakings. Two long drinks beat seven short ones: the water gets
-              deep enough for roots to follow it down.
+              in each of two deep soakings. Two soakings a week wet the soil six inches down, where
+              roots will follow it; daily sprinkling keeps them in the top inch.
             </p>
           )
         ) : null

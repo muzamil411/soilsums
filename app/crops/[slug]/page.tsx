@@ -101,7 +101,7 @@ export default async function CropPage({ params }: { params: Promise<{ slug: str
       <h1 className="text-2xl sm:text-4xl">{heading}</h1>
       <p className="text-ink/80 mt-2 max-w-prose">{entry.frontmatter.description}</p>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
+      <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
         <CropFacts crop={crop} />
         <CropCalculators crop={crop} />
       </div>

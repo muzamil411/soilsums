@@ -106,8 +106,8 @@ export function GardenYieldEstimator({ toolSlug, linkedCrops }: ToolProps) {
                 ? `${output.totalLowLb} and ${output.totalHighLb} pounds`
                 : `${output.totalLowKg} and ${output.totalHighKg} kilograms`}
             </strong>{' '}
-            over the season. The range is wide on purpose — variety, weather, soil and how often you
-            pick all move the figure, and a single number would pretend otherwise.
+            over the season. Plan against the low figure: the high one assumes a good variety, full
+            sun and picking every two or three days, which is the single largest lever on the total.
           </p>
         ) : null
       }

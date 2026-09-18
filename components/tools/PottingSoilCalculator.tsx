@@ -125,7 +125,8 @@ export function PottingSoilCalculator({ toolSlug }: { toolSlug: string }) {
             {output.quantity > 1
               ? ` Each one takes about ${output.dryQuartsPerContainer} dry quarts.`
               : ''}{' '}
-            Pots taper towards the base, so expect to use a little less than this.
+            Most pots taper, so a tapered one of this width holds ten to twenty per cent less than
+            the figure above.
           </p>
         ) : null
       }

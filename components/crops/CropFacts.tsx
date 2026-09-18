@@ -10,8 +10,14 @@ function kg(pounds: number): string {
   return `${toSignificant(poundsToKilograms(pounds), 2)} kg`;
 }
 
-function weeks(value: number | null, direction: 'before' | 'after' | 'relative'): string {
-  if (value === null) return '—';
+function weeks(
+  value: number | null,
+  direction: 'before' | 'after' | 'relative',
+  reason?: string,
+): string {
+  // A blank row tells the reader nothing. Every crop that does not use a
+  // planting step carries a reason for it in data/crops.ts.
+  if (value === null) return reason ?? 'Does not apply to this crop';
   if (value === 0) return 'On your last frost date';
   if (direction === 'before') {
     return `${value} week${value === 1 ? '' : 's'} before last frost`;
@@ -29,7 +35,7 @@ function weeks(value: number | null, direction: 'before' | 'after' | 'relative')
  * page carries a note saying so.
  */
 export function CropFacts({ crop }: { crop: Crop }) {
-  const rows: { label: string; value: string }[] = [
+  const rows: { label: string; value: string; isReason?: boolean }[] = [
     {
       label: 'Spacing between plants',
       value: `${crop.spacingInches} in (${cm(crop.spacingInches)})`,
@@ -55,7 +61,8 @@ export function CropFacts({ crop }: { crop: Crop }) {
       label: 'Days to maturity',
       value: crop.daysToMaturity
         ? `${crop.daysToMaturity[0]} to ${crop.daysToMaturity[1]} days`
-        : 'Perennial — see the timing note',
+        : 'A perennial, so it has no days-to-maturity from planting',
+      isReason: crop.daysToMaturity === null,
     },
     {
       label: 'Yield per plant',
@@ -63,15 +70,18 @@ export function CropFacts({ crop }: { crop: Crop }) {
     },
     {
       label: 'Start seeds indoors',
-      value: weeks(crop.sowIndoorsWeeksBeforeLastFrost, 'before'),
+      value: weeks(crop.sowIndoorsWeeksBeforeLastFrost, 'before', crop.noSowIndoorsReason),
+      isReason: crop.sowIndoorsWeeksBeforeLastFrost === null,
     },
     {
       label: 'Transplant out',
-      value: weeks(crop.transplantWeeksAfterLastFrost, 'relative'),
+      value: weeks(crop.transplantWeeksAfterLastFrost, 'relative', crop.noTransplantReason),
+      isReason: crop.transplantWeeksAfterLastFrost === null,
     },
     {
       label: 'Direct sow',
-      value: weeks(crop.directSowWeeksRelativeToLastFrost, 'relative'),
+      value: weeks(crop.directSowWeeksRelativeToLastFrost, 'relative', crop.noDirectSowReason),
+      isReason: crop.directSowWeeksRelativeToLastFrost === null,
     },
   ];
 
@@ -83,12 +93,19 @@ export function CropFacts({ crop }: { crop: Crop }) {
         <span aria-hidden="true" className="bg-radish h-2 w-8" />
       </div>
       <dl className="divide-rule divide-y">
-        {rows.map((row) => (
-          <div key={row.label} className="grid grid-cols-2 gap-2 px-3 py-2 text-sm">
-            <dt className="text-ink/80">{row.label}</dt>
-            <dd className="tabular font-semibold">{row.value}</dd>
-          </div>
-        ))}
+        {rows.map((row) =>
+          row.isReason ? (
+            <div key={row.label} className="px-3 py-2 text-sm">
+              <dt className="text-ink/80">{row.label}</dt>
+              <dd className="text-ink/90 mt-0.5">{row.value}</dd>
+            </div>
+          ) : (
+            <div key={row.label} className="grid grid-cols-2 gap-2 px-3 py-2 text-sm">
+              <dt className="text-ink/80">{row.label}</dt>
+              <dd className="tabular font-semibold">{row.value}</dd>
+            </div>
+          ),
+        )}
       </dl>
       <p className="border-rule text-ink/70 border-t px-3 py-2 text-xs">
         Scientific name: <em>{crop.scientificName}</em>. Figures are typical published ranges

@@ -55,7 +55,9 @@ createServer((req, res) => {
   if (COMPRESSIBLE.has(ext)) {
     const encoding = accept.includes('br') ? 'br' : accept.includes('gzip') ? 'gzip' : null;
     if (encoding) {
-      const key = `${file}:${encoding}`;
+      // Keyed on modification time as well as path, so a rebuild while the
+      // server is running is picked up rather than served from a stale cache.
+      const key = `${file}:${encoding}:${statSync(file).mtimeMs}`;
       if (!cache.has(key)) {
         const raw = readFileSync(file);
         cache.set(key, encoding === 'br' ? brotliCompressSync(raw) : gzipSync(raw));

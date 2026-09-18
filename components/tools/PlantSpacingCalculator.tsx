@@ -91,19 +91,22 @@ export function PlantSpacingCalculator({ toolSlug }: { toolSlug: string }) {
       headlineUnit={output ? (output.totalPlants === 1 ? 'plant' : 'plants') : undefined}
       sentence={
         output ? (
-          <p>
-            A {values.bedLength} by {values.bedWidth} {imperial ? 'foot' : 'metre'} bed fits{' '}
-            <strong>
-              {output.totalPlants} plant{output.totalPlants === 1 ? '' : 's'}
-            </strong>{' '}
-            at {values.plantSpacing} {imperial ? 'inch' : 'cm'} spacing in a{' '}
-            {layout === 'square' ? 'square grid' : 'staggered layout'} — {output.rows} row
-            {output.rows === 1 ? '' : 's'} of {output.plantsPerRow}
-            {layout === 'triangular' && output.plantsPerOffsetRow !== null
-              ? `, alternating with rows of ${output.plantsPerOffsetRow}`
-              : ''}
-            . That works out at about {output.squareFeetPerPlant ?? 0} square feet per plant.
-          </p>
+          <>
+            <p>
+              <strong>
+                {output.totalPlants} plant{output.totalPlants === 1 ? '' : 's'}
+              </strong>{' '}
+              — {output.rows} row{output.rows === 1 ? '' : 's'} of {output.plantsPerRow}
+              {layout === 'triangular' && output.plantsPerOffsetRow !== null
+                ? `, alternating with rows of ${output.plantsPerOffsetRow}`
+                : ''}
+              , at {output.squareFeetPerPlant ?? 0} sq ft each.
+            </p>
+            <p className="mt-2">
+              {output.limit.explanation}
+              {output.limit.suggestion ? ` ${output.limit.suggestion}` : ''}
+            </p>
+          </>
         ) : null
       }
       copyText={

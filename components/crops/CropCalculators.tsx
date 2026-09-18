@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import { DateField } from '@/components/ui/DateField';
 import { NumberField } from '@/components/ui/NumberField';
 import { UnitToggle } from '@/components/ui/UnitToggle';
 import { useUnits } from '@/lib/hooks/useUnits';
@@ -98,14 +99,14 @@ export function CropCalculators({ crop }: { crop: Crop }) {
   const lowerName = crop.name.toLowerCase();
 
   return (
-    <div className="graph-paper border-ink/20 border p-4">
+    <div className="panel">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-sm font-semibold">Work it out for your garden</h2>
         <UnitToggle units={units} onChange={changeUnits} />
       </div>
 
       <div className="divide-ink/15 divide-y">
-        <section className="pb-4">
+        <section className="pb-7">
           <h3 className="font-display text-base">How many {lowerName} plants fit in your bed?</h3>
           <div className="mt-2 grid grid-cols-2 gap-3">
             <NumberField
@@ -131,37 +132,39 @@ export function CropCalculators({ crop }: { crop: Crop }) {
               }
             />
           </div>
-          <p className="mt-2 text-sm" aria-live="polite">
+          <div className="mt-2 text-sm" aria-live="polite">
             {spacing.ok ? (
               <>
-                <strong className="tabular text-lg">{spacing.value.totalPlants}</strong> plants at{' '}
-                {crop.spacingInches} inch spacing — {spacing.value.rows} row
-                {spacing.value.rows === 1 ? '' : 's'} of {spacing.value.plantsPerRow}.{' '}
-                <Link
-                  href={`/tools/plant-spacing-calculator/?c=${crop.slug}`}
-                  className="font-semibold"
-                >
-                  Try staggered rows
-                </Link>
+                <p>
+                  <strong className="tabular text-lg">{spacing.value.totalPlants}</strong> plants —{' '}
+                  {spacing.value.rows} row{spacing.value.rows === 1 ? '' : 's'} of{' '}
+                  {spacing.value.plantsPerRow}, at {crop.spacingInches} in apart with{' '}
+                  {crop.rowSpacingInches} in between rows.
+                </p>
+                <p className="text-ink/80 mt-1">
+                  {spacing.value.limit.explanation}
+                  {spacing.value.limit.suggestion ? ` ${spacing.value.limit.suggestion}` : ''}{' '}
+                  <Link
+                    href={`/tools/plant-spacing-calculator/?c=${crop.slug}`}
+                    className="text-kale underline decoration-1"
+                  >
+                    Try staggered rows
+                  </Link>
+                </p>
               </>
             ) : (
-              'Enter your bed size.'
+              <p>Enter your bed size.</p>
             )}
-          </p>
+          </div>
         </section>
 
-        <section className="py-4">
+        <section className="py-7">
           <h3 className="font-display text-base">Sowing dates for {lowerName}</h3>
-          <div className="mt-2">
-            <label className="block text-sm font-semibold" htmlFor="crop-frost-date">
-              Your average last spring frost
-            </label>
-            <input
-              id="crop-frost-date"
-              type="date"
+          <div className="mt-3 max-w-xs">
+            <DateField
+              label="Your average last spring frost"
               value={frostDate}
-              onChange={(event) => setFrostDate(event.target.value)}
-              className="bg-paper text-ink border-kale focus:border-radish mt-1 w-full max-w-xs border-2 px-2 py-2 text-base focus:outline-none"
+              onChange={setFrostDate}
             />
           </div>
           <div className="mt-2 text-sm" aria-live="polite">
@@ -172,13 +175,28 @@ export function CropCalculators({ crop }: { crop: Crop }) {
                 ) : (
                   <>
                     <li>
-                      Start indoors: <strong>{readable(schedule.sowIndoors)}</strong>
+                      Start indoors:{' '}
+                      {schedule.sowIndoors ? (
+                        <strong>{readable(schedule.sowIndoors)}</strong>
+                      ) : (
+                        <span className="text-ink/75">{crop.noSowIndoorsReason}</span>
+                      )}
                     </li>
                     <li>
-                      Transplant out: <strong>{readable(schedule.transplant)}</strong>
+                      Transplant out:{' '}
+                      {schedule.transplant ? (
+                        <strong>{readable(schedule.transplant)}</strong>
+                      ) : (
+                        <span className="text-ink/75">{crop.noTransplantReason}</span>
+                      )}
                     </li>
                     <li>
-                      Direct sow: <strong>{readable(schedule.directSow)}</strong>
+                      Direct sow:{' '}
+                      {schedule.directSow ? (
+                        <strong>{readable(schedule.directSow)}</strong>
+                      ) : (
+                        <span className="text-ink/75">{crop.noDirectSowReason}</span>
+                      )}
                     </li>
                     {schedule.harvestStart ? (
                       <li>
@@ -206,7 +224,7 @@ export function CropCalculators({ crop }: { crop: Crop }) {
           </div>
         </section>
 
-        <section className="pt-4">
+        <section className="pt-7">
           <h3 className="font-display text-base">What will you harvest?</h3>
           <div className="mt-2 max-w-[10rem]">
             <NumberField
@@ -229,7 +247,7 @@ export function CropCalculators({ crop }: { crop: Crop }) {
                 over the season, from {line.perPlantLowLb}–{line.perPlantHighLb} lb per plant.{' '}
                 <Link
                   href={`/tools/garden-yield-estimator/?pl=${crop.slug}:${plants}`}
-                  className="font-semibold"
+                  className="text-kale underline decoration-1"
                 >
                   Add other crops
                 </Link>

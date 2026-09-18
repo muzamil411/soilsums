@@ -113,7 +113,7 @@ export function CalculatorFrame({
   const inputs = <div className="grid grid-cols-2 gap-x-3 gap-y-4">{children}</div>;
 
   return (
-    <div className="graph-paper border-ink/20 border p-4 sm:p-5">
+    <div className="panel">
       <div className="mb-4 flex items-center justify-between gap-3">
         <p className="text-sm font-semibold">{inputsLabel}</p>
         <UnitToggle units={units} onChange={onUnitsChange} />

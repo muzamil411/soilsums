@@ -74,14 +74,19 @@
 }
 
 @layer components {
-  /* The garden-notebook surface: faint graph paper behind a calculator. */
-  .graph-paper {
-    background-color: color-mix(in srgb, var(--color-paper) 92%, white);
-    background-image:
-      linear-gradient(to right, var(--color-rule) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--color-rule) 1px, transparent 1px);
-    background-size: 16px 16px;
-    background-position: -1px -1px;
+  /* The surface a calculator sits on. Plain paper, a hairline keyline and room
+     to breathe — no texture, no shadow. It hugs its content: nothing here sets
+     a height, so the panel is exactly as tall as the fields inside it. */
+  .panel {
+    background-color: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    padding: 1.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .panel {
+      padding: 1.5rem;
+    }
   }
 
   /* Long-form prose: legal pages, tool guidance, crop guides, articles.
@@ -168,10 +173,6 @@
     background: white;
     color: black;
     font-size: 12pt;
-  }
-
-  .graph-paper {
-    background-image: none;
   }
 
   .no-print,

@@ -31,6 +31,14 @@ export type CropSchedule = {
   readonly sowIndoors: string | null;
   readonly transplant: string | null;
   readonly directSow: string | null;
+  /**
+   * Why a step is null, in a few words, for a table cell that has no room for
+   * the full sentence. Taken from the crop's own reason so the short and long
+   * forms cannot disagree.
+   */
+  readonly sowIndoorsWhyNot: string | null;
+  readonly transplantWhyNot: string | null;
+  readonly directSowWhyNot: string | null;
   /** Which planting step the harvest estimate counts from. */
   readonly harvestFrom: 'transplant' | 'direct sow' | null;
   readonly harvestStart: string | null;
@@ -68,6 +76,13 @@ function addDays(date: Date, days: number): Date {
 
 function addWeeks(date: Date, weeks: number): Date {
   return addDays(date, weeks * 7);
+}
+
+/** The clause before the dash: a compact phrase fit for a table cell. */
+function shortReason(reason: string | undefined): string | null {
+  if (!reason) return null;
+  const [head] = reason.split(' — ');
+  return (head ?? reason).replace(/\.$/, '');
 }
 
 function scheduleFor(crop: Crop, lastFrost: Date, firstFallFrost: Date | null): CropSchedule {
@@ -127,6 +142,9 @@ function scheduleFor(crop: Crop, lastFrost: Date, firstFallFrost: Date | null): 
     sowIndoors: sowIndoors ? formatUtcDate(sowIndoors) : null,
     transplant: transplant ? formatUtcDate(transplant) : null,
     directSow: directSow ? formatUtcDate(directSow) : null,
+    sowIndoorsWhyNot: sowIndoors ? null : shortReason(crop.noSowIndoorsReason),
+    transplantWhyNot: transplant ? null : shortReason(crop.noTransplantReason),
+    directSowWhyNot: directSow ? null : shortReason(crop.noDirectSowReason),
     harvestFrom,
     harvestStart: harvestStart ? formatUtcDate(harvestStart) : null,
     harvestEnd: harvestEnd ? formatUtcDate(harvestEnd) : null,
