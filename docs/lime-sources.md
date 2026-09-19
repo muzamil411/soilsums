@@ -27,20 +27,18 @@ so these were originally taken from search-engine summaries rather than the
 pages themselves. The September 2026 verification report opened all of them and
 reached the same figures, which is what moved them out of "unchecked":
 
-| Claim                                                                                                                                                                                                                                                         | Where it appears                                                       | Source to check                                                                                                                           |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| No single turf application above 100 lb per 1,000 sq ft; split larger corrections into two or more, 4-6 months apart                                                                                                                                          | `SINGLE_APPLICATION_LIMIT_LB_PER_1000SQFT`, the split callout, the MDX | Penn State Extension, _Liming Turfgrass Areas_ <https://extension.psu.edu/liming-turfgrass-areas>                                         |
-| No more than 50 lb per 1,000 sq ft in one application on established turf                                                                                                                                                                                     | `COLORADO.establishedTurfLimitLbPer1000SqFt`                           | CSU Extension, _Changing Soil pH_ (CMG GardenNotes #222)                                                                                  |
-| Increase the rate by about 20% where organic matter runs 4-5%                                                                                                                                                                                                 | `COLORADO.organicMatterUplift`                                         | as above                                                                                                                                  |
-| Halve the rate for hydrated or burned lime, and never exceed 10 lb per 1,000 sq ft                                                                                                                                                                            | `COLORADO.hydratedLimeLimitLbPer1000SqFt`                              | as above                                                                                                                                  |
-| Oregon expresses rates per 100 sq ft against CEC rather than texture; 5-10 lb per 100 sq ft worked in before planting, 5 lb per 100 sq ft stated as the rate for established lawns and plants; a clay at CEC 35 needs about twice a fine sandy loam at CEC 15 | the regional comparison table in `content/tools/lime-calculator.mdx`   | OSU Extension, EC 1478 _Soil Test Interpretation Guide_ and EM 9057 _Applying Lime to Raise Soil pH for Crop Production (Western Oregon)_ |
+| Claim                                                                                                                | Where it appears                                                       | Source                                                                                            |
+| -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| No single turf application above 100 lb per 1,000 sq ft; split larger corrections into two or more, 4-6 months apart | `SINGLE_APPLICATION_LIMIT_LB_PER_1000SQFT`, the split callout, the MDX | Penn State Extension, _Liming Turfgrass Areas_ <https://extension.psu.edu/liming-turfgrass-areas> |
+| No more than 50 lb per 1,000 sq ft in one application on established turf                                            | `COLORADO.establishedTurfLimitLbPer1000SqFt`                           | CSU Extension, _Changing Soil pH_ (CMG GardenNotes #222)                                          |
+| Increase the rate by about 20% where organic matter runs 4-5%                                                        | `COLORADO.organicMatterUplift`                                         | as above                                                                                          |
+| Halve the rate for hydrated or burned lime, and never exceed 10 lb per 1,000 sq ft                                   | `COLORADO.hydratedLimeLimitLbPer1000SqFt`                              | as above                                                                                          |
 
-The Oregon row remains the weakest of these. The verification report opened
-EM 9057 and notes two things worth acting on: OSU states its rates in tons per
-acre, which only becomes lb per 1,000 sq ft through a conversion the report did
-itself, and **EM 9057's Table 2 says explicitly that it should not be used for
-lime rate recommendations.** The comparison table on the page describes the
-_shape_ of Oregon's guidance rather than quoting a rate, which stays within
-that, but the column should be reviewed against the publication once. If it
-cannot be made accurate, cut it rather than soften it — the point of the table
-is that the sources genuinely differ, and it survives with two columns.
+No Oregon figure appears anywhere on the site. The verification report opened
+EM 9057 and found two problems with using it: OSU states rates in tons per
+acre, which only become lb per 1,000 sq ft through a conversion the report did
+itself, and **Table 2 of that publication says explicitly that it must not be
+used for lime rate recommendations.** The comparison table on the lime page now
+covers Kentucky and Colorado only. Oregon State is mentioned in prose, with a
+link, for its soil-test-led approach and with no numbers attached — which is
+all the publication supports. Nothing here is outstanding.

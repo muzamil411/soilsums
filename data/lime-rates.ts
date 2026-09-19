@@ -11,10 +11,11 @@
  * soil needs is its buffering capacity — how strongly it resists a pH change —
  * which is driven by clay content and organic matter and cannot be seen from a
  * pH reading. Published rates for the same texture differ several-fold between
- * regions because the soils behind them differ: Kentucky's table, Colorado's
- * cap on a single turf application and Oregon's CEC-based figures are not
- * reconcilable into one number. That is why each texture carries a range as
- * well as a midpoint, and why a soil test reporting buffer pH beats all of it.
+ * regions because the soils behind them differ. Kentucky publishes a rate per
+ * pH unit by texture; Colorado publishes a ceiling on a single application and
+ * no texture table at all. The two are not reconcilable into one number, which
+ * is why each texture carries a range as well as a midpoint, and why a soil
+ * test reporting buffer pH beats all of it.
  *
  * The calculator treats the requirement as linear in the pH change, which is
  * an approximation. It is reasonable over a change of about one unit and gets

@@ -154,10 +154,11 @@ export function LimeCalculator({ toolSlug }: { toolSlug: string }) {
           <Callout title="A soil test beats this calculator">
             <p>
               Published rates for the same soil texture vary several-fold between regions, because
-              the soils behind them do. Kentucky&rsquo;s table, Colorado&rsquo;s cap on a single
-              turf application and Oregon&rsquo;s CEC-based figures cannot be reconciled into one
-              number, and this calculator has to pick one. That regional spread — not a general
-              disclaimer — is why the figure above is a starting point.
+              the soils behind them do. Kentucky publishes a rate per pH unit by texture; Colorado
+              publishes a ceiling on what is safe in one application and no texture table at all.
+              Those cannot be reconciled into one number, and this calculator has to pick one. That
+              regional spread — not a general disclaimer — is why the figure above is a starting
+              point.
             </p>
             <p>
               What decides the answer for your soil is its buffering capacity, which a pH reading
