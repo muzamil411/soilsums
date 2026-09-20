@@ -21,7 +21,8 @@
     "verify-data": "tsx scripts/verify-data.ts",
     "content-report": "tsx scripts/content-report.ts",
     "seo-audit": "tsx scripts/seo-audit.ts",
-    "check": "npm run lint && npm run contrast-check && npm run content-report && npm run test && npm run build && npm run seo-audit"
+    "check": "npm run lint && npm run contrast-check && npm run content-report && npm run test && npm run build && npm run seo-audit",
+    "publish-next": "tsx scripts/publish-next.ts"
   },
   "dependencies": {
     "next": "^16.3.5",

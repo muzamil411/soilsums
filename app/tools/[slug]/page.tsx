@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { Container } from '@/components/layout/Container';
+import { RelatedArticles } from '@/components/blog/RelatedArticles';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { SectionRule } from '@/components/ui/SectionRule';
 import { SeedPacket } from '@/components/ui/SeedPacket';
@@ -73,6 +74,11 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
   const faqs = entry.frontmatter.faqs ?? [];
   const heading = entry.frontmatter.heading ?? entry.frontmatter.title;
 
+  // Articles this page should point at, so none of them is orphaned.
+  const articleSlugs = Array.isArray(entry.frontmatter.articles)
+    ? (entry.frontmatter.articles as string[])
+    : [];
+
   return (
     <>
       <JsonLd
@@ -124,6 +130,13 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
                 </li>
               ))}
             </ul>
+          </>
+        ) : null}
+
+        {articleSlugs.length > 0 ? (
+          <>
+            <SectionRule>Read more on this</SectionRule>
+            <RelatedArticles slugs={articleSlugs} />
           </>
         ) : null}
 
