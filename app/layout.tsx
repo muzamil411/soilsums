@@ -35,6 +35,12 @@ export const metadata: Metadata = {
   applicationName: site.name,
   authors: [{ name: site.author }],
   creator: site.author,
+  // Pinterest claims the domain by finding this tag in the head. It is a
+  // public verification token, not a secret, and Pinterest re-checks it, so it
+  // has to stay on every page rather than just the home page.
+  other: {
+    'p:domain_verify': '5f930dd0525a8c7c7dea73dd92bba526',
+  },
 };
 
 export const viewport: Viewport = {
