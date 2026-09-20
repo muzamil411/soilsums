@@ -1,9 +1,9 @@
-# Lime data: what is cited, and how well each claim is checked
+# Soil pH sources: what is cited, and how well each claim is checked
 
-The lime calculator is the one tool on the site that quotes four separate
-extension services by name, so this file records where each claim came from and
-how firmly it stands. `npm run verify-data` cannot express this — it only knows
-about the `verified` flag on data entries — so the prose claims live here.
+The lime calculator and the two soil pH articles quote several extension
+services by name, so this file records where each claim came from and how firmly
+it stands. `npm run verify-data` cannot express this — it only knows about the
+`verified` flag on data entries — so the prose claims live here.
 
 ## Verified
 
@@ -42,3 +42,28 @@ used for lime rate recommendations.** The comparison table on the lime page now
 covers Kentucky and Colorado only. Oregon State is mentioned in prose, with a
 link, for its soil-test-led approach and with no numbers attached — which is
 all the publication supports. Nothing here is outstanding.
+
+## Lowering pH — `content/blog/how-much-sulfur-to-lower-soil-ph.mdx`
+
+**Verified.** The elemental sulfur table is Table 1 of Ohio State University
+Extension, AGF-507 _Soil Acidification: How to Lower Soil pH_,
+<https://ohioline.osu.edu/factsheet/agf-507>. Opened and read by Muzamil Ali.
+Rates are lb per acre for the top six inches; the lb per 1,000 sq ft column is
+the publication's own instruction to divide by 43.56, and the arithmetic was
+checked against every cell.
+
+The publication's assumptions are on the page because a rate without them is
+not usable: CEC of 5, 10 and 20 meq/100 g for the sand, silt loam and clay
+columns, and **soils that are not calcareous**. Where free lime is present the
+acid is neutralised as fast as the microbes produce it, so sulfur may barely
+move pH at all — the page says so, because calcareous soils are common across
+the arid West and a reader there would otherwise buy sulfur for nothing.
+
+**Verified.** The 20 lb per 1,000 sq ft per-application cap is University of
+Wisconsin soil lab guidance, relayed through Extension Foundation Ask Extension,
+<https://ask.extension.org/kb/faq.php?id=902254>.
+
+**Removed.** Earlier drafts of this page carried a University of Maine figure of
+15 lb per 1,000 sq ft and a "10-15 lb for a one-unit drop" range. Both came from
+search-engine summaries rather than documents anyone had opened, and both are
+gone. Nothing on the page now rests on a source that was not read.

@@ -39,6 +39,8 @@ type Page = {
   twitterCard: string | null;
   schemaTypes: string[];
   h1Count: number;
+  /** Every same-site href in the body, for the broken-link check. */
+  internalHrefs: string[];
   imagesWithoutAlt: number;
   noIndex: boolean;
 };
@@ -104,6 +106,9 @@ function readPage(file: string): Page {
     twitterCard: attr(head, /<meta name="twitter:card" content="([^"]*)"/),
     schemaTypes,
     h1Count: (body.match(/<h1\b/g) ?? []).length,
+    internalHrefs: [...body.matchAll(/href="(\/[^"#?]*)"/g)].flatMap((match) =>
+      match[1] === undefined ? [] : [match[1]],
+    ),
     imagesWithoutAlt: imgTags.filter((tag) => !/\balt=/.test(tag)).length,
     noIndex: /<meta name="robots" content="[^"]*noindex/.test(head),
   };
@@ -208,6 +213,24 @@ for (const page of pages) {
   );
 }
 
+// A link to a route the export never built is a 404 that nothing else catches:
+// the build emits the anchor happily and only generates published routes. This
+// is the end-to-end check that the render-time degrading in mdx-components.tsx
+// actually worked.
+const builtRoutes = new Set(pages.map((page) => page.route));
+const STATIC_ASSET = /\.(png|jpe?g|svg|webp|avif|ico|txt|xml|json|css|js|pdf|woff2?)$/i;
+
+for (const page of pages) {
+  for (const href of new Set(page.internalHrefs)) {
+    if (STATIC_ASSET.test(href)) continue;
+    if (href.startsWith('/_next/')) continue;
+    const route = href.endsWith('/') ? href : `${href}/`;
+    if (!builtRoutes.has(route) && !existsSync(join(OUT, href.replace(/^\//, '')))) {
+      failures.push(`${page.route} links to ${href}, which the export did not build`);
+    }
+  }
+}
+
 console.log(`\n${pages.length} pages audited.`);
 
 if (notes.length > 0) {
@@ -222,5 +245,5 @@ if (failures.length > 0) {
 }
 
 console.log('\nEvery page has a unique title within 60 chars, a unique description within 155,');
-console.log('a canonical URL, Open Graph and Twitter tags, exactly one h1, and alt text on');
-console.log('every image.');
+console.log('a canonical URL, Open Graph and Twitter tags, exactly one h1, alt text on every');
+console.log('image, and no internal link to a route the export did not build.');

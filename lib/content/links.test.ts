@@ -1,70 +1,44 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { listContent, listPublished } from './mdx';
+import { isDraftArticleHref } from './draft-links';
+import { listContent } from './mdx';
 
 /**
- * A published page must not link to a draft one.
+ * Links between pages, checked at source level.
  *
- * `output: 'export'` only builds published routes, so a link from a live page
- * to a draft is a 404 for every reader who follows it — and it will not show up
- * in a build, because the build is perfectly happy to emit the anchor. This is
- * the check that would have caught it.
+ * The 404 risk itself is handled at render time: `mdx-components.tsx` degrades
+ * a link to an unpublished article into plain text, because articles publish in
+ * batches and a published one will always name several that are still drafts.
+ * The end-to-end check that no built page links to an unbuilt route lives in
+ * scripts/seo-audit.ts, which runs against out/ after the build.
+ *
+ * What is left here is the class of mistake the renderer cannot save you from:
+ * a link to a slug that does not exist at all, which degrades to nothing and
+ * silently loses the link forever.
  */
 describe('internal links', () => {
-  const draftSlugs = new Set(
-    listContent('blog')
-      .filter((entry) => entry.frontmatter.draft === true)
-      .map((entry) => entry.slug),
-  );
+  const articles = listContent('blog');
+  const known = new Set(articles.map((entry) => entry.slug));
+  const drafts = articles.filter((entry) => entry.frontmatter.draft === true);
 
-  const publishedPages = [
-    ...listPublished('blog'),
-    ...listPublished('tools'),
-    ...listPublished('crops'),
-  ];
-
-  it('has drafts to check against', () => {
-    expect(draftSlugs.size).toBeGreaterThan(0);
-    expect(publishedPages.length).toBeGreaterThan(0);
-  });
-
-  it('never links from a published page to a draft article', () => {
-    const offences: string[] = [];
-
-    for (const page of publishedPages) {
-      const source = readFileSync(page.filePath, 'utf8');
-      for (const match of source.matchAll(/\]\(\/blog\/([^/)]+)\/?\)/g)) {
-        const target = match[1];
-        if (target !== undefined && draftSlugs.has(target)) {
-          offences.push(`${page.kind}/${page.slug} links to draft /blog/${target}/`);
-        }
-      }
-    }
-
-    expect(offences, offences.join('\n')).toEqual([]);
-  });
+  function blogLinksIn(filePath: string): string[] {
+    const source = readFileSync(filePath, 'utf8');
+    return [...source.matchAll(/\]\(\/blog\/([^/)]+)\/?\)/g)].flatMap((match) =>
+      match[1] === undefined ? [] : [match[1]],
+    );
+  }
 
   it('never links to a blog slug that does not exist', () => {
-    const known = new Set(listContent('blog').map((entry) => entry.slug));
-    const offences: string[] = [];
-
-    for (const page of listContent('blog')) {
-      const source = readFileSync(page.filePath, 'utf8');
-      for (const match of source.matchAll(/\]\(\/blog\/([^/)]+)\/?\)/g)) {
-        const target = match[1];
-        if (target !== undefined && !known.has(target)) {
-          offences.push(`${page.slug} links to missing /blog/${target}/`);
-        }
-      }
-    }
-
+    const offences = articles.flatMap((page) =>
+      blogLinksIn(page.filePath)
+        .filter((slug) => !known.has(slug))
+        .map((slug) => `${page.slug} links to missing /blog/${slug}/`),
+    );
     expect(offences, offences.join('\n')).toEqual([]);
   });
 
   it('only names articles that exist in tool and crop frontmatter', () => {
-    const known = new Set(listContent('blog').map((entry) => entry.slug));
     const offences: string[] = [];
-
     for (const page of [...listContent('tools'), ...listContent('crops')]) {
       const named = page.frontmatter.articles;
       if (!Array.isArray(named)) continue;
@@ -72,7 +46,23 @@ describe('internal links', () => {
         if (!known.has(slug)) offences.push(`${page.kind}/${page.slug} names missing ${slug}`);
       }
     }
-
     expect(offences, offences.join('\n')).toEqual([]);
+  });
+
+  it('recognises a draft article href so the renderer can degrade it', () => {
+    const draft = drafts[0];
+    expect(draft, 'no drafts left to test against').toBeDefined();
+    expect(isDraftArticleHref(`/blog/${draft?.slug}/`)).toBe(true);
+    expect(isDraftArticleHref(`/blog/${draft?.slug}`)).toBe(true);
+  });
+
+  it('leaves published articles, tools, crops and external links alone', () => {
+    const live = articles.find((entry) => entry.frontmatter.draft !== true);
+    expect(live, 'no published articles to test against').toBeDefined();
+    expect(isDraftArticleHref(`/blog/${live?.slug}/`)).toBe(false);
+    expect(isDraftArticleHref('/tools/lime-calculator/')).toBe(false);
+    expect(isDraftArticleHref('/crops/tomato/')).toBe(false);
+    expect(isDraftArticleHref('/blog/')).toBe(false);
+    expect(isDraftArticleHref('https://example.com/blog/anything/')).toBe(false);
   });
 });
