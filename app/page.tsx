@@ -6,7 +6,7 @@ import { SeedPacket } from '@/components/ui/SeedPacket';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { pageMetadata } from '@/lib/seo/metadata';
 import { organizationSchema, websiteSchema } from '@/lib/seo/schema';
-import { toolCategories, tools, toolsByCategory, type ToolCategory } from '@/data/tools';
+import { toolCategories, toolsByCategory, type ToolCategory } from '@/data/tools';
 
 export const metadata: Metadata = pageMetadata({
   title: 'SoilSums — gardening calculators that give real numbers',
@@ -19,13 +19,6 @@ const categoryOrder: ToolCategory[] = [
   'soil-and-beds',
   'feeding-and-soil-health',
   'timing-and-planning',
-];
-
-const quickStart = [
-  'raised-bed-soil-calculator',
-  'mulch-calculator',
-  'fertilizer-calculator',
-  'plant-spacing-calculator',
 ];
 
 export default function HomePage() {
@@ -42,26 +35,16 @@ export default function HomePage() {
           plants fit, when to sow. Answers in imperial or metric, with the formula shown.
         </p>
 
-        <div className="panel mt-8">
-          <h2 className="font-display text-xl">Start here</h2>
-          <p className="text-ink/80 mt-1 text-sm">The four people reach for most.</p>
-          <ul className="mt-4 grid grid-cols-2 gap-3">
-            {quickStart.map((slug) => {
-              const tool = tools.find((candidate) => candidate.slug === slug);
-              if (!tool) return null;
-              return (
-                <li key={tool.slug}>
-                  <SeedPacket
-                    no={tool.no}
-                    title={tool.name}
-                    href={tool.published ? `/tools/${tool.slug}/` : undefined}
-                    compact
-                  />
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+        {/* A line rather than a panel of shortcuts. The four most-used tools
+            were repeated here as cards and again in the lists below, which cost
+            400px above the fold on a phone and pushed the first category
+            heading out of view. One sentence does the same job. */}
+        <p className="mt-4 max-w-xl">
+          Most people arrive for the{' '}
+          <Link href="/tools/raised-bed-soil-calculator/">raised bed soil calculator</Link> or the{' '}
+          <Link href="/tools/mulch-calculator/">mulch calculator</Link>. All twelve are below,
+          grouped by the job you are doing.
+        </p>
       </Container>
 
       <Container>
