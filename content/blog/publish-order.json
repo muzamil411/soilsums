@@ -1,25 +1,147 @@
 {
-  "comment": "Publishing order for npm run publish-next. Ranked by keyword difficulty first, then volume, then readiness, from docs/keyword-map.md. Tier 1 is KD Easy confirmed in Ahrefs; tier 2 has volume but no calculated KD; tier 3 has no measured volume for any candidate; tier 4 is held back until its yield figures are verified. The potting soil article is already live and is skipped rather than reordered.",
+  "comment": "Publishing order for npm run publish-next. Articles are ranked by keyword difficulty first, then volume, then readiness, from docs/keyword-map.md; tier 1 is KD Easy confirmed in Ahrefs, tier 2 has volume but no calculated KD, tier 3 has no measured volume, tier 4 is held until its yield figures are verified. Crop guides are ranked by how common the crop is in US home gardens, most grown first, because a guide for a crop nobody grows earns nothing however good it is. Already-live pages are skipped rather than reordered.",
   "order": [
-    { "slug": "what-the-three-numbers-on-fertilizer-mean", "tier": 1 },
-    { "slug": "what-to-fill-raised-garden-beds-with", "tier": 1 },
-    { "slug": "how-much-sulfur-to-lower-soil-ph", "tier": 1 },
-    { "slug": "why-is-my-compost-not-breaking-down", "tier": 1 },
-    { "slug": "how-often-should-you-fertilize-vegetables", "tier": 1 },
-    { "slug": "greens-vs-browns-in-compost", "tier": 1 },
-    { "slug": "how-much-potting-soil-a-container-needs", "tier": 1 },
-    { "slug": "how-deep-should-a-raised-bed-be", "tier": 2 },
-    { "slug": "when-to-apply-lime-to-garden-soil", "tier": 2 },
-    { "slug": "what-does-last-frost-date-mean", "tier": 2 },
-    { "slug": "how-does-square-foot-gardening-work", "tier": 2 },
-    { "slug": "growing-vegetables-in-5-gallon-buckets", "tier": 2 },
-    { "slug": "succession-planting-schedule", "tier": 2 },
-    { "slug": "planning-a-vegetable-garden-layout", "tier": 2 },
-    { "slug": "does-companion-planting-actually-work", "tier": 2 },
-    { "slug": "how-much-to-water-a-vegetable-garden", "tier": 3 },
-    { "slug": "starting-seeds-indoors-weeks-before-frost", "tier": 3 },
-    { "slug": "best-mulch-for-a-vegetable-garden", "tier": 3 },
-    { "slug": "when-to-overseed-a-lawn", "tier": 3 },
-    { "slug": "how-much-food-from-a-4x8-raised-bed", "tier": 4 }
+    {
+      "slug": "what-the-three-numbers-on-fertilizer-mean",
+      "tier": 1
+    },
+    {
+      "slug": "what-to-fill-raised-garden-beds-with",
+      "tier": 1
+    },
+    {
+      "slug": "how-much-sulfur-to-lower-soil-ph",
+      "tier": 1
+    },
+    {
+      "slug": "why-is-my-compost-not-breaking-down",
+      "tier": 1
+    },
+    {
+      "slug": "how-often-should-you-fertilize-vegetables",
+      "tier": 1
+    },
+    {
+      "slug": "greens-vs-browns-in-compost",
+      "tier": 1
+    },
+    {
+      "slug": "how-much-potting-soil-a-container-needs",
+      "tier": 1
+    },
+    {
+      "slug": "how-deep-should-a-raised-bed-be",
+      "tier": 2
+    },
+    {
+      "slug": "when-to-apply-lime-to-garden-soil",
+      "tier": 2
+    },
+    {
+      "slug": "what-does-last-frost-date-mean",
+      "tier": 2
+    },
+    {
+      "slug": "how-does-square-foot-gardening-work",
+      "tier": 2
+    },
+    {
+      "slug": "growing-vegetables-in-5-gallon-buckets",
+      "tier": 2
+    },
+    {
+      "slug": "succession-planting-schedule",
+      "tier": 2
+    },
+    {
+      "slug": "planning-a-vegetable-garden-layout",
+      "tier": 2
+    },
+    {
+      "slug": "does-companion-planting-actually-work",
+      "tier": 2
+    },
+    {
+      "slug": "how-much-to-water-a-vegetable-garden",
+      "tier": 3
+    },
+    {
+      "slug": "starting-seeds-indoors-weeks-before-frost",
+      "tier": 3
+    },
+    {
+      "slug": "best-mulch-for-a-vegetable-garden",
+      "tier": 3
+    },
+    {
+      "slug": "when-to-overseed-a-lawn",
+      "tier": 3
+    },
+    {
+      "slug": "how-much-food-from-a-4x8-raised-bed",
+      "tier": 4
+    }
+  ],
+  "crops": [
+    {
+      "slug": "onion"
+    },
+    {
+      "slug": "pea"
+    },
+    {
+      "slug": "radish"
+    },
+    {
+      "slug": "broccoli"
+    },
+    {
+      "slug": "corn"
+    },
+    {
+      "slug": "cabbage"
+    },
+    {
+      "slug": "kale"
+    },
+    {
+      "slug": "beet"
+    },
+    {
+      "slug": "garlic"
+    },
+    {
+      "slug": "cilantro"
+    },
+    {
+      "slug": "parsley"
+    },
+    {
+      "slug": "squash"
+    },
+    {
+      "slug": "watermelon"
+    },
+    {
+      "slug": "pumpkin"
+    },
+    {
+      "slug": "eggplant"
+    },
+    {
+      "slug": "cauliflower"
+    },
+    {
+      "slug": "strawberry"
+    },
+    {
+      "slug": "dill"
+    },
+    {
+      "slug": "sweet-potato"
+    },
+    {
+      "slug": "okra"
+    }
   ]
 }

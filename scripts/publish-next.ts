@@ -12,19 +12,26 @@
  * actually see it, not from when it was written.
  *
  * Usage:
- *   npm run publish-next -- 4        publish the next four
- *   npm run publish-next -- 4 --dry  show what would happen and change nothing
+ *   npm run publish-next -- 4            publish the next four articles
+ *   npm run publish-next -- --crops 5    publish the next five crop guides
+ *   npm run publish-next -- 4 --dry      show what would happen and change nothing
+ *
+ * Articles and crop guides have separate orders and separate batches, because
+ * they are ranked on different things: articles on keyword difficulty, crop
+ * guides on how commonly the crop is grown.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const BLOG_DIR = join(process.cwd(), 'content', 'blog');
+const CROPS_DIR = join(process.cwd(), 'content', 'crops');
 const ORDER_FILE = join(BLOG_DIR, 'publish-order.json');
 
-type OrderEntry = { slug: string; tier: number };
+type OrderEntry = { slug: string; tier?: number };
 
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry') || args.includes('--dry-run');
+const crops = args.includes('--crops');
 const countArg = args.find((arg) => /^\d+$/.test(arg));
 const count = countArg ? Number(countArg) : 1;
 
@@ -33,7 +40,13 @@ if (count < 1) {
   process.exit(1);
 }
 
-const order: OrderEntry[] = JSON.parse(readFileSync(ORDER_FILE, 'utf8')).order;
+const orderFile = JSON.parse(readFileSync(ORDER_FILE, 'utf8')) as {
+  order: OrderEntry[];
+  crops: OrderEntry[];
+};
+const order: OrderEntry[] = crops ? orderFile.crops : orderFile.order;
+const dir = crops ? CROPS_DIR : BLOG_DIR;
+const what = crops ? 'crop guide' : 'article';
 const today = new Date().toISOString().slice(0, 10);
 
 /**
@@ -42,7 +55,7 @@ const today = new Date().toISOString().slice(0, 10);
  * FAQs and produce an unreadable diff.
  */
 function publish(slug: string): 'published' | 'already-live' | 'missing' | 'malformed' {
-  const path = join(BLOG_DIR, `${slug}.mdx`);
+  const path = join(dir, `${slug}.mdx`);
   let source: string;
   try {
     source = readFileSync(path, 'utf8');
@@ -76,7 +89,7 @@ for (const entry of order) {
   if (published.length >= count) break;
   const result = publish(entry.slug);
   if (result === 'published') {
-    published.push(`${entry.slug}  (tier ${entry.tier})`);
+    published.push(entry.tier === undefined ? entry.slug : `${entry.slug}  (tier ${entry.tier})`);
   } else if (result === 'already-live') {
     skipped.push(`${entry.slug} — already live`);
   } else {
@@ -84,14 +97,15 @@ for (const entry of order) {
   }
 }
 
-console.log(dryRun ? `Dry run: would publish ${count}\n` : `Publishing ${count}\n`);
+const label = `${count} ${what}${count === 1 ? '' : 's'}`;
+console.log(dryRun ? `Dry run: would publish ${label}\n` : `Publishing ${label}\n`);
 
 for (const line of skipped) console.log(`  skipped   ${line}`);
 for (const line of problems) console.log(`  PROBLEM   ${line}`);
 for (const line of published) console.log(`  ${dryRun ? 'would be' : 'published'}  ${line}`);
 
 if (published.length < count) {
-  console.log(`\nOnly ${published.length} draft(s) left to publish.`);
+  console.log(`\nOnly ${published.length} ${what} draft(s) left to publish.`);
 }
 
 if (!dryRun && published.length > 0) {

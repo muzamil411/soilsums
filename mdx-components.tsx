@@ -1,7 +1,7 @@
 import type { MDXComponents } from 'mdx/types';
 import Link from 'next/link';
 import { Callout } from '@/components/ui/Callout';
-import { isDraftArticleHref } from '@/lib/content/draft-links';
+import { isDraftContentHref } from '@/lib/content/draft-links';
 
 /**
  * The App Router MDX convention: every .mdx file renders through these
@@ -16,11 +16,11 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     a: ({ href, children, ...props }) => {
       const target = typeof href === 'string' ? href : '';
 
-      // A link to an article that has not been published yet would 404, since
-      // the static export only builds published routes. The sentence still
-      // reads correctly without the anchor, and the link appears by itself
-      // once the target goes live.
-      if (isDraftArticleHref(target)) {
+      // A link to an article or crop guide that has not been published yet
+      // would 404, since the static export only builds published routes. The
+      // sentence still reads correctly without the anchor, and the link
+      // appears by itself once the target goes live.
+      if (isDraftContentHref(target)) {
         return <span {...props}>{children}</span>;
       }
 

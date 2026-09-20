@@ -49,6 +49,13 @@ export function CropFacts({ crop }: { crop: Crop }) {
     second?: string;
     /** A checked field, so the row can carry an estimate marker when unconfirmed. */
     field?: (typeof CHECKED_FIELDS)[number];
+    /**
+     * Puts the estimate marker on the second line instead of the value. The
+     * plants-per-square-foot row needs this: its headline figure is arithmetic
+     * from the spacing and is never an estimate, while the square foot
+     * gardening figure beside it may be.
+     */
+    markSecond?: boolean;
   }[] = [
     {
       label: 'Spacing between plants',
@@ -67,10 +74,13 @@ export function CropFacts({ crop }: { crop: Crop }) {
       label: 'Plants per square foot',
       value: perSquare(plantsPerSquareFoot(crop)),
       second:
-        crop.sfgPlantsPerSquare === null
-          ? undefined
-          : `${perSquare(crop.sfgPlantsPerSquare)}, square foot gardening method`,
+        crop.sfgPlantsPerSquare !== null
+          ? `${perSquare(crop.sfgPlantsPerSquare)}, square foot gardening method`
+          : unverified.has('sfgPlantsPerSquare')
+            ? 'No square foot gardening figure confirmed for this crop'
+            : 'Not named on the square foot gardening page',
       field: 'sfgPlantsPerSquare' as const,
+      markSecond: true,
     },
     { label: 'Sun', value: `${crop.sunHours}+ hours a day` },
     {
@@ -125,9 +135,21 @@ export function CropFacts({ crop }: { crop: Crop }) {
               <dt className="text-ink/80">{row.label}</dt>
               <dd className="tabular font-semibold">
                 {row.value}
-                {row.field && unverified.has(row.field) ? <Estimate /> : null}
+                {row.field && !row.markSecond && unverified.has(row.field) ? <Estimate /> : null}
                 {row.second ? (
-                  <span className="text-ink/75 block font-normal">{row.second}</span>
+                  <span className="text-ink/75 block font-normal">
+                    {row.second}
+                    {/* Only badge a figure that exists. Where the square foot
+                        gardening figure is simply absent, the line already says
+                        so and a marker reading "typical published value" would
+                        describe something that is not there. */}
+                    {row.field &&
+                    row.markSecond &&
+                    crop.sfgPlantsPerSquare !== null &&
+                    unverified.has(row.field) ? (
+                      <Estimate what="the square foot gardening figure" />
+                    ) : null}
+                  </span>
                 ) : null}
               </dd>
             </div>

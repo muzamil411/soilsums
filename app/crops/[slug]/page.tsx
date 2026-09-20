@@ -58,7 +58,7 @@ export default async function CropPage({ params }: { params: Promise<{ slug: str
   const entry = getContent('crops', slug);
   const Content = cropContent[slug];
 
-  if (!crop || !entry || !Content) {
+  if (!crop || !entry || !Content || entry.frontmatter.draft === true) {
     notFound();
   }
 
