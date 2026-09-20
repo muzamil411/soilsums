@@ -70,27 +70,12 @@ and badly as general advice. So it is worth knowing which number you are using.
 
 ## How many plants per square foot?
 
-| Per square      | Crops (SFG method)                                           |
-| --------------- | ------------------------------------------------------------ |
-| 16              | Radish                                                       |
-| 9               | Carrot, beet, spinach, onion, garlic, pea                    |
-| 4               | Lettuce, bush bean                                           |
-| 2               | Cucumber, trellised                                          |
-| 1               | Pepper, broccoli, cabbage, cauliflower, potato, sweet potato |
-| 1 per 2 squares | Tomato, eggplant, zucchini                                   |
+<SfgDensityTable grouped />
 
 The Cornell page does not name every crop. Where it is silent, the sensible fallback is the
 density the crop's own in-row spacing implies — which is arithmetic, not a recommendation:
 
-| Crop                      | In-row spacing | Implied per square foot |
-| ------------------------- | -------------- | ----------------------- |
-| Kale, okra                | 12 in          | 1                       |
-| Basil, parsley, dill      | 10 in          | about 1.4               |
-| Sweet corn                | 10 in          | about 1.4               |
-| Cilantro                  | 6 in           | 4                       |
-| Strawberry                | 15 in          | 1 per 2 squares         |
-| Winter squash, watermelon | 36 in          | 1 per 10 squares        |
-| Pumpkin                   | 48 in          | 1 per 17 squares        |
+<SfgFallbackTable />
 
 The bottom rows are where people go wrong. A zucchini planted one per square smothers everything
 around it and gets mildew from the lack of air. Those crops genuinely need several squares, and

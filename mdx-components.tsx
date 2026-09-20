@@ -1,6 +1,20 @@
 import type { MDXComponents } from 'mdx/types';
 import Link from 'next/link';
 import { Callout } from '@/components/ui/Callout';
+import { BedPlanTable } from '@/components/tools/tables/BedPlanTable';
+import { CompostMaterialTable } from '@/components/tools/tables/CompostMaterialTable';
+import { CropSpacingTable, SpacingGridTable } from '@/components/tools/tables/CropSpacingTable';
+import { CropWaterTable } from '@/components/tools/tables/CropWaterTable';
+import { CropYieldTable } from '@/components/tools/tables/CropYieldTable';
+import { GrassSeedRateTable } from '@/components/tools/tables/GrassSeedRateTable';
+import { LimeComparisonTable } from '@/components/tools/tables/LimeComparisonTable';
+import { LimeRateTable } from '@/components/tools/tables/LimeRateTable';
+import { PlantingOffsetTable } from '@/components/tools/tables/PlantingOffsetTable';
+import {
+  DirectSowOnlyTable,
+  IndoorSowingTable,
+} from '@/components/tools/tables/SeedStartingTables';
+import { SfgDensityTable, SfgFallbackTable } from '@/components/tools/tables/SfgDensityTable';
 import { isDraftContentHref } from '@/lib/content/draft-links';
 
 /**
@@ -43,6 +57,24 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </div>
     ),
     Callout,
+    // Tables generated from the data files. An agronomic figure that a data
+    // file covers is never written into Markdown by hand: that is how four
+    // tool pages ended up contradicting their own calculators, and
+    // lib/content/mdx-figures.test.ts now fails the build if it happens again.
+    BedPlanTable,
+    CompostMaterialTable,
+    CropSpacingTable,
+    CropWaterTable,
+    DirectSowOnlyTable,
+    CropYieldTable,
+    GrassSeedRateTable,
+    IndoorSowingTable,
+    LimeComparisonTable,
+    LimeRateTable,
+    PlantingOffsetTable,
+    SfgDensityTable,
+    SfgFallbackTable,
+    SpacingGridTable,
     ...components,
   };
 }

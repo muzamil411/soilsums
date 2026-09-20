@@ -79,25 +79,7 @@ So the useful output is a range, and the number to plan against is the low end.
 
 ## Typical yields per plant
 
-| Crop          | Low     | High    | Spacing |
-| ------------- | ------- | ------- | ------- |
-| Watermelon    | 10 lb   | 30 lb   | 36 in   |
-| Pumpkin       | 10 lb   | 25 lb   | 48 in   |
-| Winter squash | 10 lb   | 20 lb   | 36 in   |
-| Tomato        | 8 lb    | 15 lb   | 24 in   |
-| Zucchini      | 6 lb    | 12 lb   | 24 in   |
-| Cucumber      | 5 lb    | 10 lb   | 12 in   |
-| Eggplant      | 3 lb    | 6 lb    | 18 in   |
-| Potato        | 2 lb    | 5 lb    | 12 in   |
-| Pepper        | 2 lb    | 5 lb    | 18 in   |
-| Cabbage       | 2 lb    | 4 lb    | 15 in   |
-| Kale          | 1 lb    | 2 lb    | 12 in   |
-| Broccoli      | 0.75 lb | 1.5 lb  | 18 in   |
-| Lettuce       | 0.5 lb  | 1 lb    | 8 in    |
-| Onion         | 0.3 lb  | 0.7 lb  | 4 in    |
-| Bush bean     | 0.25 lb | 0.5 lb  | 4 in    |
-| Carrot        | 0.2 lb  | 0.35 lb | 3 in    |
-| Radish        | 0.03 lb | 0.06 lb | 2 in    |
+<CropYieldTable withSpacing />
 
 Yields are estimates; spacings are checked against extension sources. The
 [yield estimator](/tools/garden-yield-estimator/) applies these ranges to a plant count, and the
@@ -108,13 +90,14 @@ actually holds.
 
 Thirty-two square feet, planted for a household of two through one season:
 
-| Crop                 | Plants | Space used   | Low       | High      |
-| -------------------- | ------ | ------------ | --------- | --------- |
-| Tomato               | 4      | 16 sq ft     | 32 lb     | 60 lb     |
-| Zucchini             | 1      | 6 sq ft      | 6 lb      | 12 lb     |
-| Pepper               | 3      | 6 sq ft      | 6 lb      | 15 lb     |
-| Lettuce, two sowings | 12     | 4 sq ft      | 6 lb      | 12 lb     |
-| **Total**            |        | **32 sq ft** | **50 lb** | **99 lb** |
+<BedPlanTable
+  rows={[
+    { crop: 'tomato', plants: 4, squareFeet: 16 },
+    { crop: 'zucchini', plants: 1, squareFeet: 6 },
+    { crop: 'pepper', plants: 3, squareFeet: 6 },
+    { crop: 'lettuce', plants: 6, squareFeet: 4, harvests: 2, label: 'Lettuce, two sowings' },
+  ]}
+/>
 
 Fifty pounds is the number to plan around. That is a meaningful contribution to a household's
 vegetables through summer, and nothing like feeding it.
@@ -137,7 +120,7 @@ feet fills up faster than people expect once real spacings are applied — four 
 | Rarely worth it in a small bed | Why                                                            |
 | ------------------------------ | -------------------------------------------------------------- |
 | Sweet corn                     | Needs a block for pollination; a few plants pollinate badly    |
-| Pumpkins, winter squash        | 36–48 inch spacing for one or two fruit                        |
+| Pumpkins, winter squash        | One plant sprawls over several squares for one or two fruit    |
 | Main-crop potatoes             | Cheap to buy, bulky to grow; early varieties are a better case |
 | Onions, storage                | 4-inch spacing but months in the ground and cheap in shops     |
 | Cabbage                        | Large, slow, and inexpensive year round                        |

@@ -80,17 +80,20 @@ enough to generate heat.
 Here is why this is so easy to get wrong. The carbon-to-nitrogen ratios of common browns are far
 higher than most people assume:
 
-| Material              | C:N ratio | Published range |
-| --------------------- | --------- | --------------- |
-| Plain cardboard       | 580:1     | 560–600         |
-| Shredded newspaper    | 560:1     | 400–900         |
-| Sawdust               | 500:1     | 200–750         |
-| Wood chips            | 400:1     | 200–1,300       |
-| Straw                 | 75:1      | 48–150          |
-| Dry autumn leaves     | 60:1      | 30–80           |
-| Fresh grass clippings | 20:1      | 9–25            |
-| Coffee grounds        | 20:1      | 20              |
-| Chicken manure, fresh | 7:1       | 3–10            |
+<CompostMaterialTable
+  showCategory={false}
+  only={[
+    'cardboard',
+    'shredded-newspaper',
+    'sawdust',
+    'wood-chips',
+    'straw',
+    'dry-leaves',
+    'grass-clippings',
+    'coffee-grounds',
+    'chicken-manure',
+  ]}
+/>
 
 Figures from the [Cornell Waste Management Institute](https://cwmi.css.cornell.edu/chapter3.pdf)
 composting tables. Cornell's own wording is that these are "representative ranges, not universal
