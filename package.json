@@ -22,7 +22,8 @@
     "content-report": "tsx scripts/content-report.ts",
     "seo-audit": "tsx scripts/seo-audit.ts",
     "check": "npm run lint && npm run contrast-check && npm run content-report && npm run test && npm run build && npm run seo-audit",
-    "publish-next": "tsx scripts/publish-next.ts"
+    "publish-next": "tsx scripts/publish-next.ts",
+    "pins": "tsx scripts/generate-pins.tsx"
   },
   "dependencies": {
     "next": "^16.3.5",
