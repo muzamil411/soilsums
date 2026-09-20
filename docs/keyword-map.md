@@ -1,4 +1,4 @@
-# Keyword map — blog articles
+# Keyword map — blog articles and crop guides
 
 Chosen keyword, volume and difficulty are filled in from Muzamil's checks in
 Ahrefs' free Keyword Generator (US database, September 2026). The candidate
@@ -100,3 +100,47 @@ the splits above are applied.
    report never checked. It can still be written — honestly, as estimates, with
    the inflated competitor claims as the contrast — but it cannot assert
    pounds-per-plant as fact.
+
+
+---
+
+## Crop guide keywords
+
+The 30 crop guides each target one long-tail question. The 10 original guides
+were written before the article keywords were chosen; the 20 added in September
+2026 were checked against this map and against the tool pages before they went
+in, and four were re-pointed as a result.
+
+### The overlap audit, September 2026
+
+Twenty new crop questions were checked against the article keywords above and
+against the tool pages. Three were genuinely competing with
+`starting-seeds-indoors-weeks-before-frost`, whose schedule table answers them
+outright, and one with the planting date calculator. All four were re-pointed at
+a question only the crop page can own:
+
+| Crop        | Was                          | Now                                 | Why it had to move                                                                                        |
+| ----------- | ---------------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Parsley     | when to start parsley seeds  | why is parsley so slow to germinate | The seed-starting article's table answers the old question exactly. Germination is the crop's real search. |
+| Cauliflower | when to start cauliflower seeds | why is my cauliflower curd loose | Same table, same answer. The curd failure is what people actually look up and nothing else covers it.     |
+| Eggplant    | when to plant eggplant       | what temperature does eggplant need | The article covers both the 8-week count and the 50°F-nights condition. The temperature is the distinctive claim. |
+| Cabbage     | when to plant cabbage        | why do cabbage heads split          | Weaker overlap than the three above, but the article carries the 9-week figure and cabbage has no second timing condition. |
+
+**Left alone deliberately.** `when to plant peas` overlaps the seed-starting
+article by one row of one table, and the pea page's 45°F soil condition is
+enough differentiation. `when to plant garlic` looks like an overlap and is the
+opposite: garlic's autumn timing is the one thing the planting date calculator
+cannot compute, and the page's FAQ is "Why does garlic not get a date?".
+
+**No overlap found** for the ten `how far apart to plant X` questions. The plant
+spacing calculator targets tool intent, and its own table is organised by
+spacing distance rather than by crop, so it never competes for a crop-named
+phrase. `when to plant cilantro`, `when to plant dill`, `when to plant sweet
+potato slips` and `how long do radishes take to grow` are likewise clear.
+
+### The rule going forward
+
+A crop guide may not target a question that the seed-starting article's schedule
+table or the planting date calculator answers directly. Where the honest answer
+to "when do I plant this" is a frost offset, that belongs to the tool; the crop
+page takes the crop's characteristic failure or condition instead.
