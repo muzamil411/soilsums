@@ -97,6 +97,7 @@ function words(text: string): number {
  */
 const HEADLINE_OVERRIDES: Readonly<Record<string, string>> = {
   'tool-compost-ratio-calculator-b': 'Why not just average the C:N ratios?',
+  'tool-soil-volume-converter-b': 'How many cubic feet is a 25 quart bag?',
   'tool-grass-seed-calculator-a': 'How much grass seed for 1,000 square feet?',
   'tool-grass-seed-calculator-b': 'Why does overseeding need less seed than a new lawn?',
   'tool-lime-calculator-a': 'How much lime raises soil pH by one point?',

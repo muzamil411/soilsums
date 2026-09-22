@@ -10,6 +10,7 @@ import { PlantSpacingCalculator } from './PlantSpacingCalculator';
 import { PlantingDateCalculator } from './PlantingDateCalculator';
 import { PottingSoilCalculator } from './PottingSoilCalculator';
 import { RaisedBedSoilCalculator } from './RaisedBedSoilCalculator';
+import { SoilVolumeConverter } from './SoilVolumeConverter';
 import { SquareFootGardenPlanner } from './SquareFootGardenPlanner';
 
 export type ToolProps = {
@@ -43,4 +44,5 @@ export const toolComponents: Record<string, ToolComponent> = {
   'potting-soil-calculator': PottingSoilCalculator,
   'lime-calculator': LimeCalculator,
   'garden-yield-estimator': GardenYieldEstimator,
+  'soil-volume-converter': SoilVolumeConverter,
 };

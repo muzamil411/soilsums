@@ -41,7 +41,7 @@ export const tools: readonly Tool[] = [
     name: 'Raised bed soil calculator',
     summary: 'Cubic feet, cubic yards, liters and how many bags',
     category: 'soil-and-beds',
-    related: ['mulch-calculator', 'potting-soil-calculator', 'plant-spacing-calculator'],
+    related: ['mulch-calculator', 'potting-soil-calculator', 'soil-volume-converter'],
     published: true,
   },
   {
@@ -126,7 +126,7 @@ export const tools: readonly Tool[] = [
     name: 'Container potting soil calculator',
     summary: 'Dry quarts, gallons, cubic feet and liters per pot',
     category: 'soil-and-beds',
-    related: ['raised-bed-soil-calculator', 'mulch-calculator', 'garden-watering-calculator'],
+    related: ['soil-volume-converter', 'raised-bed-soil-calculator', 'mulch-calculator'],
     published: true,
   },
   {
@@ -145,6 +145,17 @@ export const tools: readonly Tool[] = [
     summary: 'A realistic harvest range for what you have planted',
     category: 'timing-and-planning',
     related: ['plant-spacing-calculator', 'square-foot-garden-planner', 'planting-date-calculator'],
+    published: true,
+  },
+  {
+    // Built in response to Search Console: four distinct queries in the first
+    // five days were people converting a bag size, with no page to land on.
+    no: 'No. 13',
+    slug: 'soil-volume-converter',
+    name: 'Soil volume converter',
+    summary: 'Dry quarts, cubic feet, liters and cubic yards, both ways',
+    category: 'soil-and-beds',
+    related: ['potting-soil-calculator', 'raised-bed-soil-calculator', 'mulch-calculator'],
     published: true,
   },
 ];

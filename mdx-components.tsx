@@ -1,6 +1,7 @@
 import type { MDXComponents } from 'mdx/types';
 import Link from 'next/link';
 import { Callout } from '@/components/ui/Callout';
+import { BagVolumeTable } from '@/components/tools/tables/BagVolumeTable';
 import { BedPlanTable } from '@/components/tools/tables/BedPlanTable';
 import { CompostMaterialTable } from '@/components/tools/tables/CompostMaterialTable';
 import { CropSpacingTable, SpacingGridTable } from '@/components/tools/tables/CropSpacingTable';
@@ -61,6 +62,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     // file covers is never written into Markdown by hand: that is how four
     // tool pages ended up contradicting their own calculators, and
     // lib/content/mdx-figures.test.ts now fails the build if it happens again.
+    BagVolumeTable,
     BedPlanTable,
     CompostMaterialTable,
     CropSpacingTable,
