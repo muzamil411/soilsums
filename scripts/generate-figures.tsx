@@ -527,6 +527,142 @@ const coverage = (
   </div>
 );
 
+/**
+ * Corn: a single row against a block, showing why one pollinates and the
+ * other does not.
+ *
+ * Corn is wind-pollinated and the failure mode — ears with scattered gaps —
+ * is invisible until harvest, so the reason is worth drawing rather than
+ * describing. Same plant count in both layouts.
+ */
+const cornBlock = (
+  <div
+    style={{
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      backgroundColor: paper,
+      padding: '36px 44px',
+    }}
+  >
+    <div style={{ fontFamily: 'Fraunces', fontWeight: 600, fontSize: 34, color: ink }}>
+      Why corn goes in a block, not a row
+    </div>
+    <div
+      style={{
+        fontFamily: 'Public Sans',
+        fontSize: 20,
+        color: ink,
+        opacity: 0.8,
+        marginTop: 8,
+        marginBottom: 26,
+      }}
+    >
+      {'Sixteen plants either way. Pollen falls from the tassels onto the silks below — it has to land on another plant to do any good.'}
+    </div>
+
+    <div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, marginRight: 30 }}>
+        <div style={{ display: 'flex', fontFamily: 'Public Sans', fontWeight: 600, fontSize: 24, color: radish, marginBottom: 14 }}>
+          One long row — poor pollination
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', width: 490 }}>
+          {Array.from({ length: 16 }).map((_, i) => (
+            <div key={i} style={{ display: 'flex', width: 18, height: 54, backgroundColor: radish, marginRight: 12, marginBottom: 10 }} />
+          ))}
+        </div>
+        <div style={{ display: 'flex', fontFamily: 'Public Sans', fontSize: 18, color: ink, opacity: 0.8, marginTop: 14, width: 470 }}>
+          {'Most pollen blows sideways past the row and lands on bare ground. Ears fill patchily.'}
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <div style={{ display: 'flex', fontFamily: 'Public Sans', fontWeight: 600, fontSize: 24, color: kale, marginBottom: 14 }}>
+          Four by four block — good pollination
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {Array.from({ length: 4 }).map((_, row) => (
+            <div key={row} style={{ display: 'flex', flexDirection: 'row', marginBottom: 12 }}>
+              {Array.from({ length: 4 }).map((__, col) => (
+                <div key={col} style={{ display: 'flex', width: 18, height: 40, backgroundColor: kale, marginRight: 26 }} />
+              ))}
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'flex', fontFamily: 'Public Sans', fontSize: 18, color: ink, opacity: 0.8, marginTop: 8, width: 420 }}>
+          {'Pollen from any plant falls among its neighbours. Ears fill completely.'}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+/** Watermelon, seed to cut, with the week each stage typically starts. */
+const MELON_STAGES = [
+  { weeks: 'Days 7-10', name: 'Germination', note: 'Slow below 70°F', fill: rule, text: ink },
+  { weeks: 'Weeks 2-4', name: 'Vining', note: 'Nitrogen matters here', fill: kale, text: paper },
+  { weeks: 'Weeks 5-7', name: 'Flowering', note: 'Male flowers first, and they drop', fill: kale, text: paper },
+  { weeks: 'Weeks 7-11', name: 'Fruit set and swelling', note: 'Water consistently', fill: '#3d6b52', text: paper },
+  { weeks: 'Weeks 10-14', name: 'Ripening', note: 'Ease off water; tendril dries', fill: radish, text: paper },
+] as const;
+
+const melonStages = (
+  <div
+    style={{
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      backgroundColor: paper,
+      padding: '38px 44px',
+    }}
+  >
+    <div style={{ fontFamily: 'Fraunces', fontWeight: 600, fontSize: 34, color: ink }}>
+      Watermelon, seed to cut
+    </div>
+    <div
+      style={{
+        fontFamily: 'Public Sans',
+        fontSize: 20,
+        color: ink,
+        opacity: 0.8,
+        marginTop: 8,
+        marginBottom: 26,
+      }}
+    >
+      {'A warm season runs faster and a cool one slower, but the order never changes.'}
+    </div>
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+      {MELON_STAGES.map((stage) => (
+        <div key={stage.name} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+          <div style={{ display: 'flex', width: 190, fontFamily: 'Public Sans', fontWeight: 600, fontSize: 21, color: ink }}>
+            {stage.weeks}
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              flex: 1,
+              backgroundColor: stage.fill,
+              color: stage.text,
+              padding: '12px 18px',
+            }}
+          >
+            <div style={{ display: 'flex', fontFamily: 'Public Sans', fontWeight: 600, fontSize: 23 }}>
+              {stage.name}
+            </div>
+            <div style={{ display: 'flex', fontFamily: 'Public Sans', fontSize: 18, opacity: 0.9 }}>
+              {stage.note}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
 async function main(): Promise<void> {
   const width = 1200;
   const height = 620;
@@ -567,6 +703,20 @@ async function main(): Promise<void> {
   console.log(
     `Wrote public/figures/cubic-yard-coverage-by-depth.webp (${(coverageWebp.length / 1024).toFixed(0)} kB, ${width}x560)`,
   );
+
+  for (const [name, element] of [
+    ['corn-block-planting', cornBlock],
+    ['watermelon-growing-stages', melonStages],
+  ] as const) {
+    const png = Buffer.from(
+      await new ImageResponse(element, { width, height: 560, fonts }).arrayBuffer(),
+    );
+    const webp = await sharp(png).webp({ quality: 90 }).toBuffer();
+    writeFileSync(join(OUT_DIR, `${name}.webp`), webp);
+    console.log(
+      `Wrote public/figures/${name}.webp (${(webp.length / 1024).toFixed(0)} kB, ${width}x560)`,
+    );
+  }
 }
 
 void main();

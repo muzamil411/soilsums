@@ -96,6 +96,7 @@ function words(text: string): number {
  * getting mangled, which is the point at which a human should write one.
  */
 const HEADLINE_OVERRIDES: Readonly<Record<string, string>> = {
+  'crop-corn-b': 'Why plant corn in a block, not a row?',
   'tool-compost-ratio-calculator-b': 'Why not just average the C:N ratios?',
   'tool-soil-volume-converter-b': 'How many cubic feet is a 25 quart bag?',
   'tool-grass-seed-calculator-a': 'How much grass seed for 1,000 square feet?',

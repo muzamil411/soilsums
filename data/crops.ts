@@ -1304,8 +1304,162 @@ export const crops: readonly Crop[] = [
     ],
     verified: false,
   },
+  // ---------------------------------------------------------------------
+  // Added September 2026 for the Batch 2 crop pages. None of these four is
+  // in the verification report, so every checked field is unverified and the
+  // pages carry the estimate marker on them. The figures are typical
+  // published ranges, expressed as a midpoint where the type requires a
+  // single number; docs/data-to-verify.md lists them for sourcing.
+  // ---------------------------------------------------------------------
+  {
+    slug: 'asparagus',
+    name: 'Asparagus',
+    scientificName: 'Asparagus officinalis',
+    type: 'vegetable',
+    spacingInches: 15,
+    rowSpacingInches: 48,
+    sfgPlantsPerSquare: null,
+    notes: [
+      'A perennial. A bed takes two to three years before a real harvest and then crops for fifteen to twenty years, so siting it well matters more than for anything annual.',
+      'Grown from one-year-old crowns rather than seed in almost every home garden. Seed adds a year.',
+    ],
+    sowIndoorsWeeksBeforeLastFrost: null,
+    transplantWeeksAfterLastFrost: -4,
+    directSowWeeksRelativeToLastFrost: null,
+    timingNote:
+      'Crowns go in early, while the soil is still cool and before growth starts. Harvest nothing in the planting year, little in the second, and a full cut from the third.',
+    noSowIndoorsReason: 'Not usually grown from seed — plant one-year-old crowns instead.',
+    noDirectSowReason: 'Not direct sown — crowns are planted in a trench, not seed in a drill.',
+    daysToMaturity: null,
+    sunHours: 8,
+    waterInchesPerWeek: 1,
+    soilPh: [6.5, 7],
+    fertilizerNote:
+      'Feed after the harvest window closes rather than during it, so the ferns can build reserves for next year.',
+    yieldPerPlantLb: [0.5, 1],
+    companionPlants: ['Tomato', 'Basil', 'Parsley'],
+    avoidPlanting: ['Onion', 'Garlic', 'Potato'],
+    commonProblems: [
+      'Harvesting too early in the bed\u2019s life',
+      'Asparagus beetle',
+      'Weeds in a permanent bed',
+      'Spears thinning late in the season',
+    ],
+    source: null,
+    verifiedFields: [],
+    verified: false,
+  },
+  {
+    slug: 'blueberry',
+    name: 'Blueberry',
+    scientificName: 'Vaccinium corymbosum',
+    type: 'fruit',
+    spacingInches: 60,
+    rowSpacingInches: 96,
+    sfgPlantsPerSquare: null,
+    notes: [
+      'Soil pH decides everything. Blueberries need strongly acid soil and will not take up iron above about pH 5.5, whatever else is done for them.',
+      'Most varieties crop far better with a second variety nearby for cross-pollination.',
+    ],
+    sowIndoorsWeeksBeforeLastFrost: null,
+    transplantWeeksAfterLastFrost: -4,
+    directSowWeeksRelativeToLastFrost: null,
+    timingNote:
+      'Planted as a container-grown or bare-root bush, in early spring while dormant or in autumn. A bush takes two to three years to crop properly and lives for decades.',
+    noSowIndoorsReason: 'Not grown from seed in a home garden — buy a two- or three-year-old bush.',
+    noDirectSowReason: 'Not sown from seed — a bush from a nursery fruits years sooner.',
+    daysToMaturity: null,
+    sunHours: 7,
+    waterInchesPerWeek: 1.5,
+    soilPh: [4.5, 5.5],
+    fertilizerNote:
+      'Use an acidifying fertilizer formulated for ericaceous plants. Never lime a blueberry, and avoid nitrate-based feeds, which they tolerate poorly.',
+    yieldPerPlantLb: [3, 10],
+    companionPlants: ['Strawberry', 'Thyme'],
+    avoidPlanting: ['Brassicas'],
+    commonProblems: [
+      'Yellow leaves with green veins from high pH',
+      'Birds taking the crop',
+      'Drying out in a container',
+      'No fruit without a pollination partner',
+    ],
+    source: null,
+    verifiedFields: [],
+    verified: false,
+  },
+  {
+    slug: 'marigold',
+    name: 'Marigold',
+    scientificName: 'Tagetes spp.',
+    type: 'herb',
+    spacingInches: 10,
+    rowSpacingInches: 12,
+    sfgPlantsPerSquare: null,
+    notes: [
+      'An annual in every climate, despite being widely searched for as a perennial. It self-seeds freely, which is what makes people think it came back.',
+      'French marigolds are compact and the usual companion planting choice; African marigolds are tall and grown for the flower.',
+    ],
+    sowIndoorsWeeksBeforeLastFrost: 6,
+    transplantWeeksAfterLastFrost: 0,
+    directSowWeeksRelativeToLastFrost: 0,
+    soilPh: [6, 7],
+    daysToMaturity: [45, 60],
+    sunHours: 6,
+    waterInchesPerWeek: 1,
+    fertilizerNote:
+      'Poor soil suits them. Rich or heavily fed ground gives large leafy plants and few flowers.',
+    yieldPerPlantLb: [0, 0],
+    companionPlants: ['Tomato', 'Pepper', 'Bush bean', 'Cucumber', 'Squash'],
+    // The "marigolds inhibit beans" claim is persistent folklore with no
+    // support worth citing, and it contradicted the bush bean entry, which
+    // names marigold as a companion. Dropped rather than carried on both
+    // sides; the marigold page says why.
+    avoidPlanting: [],
+    commonProblems: [
+      'Few flowers on rich soil',
+      'Slugs on young plants',
+      'Spider mites in hot, dry spells',
+      'Damping off if sown too wet',
+    ],
+    source: null,
+    verifiedFields: [],
+    verified: false,
+  },
+  {
+    slug: 'swiss-chard',
+    name: 'Swiss chard',
+    scientificName: 'Beta vulgaris subsp. vulgaris',
+    type: 'vegetable',
+    spacingInches: 9,
+    rowSpacingInches: 18,
+    sfgPlantsPerSquare: null,
+    notes: [
+      'A cut-and-come-again crop. One sowing crops for months if the outer leaves are taken and the growing point is left alone.',
+      'The same species as beetroot, bred for leaf and stalk instead of root.',
+    ],
+    sowIndoorsWeeksBeforeLastFrost: 5,
+    transplantWeeksAfterLastFrost: -2,
+    directSowWeeksRelativeToLastFrost: -2,
+    soilPh: [6, 7],
+    daysToMaturity: [50, 60],
+    sunHours: 6,
+    waterInchesPerWeek: 1,
+    fertilizerNote:
+      'A steady nitrogen supply keeps leaves coming. Side-dress once mid-season rather than feeding heavily at sowing.',
+    yieldPerPlantLb: [1, 2],
+    companionPlants: ['Bush bean', 'Onion', 'Cabbage'],
+    avoidPlanting: ['Beet', 'Spinach'],
+    commonProblems: [
+      'Leaf miner tunnels in the leaves',
+      'Bolting in a hot summer',
+      'Downy mildew in crowded plantings',
+      'Slugs on seedlings',
+    ],
+    source: null,
+    verifiedFields: [],
+    verified: false,
+  },
 ];
-
 export const cropSlugs = crops.map((crop) => crop.slug);
 
 export function getCrop(slug: string): Crop | undefined {

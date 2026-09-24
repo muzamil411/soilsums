@@ -1,4 +1,8 @@
 import type { ComponentType } from 'react';
+import Asparagus from './asparagus.mdx';
+import Blueberry from './blueberry.mdx';
+import Marigold from './marigold.mdx';
+import SwissChard from './swiss-chard.mdx';
 import Basil from './basil.mdx';
 import Bean from './bean.mdx';
 import Beet from './beet.mdx';
@@ -39,6 +43,10 @@ import Zucchini from './zucchini.mdx';
  * work — see content/blog/publish-order.json for the release order.
  */
 export const cropContent: Record<string, ComponentType> = {
+  'swiss-chard': SwissChard,
+  marigold: Marigold,
+  blueberry: Blueberry,
+  asparagus: Asparagus,
   tomato: Tomato,
   pepper: Pepper,
   cucumber: Cucumber,

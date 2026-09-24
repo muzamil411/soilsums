@@ -80,64 +80,34 @@
   ],
   "crops": [
     {
-      "slug": "onion"
-    },
-    {
-      "slug": "pea"
-    },
-    {
-      "slug": "radish"
-    },
-    {
-      "slug": "broccoli"
-    },
-    {
-      "slug": "corn"
-    },
-    {
-      "slug": "cabbage"
-    },
-    {
-      "slug": "kale"
-    },
-    {
-      "slug": "beet"
-    },
-    {
-      "slug": "garlic"
-    },
-    {
-      "slug": "cilantro"
-    },
-    {
-      "slug": "parsley"
-    },
-    {
-      "slug": "squash"
-    },
-    {
-      "slug": "watermelon"
-    },
-    {
-      "slug": "pumpkin"
-    },
-    {
-      "slug": "eggplant"
-    },
-    {
-      "slug": "cauliflower"
-    },
-    {
       "slug": "strawberry"
-    },
-    {
-      "slug": "dill"
     },
     {
       "slug": "sweet-potato"
     },
     {
-      "slug": "okra"
+      "slug": "asparagus"
+    },
+    {
+      "slug": "blueberry"
+    },
+    {
+      "slug": "onion"
+    },
+    {
+      "slug": "marigold"
+    },
+    {
+      "slug": "pea"
+    },
+    {
+      "slug": "corn"
+    },
+    {
+      "slug": "watermelon"
+    },
+    {
+      "slug": "swiss-chard"
     }
   ]
 }
