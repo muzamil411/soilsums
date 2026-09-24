@@ -421,6 +421,112 @@ const timeline = (
   </div>
 );
 
+/**
+ * The coverage relationship: one cubic yard, spread at three depths.
+ *
+ * The table gives 324 divided by depth and a reader has to picture it. Drawn
+ * to scale against each other, the trade-off is immediate — the same material
+ * is either a thin skin over a large area or a real depth over a small one.
+ *
+ * The rectangles are scaled by area so the comparison is honest: 324, 108 and
+ * 54 square feet in the same ratio on the page as on the ground.
+ */
+const COVERAGE = [
+  { depth: '1 inch deep', area: 324, use: 'A top-dressing' },
+  { depth: '3 inches deep', area: 108, use: 'A mulch layer' },
+  { depth: '6 inches deep', area: 54, use: 'Filling a bed' },
+] as const;
+
+const MAX_AREA = 324;
+const PLOT_W = 1040;
+const PLOT_H = 300;
+
+const coverage = (
+  <div
+    style={{
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      backgroundColor: paper,
+      padding: '38px 44px',
+    }}
+  >
+    <div style={{ fontFamily: 'Fraunces', fontWeight: 600, fontSize: 34, color: ink }}>
+      One cubic yard, spread three ways
+    </div>
+    <div
+      style={{
+        fontFamily: 'Public Sans',
+        fontSize: 20,
+        color: ink,
+        opacity: 0.8,
+        marginTop: 8,
+        marginBottom: 28,
+      }}
+    >
+      {"Areas drawn to scale against each other. A cubic yard covers 324 square feet divided by the depth in inches."}
+    </div>
+
+    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+      {COVERAGE.map((row, index) => {
+        const scale = Math.sqrt(row.area / MAX_AREA);
+        return (
+          <div
+            key={row.depth}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              width: PLOT_W / 3,
+              marginRight: index === COVERAGE.length - 1 ? 0 : 16,
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: Math.round((PLOT_W / 3 - 40) * scale),
+                height: Math.round(PLOT_H * scale),
+                backgroundColor: index === 1 ? radish : kale,
+                color: paper,
+                fontFamily: 'Public Sans',
+                fontWeight: 600,
+                fontSize: 26,
+              }}
+            >
+              {`${row.area} sq ft`}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    <div style={{ display: 'flex', flexDirection: 'row', marginTop: 18 }}>
+      {COVERAGE.map((row, index) => (
+        <div
+          key={row.depth}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: PLOT_W / 3,
+            marginRight: index === COVERAGE.length - 1 ? 0 : 16,
+          }}
+        >
+          <div style={{ display: 'flex', fontFamily: 'Public Sans', fontWeight: 600, fontSize: 22, color: ink }}>
+            {row.depth}
+          </div>
+          <div style={{ display: 'flex', fontFamily: 'Public Sans', fontSize: 18, color: ink, opacity: 0.75, marginTop: 4 }}>
+            {row.use}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
 async function main(): Promise<void> {
   const width = 1200;
   const height = 620;
@@ -451,6 +557,15 @@ async function main(): Promise<void> {
   writeFileSync(join(OUT_DIR, 'lime-timeline-autumn-to-spring.webp'), timelineWebp);
   console.log(
     `Wrote public/figures/lime-timeline-autumn-to-spring.webp (${(timelineWebp.length / 1024).toFixed(0)} kB, ${width}x560)`,
+  );
+
+  const coveragePng = Buffer.from(
+    await new ImageResponse(coverage, { width, height: 560, fonts }).arrayBuffer(),
+  );
+  const coverageWebp = await sharp(coveragePng).webp({ quality: 90 }).toBuffer();
+  writeFileSync(join(OUT_DIR, 'cubic-yard-coverage-by-depth.webp'), coverageWebp);
+  console.log(
+    `Wrote public/figures/cubic-yard-coverage-by-depth.webp (${(coverageWebp.length / 1024).toFixed(0)} kB, ${width}x560)`,
   );
 }
 

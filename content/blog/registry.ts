@@ -5,6 +5,7 @@ import GardenSoilVsPottingSoil from './garden-soil-vs-potting-soil-vs-topsoil.md
 import GreensVsBrownsInCompost from './greens-vs-browns-in-compost.mdx';
 import GrowingVegetablesIn5GallonBuckets from './growing-vegetables-in-5-gallon-buckets.mdx';
 import HowDeepShouldARaisedBedBe from './how-deep-should-a-raised-bed-be.mdx';
+import HowMuchIsAYardOfDirt from './how-much-is-a-yard-of-dirt.mdx';
 import HowToAddNitrogenToSoil from './how-to-add-nitrogen-to-soil.mdx';
 import HowToRaiseSoilPh from './how-to-raise-soil-ph.mdx';
 import HowDoesSquareFootGardeningWork from './how-does-square-foot-gardening-work.mdx';
@@ -19,7 +20,6 @@ import SuccessionPlantingSchedule from './succession-planting-schedule.mdx';
 import WhatDoesLastFrostDateMean from './what-does-last-frost-date-mean.mdx';
 import WhatTheThreeNumbersOnFertilizerMean from './what-the-three-numbers-on-fertilizer-mean.mdx';
 import WhatToFillRaisedGardenBedsWith from './what-to-fill-raised-garden-beds-with.mdx';
-import WhenToApplyLimeToGardenSoil from './when-to-apply-lime-to-garden-soil.mdx';
 import WhenToOverseedALawn from './when-to-overseed-a-lawn.mdx';
 import WhyIsMyCompostNotBreakingDown from './why-is-my-compost-not-breaking-down.mdx';
 
@@ -35,6 +35,7 @@ import WhyIsMyCompostNotBreakingDown from './why-is-my-compost-not-breaking-down
  * on would.
  */
 export const articleContent: Record<string, ComponentType> = {
+  'how-much-is-a-yard-of-dirt': HowMuchIsAYardOfDirt,
   'how-to-raise-soil-ph': HowToRaiseSoilPh,
   'how-to-add-nitrogen-to-soil': HowToAddNitrogenToSoil,
   'garden-soil-vs-potting-soil-vs-topsoil': GardenSoilVsPottingSoil,
@@ -55,7 +56,6 @@ export const articleContent: Record<string, ComponentType> = {
   'what-does-last-frost-date-mean': WhatDoesLastFrostDateMean,
   'what-the-three-numbers-on-fertilizer-mean': WhatTheThreeNumbersOnFertilizerMean,
   'what-to-fill-raised-garden-beds-with': WhatToFillRaisedGardenBedsWith,
-  'when-to-apply-lime-to-garden-soil': WhenToApplyLimeToGardenSoil,
   'when-to-overseed-a-lawn': WhenToOverseedALawn,
   'why-is-my-compost-not-breaking-down': WhyIsMyCompostNotBreakingDown,
 };
