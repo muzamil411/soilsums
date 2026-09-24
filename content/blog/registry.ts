@@ -6,6 +6,7 @@ import GreensVsBrownsInCompost from './greens-vs-browns-in-compost.mdx';
 import GrowingVegetablesIn5GallonBuckets from './growing-vegetables-in-5-gallon-buckets.mdx';
 import HowDeepShouldARaisedBedBe from './how-deep-should-a-raised-bed-be.mdx';
 import HowToAddNitrogenToSoil from './how-to-add-nitrogen-to-soil.mdx';
+import HowToRaiseSoilPh from './how-to-raise-soil-ph.mdx';
 import HowDoesSquareFootGardeningWork from './how-does-square-foot-gardening-work.mdx';
 import HowMuchFoodFromA4x8RaisedBed from './how-much-food-from-a-4x8-raised-bed.mdx';
 import HowMuchPottingSoilAContainerNeeds from './how-much-potting-soil-a-container-needs.mdx';
@@ -34,6 +35,7 @@ import WhyIsMyCompostNotBreakingDown from './why-is-my-compost-not-breaking-down
  * on would.
  */
 export const articleContent: Record<string, ComponentType> = {
+  'how-to-raise-soil-ph': HowToRaiseSoilPh,
   'how-to-add-nitrogen-to-soil': HowToAddNitrogenToSoil,
   'garden-soil-vs-potting-soil-vs-topsoil': GardenSoilVsPottingSoil,
   'best-mulch-for-a-vegetable-garden': BestMulchForAVegetableGarden,

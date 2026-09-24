@@ -295,6 +295,132 @@ const spectrum = (
   </div>
 );
 
+/**
+ * The liming timeline.
+ *
+ * The article's whole argument is that raising pH is a slow job planned in
+ * advance, and a curve says that faster than a paragraph does. Deliberately
+ * unnumbered on the vertical axis: how far pH moves depends on texture, buffer
+ * pH and rate, and putting a scale on it would imply a precision the page does
+ * not claim. The shape is the point.
+ */
+const MONTHS = [
+  { label: 'Sep', note: 'Lime applied', rise: 0.04 },
+  { label: 'Oct', note: '', rise: 0.14 },
+  { label: 'Nov', note: '', rise: 0.3 },
+  { label: 'Dec', note: 'Cold — little happens', rise: 0.37 },
+  { label: 'Jan', note: '', rise: 0.42 },
+  { label: 'Feb', note: '', rise: 0.55 },
+  { label: 'Mar', note: '', rise: 0.72 },
+  { label: 'Apr', note: 'Spring planting', rise: 0.86 },
+  { label: 'May', note: '', rise: 0.93 },
+  { label: 'Jun', note: 'Retest here', rise: 1 },
+] as const;
+
+const PLOT_HEIGHT = 250;
+
+const timeline = (
+  <div
+    style={{
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      backgroundColor: paper,
+      padding: '38px 44px',
+    }}
+  >
+    <div style={{ fontFamily: 'Fraunces', fontWeight: 600, fontSize: 34, color: ink }}>
+      Lime applied in autumn, ready for spring
+    </div>
+    <div
+      style={{
+        fontFamily: 'Public Sans',
+        fontSize: 20,
+        color: ink,
+        opacity: 0.8,
+        marginTop: 8,
+        marginBottom: 30,
+      }}
+    >
+      Soil pH rises over three to six months. How far it rises depends on your soil, so the
+      axis is deliberately unscaled.
+    </div>
+
+    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', height: PLOT_HEIGHT }}>
+      {MONTHS.map((month) => (
+        <div
+          key={month.label}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            flex: 1,
+            height: PLOT_HEIGHT,
+            marginRight: 6,
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              width: '100%',
+              height: Math.round(month.rise * PLOT_HEIGHT),
+              backgroundColor: month.note === 'Spring planting' ? radish : kale,
+            }}
+          />
+        </div>
+      ))}
+    </div>
+
+    <div style={{ display: 'flex', flexDirection: 'row', marginTop: 10 }}>
+      {MONTHS.map((month) => (
+        <div
+          key={month.label}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            flex: 1,
+            marginRight: 6,
+          }}
+        >
+          <div style={{ display: 'flex', fontFamily: 'Public Sans', fontWeight: 600, fontSize: 19, color: ink }}>
+            {month.label}
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              fontFamily: 'Public Sans',
+              fontSize: 15,
+              color: month.note === 'Spring planting' ? radish : ink,
+              opacity: month.note === 'Spring planting' ? 1 : 0.75,
+              textAlign: 'center',
+              marginTop: 4,
+            }}
+          >
+            {month.note}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div
+      style={{
+        display: 'flex',
+        marginTop: 26,
+        paddingTop: 18,
+        borderTop: `2px solid ${rule}`,
+        fontFamily: 'Public Sans',
+        fontSize: 20,
+        color: ink,
+      }}
+    >
+      {"There is no fast version of this curve. Lime spread in April is working on next year's garden, not this one."}
+    </div>
+  </div>
+);
+
 async function main(): Promise<void> {
   const width = 1200;
   const height = 620;
@@ -316,6 +442,15 @@ async function main(): Promise<void> {
   writeFileSync(join(OUT_DIR, 'nitrogen-release-rate-spectrum.webp'), spectrumWebp);
   console.log(
     `Wrote public/figures/nitrogen-release-rate-spectrum.webp (${(spectrumWebp.length / 1024).toFixed(0)} kB, ${width}x560)`,
+  );
+
+  const timelinePng = Buffer.from(
+    await new ImageResponse(timeline, { width, height: 560, fonts }).arrayBuffer(),
+  );
+  const timelineWebp = await sharp(timelinePng).webp({ quality: 90 }).toBuffer();
+  writeFileSync(join(OUT_DIR, 'lime-timeline-autumn-to-spring.webp'), timelineWebp);
+  console.log(
+    `Wrote public/figures/lime-timeline-autumn-to-spring.webp (${(timelineWebp.length / 1024).toFixed(0)} kB, ${width}x560)`,
   );
 }
 

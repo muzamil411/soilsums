@@ -118,6 +118,36 @@ export const MAX_RELIABLE_PH_CHANGE = 1.5;
 /** Practical pH bounds for the inputs. Soils outside this are exceptional. */
 export const PH_RANGE = { min: 3.5, max: 9 } as const;
 
+/**
+ * Wood ash as a liming material.
+ *
+ * From Iowa State University Extension and Outreach, "Using Wood Ashes in the
+ * Home Garden". Ash is a real liming material and a free one, but its strength
+ * is unknowable without a test: the calcium carbonate equivalent ranges from
+ * 25 to 59 percent against 90 to 95 for ground limestone, so the same pH
+ * change needs two to four times the weight.
+ *
+ * The application ceiling and the pH 7.0 cut-off are Iowa State's own, and
+ * both belong on any page that quotes the CCE figures.
+ */
+export const WOOD_ASH = {
+  /** Calcium carbonate equivalent, percent, low and high. */
+  cceRangePercent: [25, 59] as const,
+  /** What to assume when the ash has not been tested, which is normal. */
+  cceAssumedPercent: 50,
+  /** Ground limestone, for comparison. */
+  limestoneCcePercent: [90, 95] as const,
+  /** Weight of ash needed for the same effect as lime, low and high. */
+  timesMoreThanLime: [2, 4] as const,
+  /** Ceiling per application: about one five-gallon bucket. */
+  maxLbPer1000SqFt: 20,
+  /** Apply none at or above this soil pH. */
+  doNotApplyAbovePh: 7,
+  source:
+    'Iowa State University Extension and Outreach, Using Wood Ashes in the Home Garden: https://yardandgarden.extension.iastate.edu/encyclopedia/using-wood-ashes-home-garden',
+  verified: true,
+} as const;
+
 export function getLimeRate(texture: SoilTexture): LimeRate | undefined {
   return limeRates.find((rate) => rate.slug === texture);
 }
