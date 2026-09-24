@@ -137,6 +137,13 @@ export type Crop = {
   /** Explains any crop whose timing cannot be expressed as a frost offset. */
   readonly timingNote?: string;
   /**
+   * Wording for an offset that has a value but is published as a condition.
+   * Clemson puts marigolds out "after the last frost in spring" — which is
+   * zero weeks, and which tells a reader something a zero does not.
+   */
+  readonly transplantNote?: string;
+  readonly directSowNote?: string;
+  /**
    * Why a planting step does not apply, for each of the three that can be
    * null. A quick-facts table saying "Direct sow: —" tells the reader nothing;
    * these turn each blank into a short reason.
@@ -1386,6 +1393,8 @@ export const crops: readonly Crop[] = [
     // both rather than averaging to a figure neither gives.
     spacingInches: [12, 18],
     rowSpacingInches: [36, 60],
+    // Confirmed absent from the Cornell CALS square foot gardening page, which
+    // is itself the claim this field records.
     sfgPlantsPerSquare: null,
     notes: [
       'A perennial. Minnesota puts the first harvest two years after planting crowns, or three years from seed, and Maryland advises only a light cut in years two and three.',
@@ -1424,15 +1433,18 @@ export const crops: readonly Crop[] = [
     },
     extraSources: [
       {
+        institution: 'Cornell CALS',
+        title: 'Square Foot Gardening',
+        url: 'https://cals.cornell.edu/school-integrative-plant-science/school-sections/horticulture-section/outreach-and-extension/pandemic-vegetable-gardening/pandemic-vegetable-gardening-2021-archive/square-foot-gardening',
+      },
+      {
         institution: 'University of Maryland Extension',
         title: 'Growing Asparagus in a Home Garden',
         url: 'https://extension.umd.edu/resource/asparagus/',
       },
     ],
-    verifiedFields: ['spacingInches', 'rowSpacingInches'],
-    // Spacing is sourced; whether the Cornell square foot gardening page
-    // names this crop has not been checked, so the roll-up stays false.
-    verified: false,
+    verifiedFields: ['spacingInches', 'rowSpacingInches', 'sfgPlantsPerSquare'],
+    verified: true,
   },
   {
     slug: 'blueberry',
@@ -1444,17 +1456,24 @@ export const crops: readonly Crop[] = [
     // feet. 60 and 96 inches sit inside that spread.
     spacingInches: 60,
     rowSpacingInches: 96,
+    // Confirmed absent from the Cornell CALS square foot gardening page.
     sfgPlantsPerSquare: null,
     notes: [
       'Soil pH decides everything. Maryland gives 4.5 to 5.5, New Hampshire a tighter 4.5 to 5.0 and Minnesota a wider 4.0 to 5.5 — the disagreement is real and the safe target is the band they share.',
       'Most varieties crop far better with a second variety nearby for cross-pollination.',
+      'Maryland advises making pH adjustments about six months before planting — the single most consequential piece of timing on this crop.',
       'Minnesota puts large harvests two or three years after planting, with a bush reaching full size at eight to ten years.',
     ],
     sowIndoorsWeeksBeforeLastFrost: null,
-    transplantWeeksAfterLastFrost: -4,
+    // Deleted rather than estimated. Maryland gives no planting-time guidance
+    // at all, and Minnesota's late April to early May is a local calendar, not
+    // a frost offset — turning it into one would invent precision.
+    transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: null,
+    noTransplantReason:
+      'Planted in spring, not on a frost offset — bare-root stock ships at the right time to go straight in.',
     timingNote:
-      'Planted as a container-grown or bare-root bush, in early spring while dormant or in autumn. A bush takes two to three years to crop properly and lives for decades.',
+      'Plant in spring. Bare-root plants arrive at the appropriate time for planting, and a bush takes two to three years to crop properly. Any pH correction wants doing about six months before planting, so the ground is ready when the bush goes in.',
     noSowIndoorsReason: 'Not grown from seed in a home garden — buy a two- or three-year-old bush.',
     noDirectSowReason: 'Not sown from seed — a bush from a nursery fruits years sooner.',
     daysToMaturity: null,
@@ -1483,6 +1502,11 @@ export const crops: readonly Crop[] = [
     },
     extraSources: [
       {
+        institution: 'Cornell CALS',
+        title: 'Square Foot Gardening',
+        url: 'https://cals.cornell.edu/school-integrative-plant-science/school-sections/horticulture-section/outreach-and-extension/pandemic-vegetable-gardening/pandemic-vegetable-gardening-2021-archive/square-foot-gardening',
+      },
+      {
         institution: 'University of New Hampshire Extension',
         title: 'Growing Fruit: Highbush Blueberries',
         url: 'https://extension.unh.edu/resource/growing-fruit-highbush-blueberries-fact-sheet',
@@ -1493,10 +1517,8 @@ export const crops: readonly Crop[] = [
         url: 'https://extension.umn.edu/fruit/growing-blueberries-home-garden',
       },
     ],
-    verifiedFields: ['spacingInches', 'rowSpacingInches'],
-    // Spacing is sourced; whether the Cornell square foot gardening page
-    // names this crop has not been checked, so the roll-up stays false.
-    verified: false,
+    verifiedFields: ['spacingInches', 'rowSpacingInches', 'sfgPlantsPerSquare'],
+    verified: true,
   },
   {
     slug: 'marigold',
@@ -1510,6 +1532,8 @@ export const crops: readonly Crop[] = [
     // The factsheet spaces plants without distinguishing rows, so there is no
     // row figure to quote. An invented one would be worse than none.
     rowSpacingInches: null,
+    // Confirmed absent from the Cornell CALS square foot gardening page, which
+    // is itself the claim this field records.
     sfgPlantsPerSquare: null,
     spacingByType: [
       { name: 'French marigolds', inches: [8, 10] },
@@ -1521,8 +1545,16 @@ export const crops: readonly Crop[] = [
       'Clemson starts seed indoors four to six weeks before the intended planting date, and eight weeks for African types.',
     ],
     sowIndoorsWeeksBeforeLastFrost: 6,
+    // Clemson puts the ideal planting time after the last frost in spring, and
+    // direct sowing once the soil has warmed and the danger of frost has
+    // passed. Zero is the right encoding of both, and the reasons below carry
+    // the wording, because "after the last frost" tells a reader something a
+    // zero does not.
     transplantWeeksAfterLastFrost: 0,
+    transplantNote:
+      'Plant out after the last frost in spring — Clemson gives the condition rather than a week count.',
     directSowWeeksRelativeToLastFrost: 0,
+    directSowNote: 'Sow direct once the soil has warmed and the danger of frost has passed.',
     germinationDays: [5, 7],
     seedDepthInches: 0.25,
     soilPh: [5.5, 7],
@@ -1547,10 +1579,22 @@ export const crops: readonly Crop[] = [
       title: 'HGIC 1168, How to Grow and Care for Marigolds in South Carolina',
       url: 'https://hgic.clemson.edu/factsheet/marigold/',
     },
-    verifiedFields: ['spacingInches', 'sowIndoorsWeeksBeforeLastFrost'],
-    // Spacing is sourced; whether the Cornell square foot gardening page
-    // names this crop has not been checked, so the roll-up stays false.
-    verified: false,
+    extraSources: [
+      {
+        institution: 'Cornell CALS',
+        title: 'Square Foot Gardening',
+        url: 'https://cals.cornell.edu/school-integrative-plant-science/school-sections/horticulture-section/outreach-and-extension/pandemic-vegetable-gardening/pandemic-vegetable-gardening-2021-archive/square-foot-gardening',
+      },
+    ],
+    verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
+      'sfgPlantsPerSquare',
+      'sowIndoorsWeeksBeforeLastFrost',
+      'transplantWeeksAfterLastFrost',
+      'directSowWeeksRelativeToLastFrost',
+    ],
+    verified: true,
   },
   {
     slug: 'swiss-chard',
@@ -1564,7 +1608,10 @@ export const crops: readonly Crop[] = [
     // Utah puts rows 12 inches apart and Minnesota 18 to 30. A real
     // disagreement between a close-planted bed and a hoed row.
     rowSpacingInches: [12, 30],
-    sfgPlantsPerSquare: null,
+    // Cornell CALS lists chard with the leafy greens on a two-by-two grid,
+    // which is four to the square foot. Our earlier null said the page did not
+    // name it; it does.
+    sfgPlantsPerSquare: 4,
     notes: [
       'A cut-and-come-again crop. One sowing crops for months if the outer leaves are taken and the growing point is left alone.',
       'Maryland sows seed 2 inches apart in all directions, thins to 4 inches when seedlings are about 2 inches high, and allows 8 to 12 inches for larger plants.',
@@ -1602,6 +1649,11 @@ export const crops: readonly Crop[] = [
     },
     extraSources: [
       {
+        institution: 'Cornell CALS',
+        title: 'Square Foot Gardening',
+        url: 'https://cals.cornell.edu/school-integrative-plant-science/school-sections/horticulture-section/outreach-and-extension/pandemic-vegetable-gardening/pandemic-vegetable-gardening-2021-archive/square-foot-gardening',
+      },
+      {
         institution: 'University of Maryland Extension',
         title: 'Growing Swiss Chard in a Home Garden',
         url: 'https://extension.umd.edu/resource/swiss-chard/',
@@ -1612,10 +1664,13 @@ export const crops: readonly Crop[] = [
         url: 'https://extension.umn.edu/vegetables/growing-spinach-and-swiss-chard',
       },
     ],
-    verifiedFields: ['spacingInches', 'rowSpacingInches', 'directSowWeeksRelativeToLastFrost'],
-    // Spacing is sourced; whether the Cornell square foot gardening page
-    // names this crop has not been checked, so the roll-up stays false.
-    verified: false,
+    verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
+      'sfgPlantsPerSquare',
+      'directSowWeeksRelativeToLastFrost',
+    ],
+    verified: true,
   },
 ];
 export const cropSlugs = crops.map((crop) => crop.slug);

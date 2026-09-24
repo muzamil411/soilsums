@@ -146,12 +146,18 @@ export function CropFacts({ crop }: { crop: Crop }) {
     },
     {
       label: 'Transplant out',
-      value: weeks(crop.transplantWeeksAfterLastFrost, 'relative', crop.noTransplantReason),
+      // A sourced note beats the computed phrase where a publication gives a
+      // condition rather than a week count.
+      value:
+        crop.transplantNote ??
+        weeks(crop.transplantWeeksAfterLastFrost, 'relative', crop.noTransplantReason),
       isReason: crop.transplantWeeksAfterLastFrost === null,
     },
     {
       label: 'Direct sow',
-      value: weeks(crop.directSowWeeksRelativeToLastFrost, 'relative', crop.noDirectSowReason),
+      value:
+        crop.directSowNote ??
+        weeks(crop.directSowWeeksRelativeToLastFrost, 'relative', crop.noDirectSowReason),
       isReason: crop.directSowWeeksRelativeToLastFrost === null,
     },
   ];
