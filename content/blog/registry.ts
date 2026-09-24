@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import BestMulchForAVegetableGarden from './best-mulch-for-a-vegetable-garden.mdx';
 import DoesCompanionPlantingActuallyWork from './does-companion-planting-actually-work.mdx';
+import GardenSoilVsPottingSoil from './garden-soil-vs-potting-soil-vs-topsoil.mdx';
 import GreensVsBrownsInCompost from './greens-vs-browns-in-compost.mdx';
 import GrowingVegetablesIn5GallonBuckets from './growing-vegetables-in-5-gallon-buckets.mdx';
 import HowDeepShouldARaisedBedBe from './how-deep-should-a-raised-bed-be.mdx';
@@ -32,6 +33,7 @@ import WhyIsMyCompostNotBreakingDown from './why-is-my-compost-not-breaking-down
  * on would.
  */
 export const articleContent: Record<string, ComponentType> = {
+  'garden-soil-vs-potting-soil-vs-topsoil': GardenSoilVsPottingSoil,
   'best-mulch-for-a-vegetable-garden': BestMulchForAVegetableGarden,
   'does-companion-planting-actually-work': DoesCompanionPlantingActuallyWork,
   'greens-vs-browns-in-compost': GreensVsBrownsInCompost,

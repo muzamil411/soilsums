@@ -4,6 +4,23 @@ import { absoluteUrl, site } from './site';
 export const TITLE_MAX = 60;
 export const DESCRIPTION_MAX = 155;
 
+/** What the root layout's title template appends, e.g. " | SoilSums". */
+const BRAND_SUFFIX = ` | ${site.name}`;
+
+/**
+ * The brand goes in the title only when it fits.
+ *
+ * The root layout appends " | SoilSums" to every page title. That is fine for
+ * a short title and not for a long one: a comparison page whose own title is
+ * already in the fifties renders at 63 characters and gets truncated in the
+ * results, losing the end of the title rather than the brand. Where the suffix
+ * would push a title past the limit, this returns an absolute title and the
+ * template is skipped.
+ */
+function titleWithBrand(title: string): string | { absolute: string } {
+  return title.length + BRAND_SUFFIX.length > TITLE_MAX ? { absolute: title } : title;
+}
+
 /**
  * Builds a page's metadata: unique title and description, canonical URL, Open
  * Graph and Twitter card tags.
@@ -52,7 +69,7 @@ export function pageMetadata({
   ];
 
   return {
-    title,
+    title: titleWithBrand(title),
     description,
     alternates: { canonical },
     openGraph: {

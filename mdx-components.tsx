@@ -1,6 +1,7 @@
 import type { MDXComponents } from 'mdx/types';
 import Link from 'next/link';
 import { Callout } from '@/components/ui/Callout';
+import { Figure } from '@/components/ui/Figure';
 import { BagVolumeTable } from '@/components/tools/tables/BagVolumeTable';
 import { BedPlanTable } from '@/components/tools/tables/BedPlanTable';
 import { CompostMaterialTable } from '@/components/tools/tables/CompostMaterialTable';
@@ -58,6 +59,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </div>
     ),
     Callout,
+    Figure,
     // Tables generated from the data files. An agronomic figure that a data
     // file covers is never written into Markdown by hand: that is how four
     // tool pages ended up contradicting their own calculators, and
