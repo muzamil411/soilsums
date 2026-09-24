@@ -1,5 +1,11 @@
 import Link from 'next/link';
-import { CHECKED_FIELDS, plantsPerSquareFoot, type Crop } from '@/data/crops';
+import {
+  CHECKED_FIELDS,
+  inchesLabel,
+  plantsPerSquareFoot,
+  type Crop,
+  type Inches,
+} from '@/data/crops';
 import { DENSITY_NOTE, perSquare } from '@/lib/content/density';
 import { Estimate } from '@/components/ui/Estimate';
 import { inchesToCentimeters, poundsToKilograms } from '@/lib/calculators/shared/units';
@@ -7,6 +13,15 @@ import { toSignificant } from '@/lib/calculators/shared/round';
 
 function cm(inches: number): string {
   return `${Math.round(inchesToCentimeters(inches))} cm`;
+}
+
+/** "12 to 18 in (30 to 46 cm)", or the single-figure form. */
+function spacingLabel(value: Inches): string {
+  if (Array.isArray(value)) {
+    const [low, high] = value as readonly [number, number];
+    return `${inchesLabel(value)} (${Math.round(inchesToCentimeters(low))} to ${cm(high)})`;
+  }
+  return `${inchesLabel(value)} (${cm(value as number)})`;
 }
 
 function kg(pounds: number): string {
@@ -59,12 +74,19 @@ export function CropFacts({ crop }: { crop: Crop }) {
   }[] = [
     {
       label: 'Spacing between plants',
-      value: `${crop.spacingInches} in (${cm(crop.spacingInches)})`,
+      value: spacingLabel(crop.spacingInches),
+      second: crop.spacingByType
+        ? crop.spacingByType.map((type) => `${type.name} ${inchesLabel(type.inches)}`).join('; ')
+        : undefined,
       field: 'spacingInches' as const,
     },
     {
       label: 'Spacing between rows',
-      value: `${crop.rowSpacingInches} in (${cm(crop.rowSpacingInches)})`,
+      value:
+        crop.rowSpacingInches === null
+          ? 'No separate row figure is published for this crop'
+          : spacingLabel(crop.rowSpacingInches),
+      isReason: crop.rowSpacingInches === null,
       field: 'rowSpacingInches' as const,
     },
     {
@@ -85,9 +107,19 @@ export function CropFacts({ crop }: { crop: Crop }) {
     { label: 'Sun', value: `${crop.sunHours}+ hours a day` },
     {
       label: 'Water',
-      value: `${crop.waterInchesPerWeek} in a week (${Math.round(crop.waterInchesPerWeek * 25.4)} mm)`,
+      value:
+        crop.waterInchesPerWeek === null
+          ? (crop.waterNote ?? 'No weekly figure is published for this crop')
+          : `${crop.waterInchesPerWeek} in a week (${Math.round(crop.waterInchesPerWeek * 25.4)} mm)`,
+      isReason: crop.waterInchesPerWeek === null,
     },
-    { label: 'Soil pH', value: `${crop.soilPh[0]} to ${crop.soilPh[1]}` },
+    {
+      label: 'Soil pH',
+      value: crop.soilPh
+        ? `${crop.soilPh[0]} to ${crop.soilPh[1]}`
+        : (crop.soilPhNote ?? 'No range is published for this crop'),
+      isReason: crop.soilPh === null,
+    },
     {
       label: 'Days to maturity',
       value: crop.daysToMaturity
@@ -96,8 +128,16 @@ export function CropFacts({ crop }: { crop: Crop }) {
       isReason: crop.daysToMaturity === null,
     },
     {
-      label: 'Yield per plant',
-      value: `${crop.yieldPerPlantLb[0]} to ${crop.yieldPerPlantLb[1]} lb (${kg(crop.yieldPerPlantLb[0])} to ${kg(crop.yieldPerPlantLb[1])})`,
+      // Reported in whatever unit the source used. Asparagus is published per
+      // 10-foot row, and dividing that into a per-crown figure would invent
+      // one nobody gave.
+      label: crop.yieldPer10FtRowLb ? 'Yield per 10-foot row' : 'Yield per plant',
+      value: crop.yieldPer10FtRowLb
+        ? `${crop.yieldPer10FtRowLb[0]} to ${crop.yieldPer10FtRowLb[1]} lb a year (${kg(crop.yieldPer10FtRowLb[0])} to ${kg(crop.yieldPer10FtRowLb[1])})`
+        : crop.yieldPerPlantLb
+          ? `${crop.yieldPerPlantLb[0]} to ${crop.yieldPerPlantLb[1]} lb (${kg(crop.yieldPerPlantLb[0])} to ${kg(crop.yieldPerPlantLb[1])})`
+          : 'No yield figure is published for this crop',
+      isReason: !crop.yieldPer10FtRowLb && crop.yieldPerPlantLb === null,
     },
     {
       label: 'Start seeds indoors',

@@ -1,4 +1,4 @@
-import { crops, plantsPerSquareFoot } from '@/data/crops';
+import { crops, inchesLabel, plantsPerSquareFoot, spacingFor } from '@/data/crops';
 import { DENSITY_NOTE, perSquare } from '@/lib/content/density';
 import { DataTable, NotApplicable } from './DataTable';
 
@@ -79,14 +79,18 @@ function GroupedByDensity() {
 export function SfgFallbackTable() {
   const missing = [...crops]
     .filter((crop) => crop.sfgPlantsPerSquare === null)
-    .sort((a, b) => a.spacingInches - b.spacingInches || a.name.localeCompare(b.name));
+    .sort(
+      (a, b) =>
+        spacingFor(a.spacingInches) - spacingFor(b.spacingInches) ||
+        a.name.localeCompare(b.name),
+    );
 
   return (
     <DataTable columns={['Crop', 'In-row spacing', 'Implied per square foot']}>
       {missing.map((crop) => (
         <tr key={crop.slug}>
           <td>{crop.name}</td>
-          <td>{crop.spacingInches} in</td>
+          <td>{inchesLabel(crop.spacingInches)}</td>
           <td>{perSquare(plantsPerSquareFoot(crop))}</td>
         </tr>
       ))}

@@ -9,7 +9,7 @@ import { ResultTable } from '@/components/ui/ResultTable';
 import { SelectField } from '@/components/ui/SelectField';
 import { num, useToolState, type FieldKind } from '@/lib/hooks/useToolState';
 import { calculatePlantSpacing, type SpacingLayout } from '@/lib/calculators/plant-spacing';
-import { crops, getCrop } from '@/data/crops';
+import { crops, getCrop, spacingFor, inchesLabel } from '@/data/crops';
 import { CropDataSource } from './DataSource';
 
 const PARAMS = {
@@ -62,8 +62,11 @@ export function PlantSpacingCalculator({ toolSlug }: { toolSlug: string }) {
     const crop = crops.find((candidate) => candidate.slug === slug);
     if (!crop) return;
     const scale = imperial ? 1 : 2.54;
-    setValue('plantSpacing', String(Math.round(crop.spacingInches * scale * 10) / 10));
-    setValue('rowSpacing', String(Math.round(crop.rowSpacingInches * scale * 10) / 10));
+    const plantInches = spacingFor(crop.spacingInches);
+    const rowInches =
+      crop.rowSpacingInches === null ? plantInches : spacingFor(crop.rowSpacingInches);
+    setValue('plantSpacing', String(Math.round(plantInches * scale * 10) / 10));
+    setValue('rowSpacing', String(Math.round(rowInches * scale * 10) / 10));
   }
 
   const result = useMemo(
@@ -164,7 +167,7 @@ export function PlantSpacingCalculator({ toolSlug }: { toolSlug: string }) {
             { value: '', label: 'Choose a crop to fill in its spacing' },
             ...crops.map((crop) => ({
               value: crop.slug,
-              label: `${crop.name} — ${crop.spacingInches} in apart`,
+              label: `${crop.name} — ${inchesLabel(crop.spacingInches)} apart`,
             })),
           ]}
         />

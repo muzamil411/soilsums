@@ -1,4 +1,4 @@
-import { crops } from '@/data/crops';
+import { crops, inchesLabel } from '@/data/crops';
 import { DataTable } from './DataTable';
 
 /**
@@ -10,7 +10,13 @@ import { DataTable } from './DataTable';
  * what keeps that true after the next data correction.
  */
 export function CropYieldTable({ withSpacing = false }: { withSpacing?: boolean }) {
-  const ranked = [...crops].sort(
+  // Per-plant yields only: a crop published per row of bed belongs in a
+  // different table, not converted into this one.
+  const ranked = crops
+    .filter((crop): crop is typeof crop & { yieldPerPlantLb: readonly [number, number] } =>
+      crop.yieldPerPlantLb !== null,
+    )
+    .sort(
     (a, b) => b.yieldPerPlantLb[1] - a.yieldPerPlantLb[1] || a.name.localeCompare(b.name),
   );
 
@@ -25,7 +31,7 @@ export function CropYieldTable({ withSpacing = false }: { withSpacing?: boolean 
           <td>{crop.name}</td>
           <td>{crop.yieldPerPlantLb[0]} lb</td>
           <td>{crop.yieldPerPlantLb[1]} lb</td>
-          {withSpacing ? <td>{crop.spacingInches} in</td> : null}
+          {withSpacing ? <td>{inchesLabel(crop.spacingInches)}</td> : null}
         </tr>
       ))}
     </DataTable>

@@ -9,7 +9,7 @@
  * how attentively the garden is watered and picked, and a single number would
  * imply a precision that does not exist.
  */
-import { getCrop, plantsPerRowFoot, type Crop } from '@/data/crops';
+import { getCrop, plantsPerRowFoot, type Crop, spacingFor } from '@/data/crops';
 import { lengthToFeet, poundsToKilograms, type UnitSystem } from './shared/units';
 import { round, toSignificant } from './shared/round';
 import {
@@ -105,12 +105,13 @@ export function calculateGardenYield(input: GardenYieldInput): Calculation<Garde
     const rawPlants = plantsFromEntry(crop, entry, units);
     // Part of a plant harvests nothing, so a row is worth whole plants only.
     const plants = entry.mode === 'plants' ? entry.quantity : Math.floor(rawPlants);
-    const [low, high] = crop.yieldPerPlantLb;
+    // Crops with no published per-plant yield are filtered out before here.
+    const [low, high] = crop.yieldPerPlantLb ?? [0, 0];
 
     const notes: string[] = [];
     if (entry.mode === 'row-length' && plants === 0) {
       notes.push(
-        `At ${crop.spacingInches} inch spacing, that row is too short to hold even one ${crop.name.toLowerCase()} plant.`,
+        `At ${spacingFor(crop.spacingInches)} inch spacing, that row is too short to hold even one ${crop.name.toLowerCase()} plant.`,
       );
     }
     if (crop.daysToMaturity === null) {

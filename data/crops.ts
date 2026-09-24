@@ -42,7 +42,38 @@ export type CropType = 'vegetable' | 'herb' | 'fruit';
 export type CropSource = {
   readonly institution: string;
   readonly url: string;
+  /** The publication's own title, where a crop cites more than one. */
+  readonly title?: string;
 };
+
+/**
+ * Inches, or a low-high pair where published sources genuinely disagree.
+ *
+ * Extension figures differ because the publications are written for different
+ * soils and climates: Minnesota spaces asparagus crowns at 12 inches and
+ * Maryland at 18. Averaging them invents a figure neither source gives, and
+ * picking one hides a real disagreement, so the pair is stored and the page
+ * shows both with their sources.
+ */
+export type Inches = number | readonly [number, number];
+
+/**
+ * The single figure a calculator works from when a crop's spacing is a range.
+ *
+ * The wide end, deliberately. A spacing calculator that takes the narrow end
+ * plants too densely, and crowding is the harder mistake to undo — you cannot
+ * move a crown once the bed is established.
+ */
+export function spacingFor(value: Inches): number {
+  return Array.isArray(value) ? (value as readonly [number, number])[1] : (value as number);
+}
+
+/** "12 to 18 in", or "15 in" for a single figure. */
+export function inchesLabel(value: Inches): string {
+  return Array.isArray(value)
+    ? `${(value as readonly [number, number])[0]} to ${(value as readonly [number, number])[1]} in`
+    : `${value as number} in`;
+}
 
 /**
  * The fields the verification report checked. Anything outside this list was
@@ -65,10 +96,14 @@ export type Crop = {
   readonly scientificName: string;
   readonly type: CropType;
 
-  /** In-row spacing between plants, inches. */
-  readonly spacingInches: number;
-  /** Spacing between rows, inches. */
-  readonly rowSpacingInches: number;
+  /** In-row spacing between plants. A pair where sources disagree. */
+  readonly spacingInches: Inches;
+  /**
+   * Spacing between rows. Null where no source gives one separately — the
+   * marigold factsheet spaces plants without distinguishing rows, and an
+   * invented row figure would be worse than none.
+   */
+  readonly rowSpacingInches: Inches | null;
   /**
    * Plants per square under the square foot gardening METHOD, as described by
    * Cornell CALS. This is Mel Bartholomew's convention — a way of laying out an
@@ -112,11 +147,32 @@ export type Crop = {
 
   readonly daysToMaturity: readonly [number, number] | null;
   readonly sunHours: number;
-  readonly waterInchesPerWeek: number;
-  readonly soilPh: readonly [number, number];
+  /** Inches per week. Null where no source quantifies it. */
+  readonly waterInchesPerWeek: number | null;
+  /** Said in words where a source declines to give a number. */
+  readonly waterNote?: string;
+  /** Null where the only sourced statement is a floor, carried in soilPhNote. */
+  readonly soilPh: readonly [number, number] | null;
+  readonly soilPhNote?: string;
   readonly fertilizerNote: string;
-  /** Pounds of harvest per plant, low to high, for a home garden. */
-  readonly yieldPerPlantLb: readonly [number, number];
+  /** Pounds of harvest per plant, low to high. Null where sources give another unit. */
+  readonly yieldPerPlantLb: readonly [number, number] | null;
+  /**
+   * Some crops are only ever reported per length of row — asparagus is given
+   * as pounds per 10-foot row, not per crown, and converting it to per-plant
+   * would invent a figure the source does not give.
+   */
+  readonly yieldPer10FtRowLb?: readonly [number, number];
+  /** Days from sowing to emergence, where a source gives it. */
+  readonly germinationDays?: readonly [number, number];
+  /** How deep to sow, inches. */
+  readonly seedDepthInches?: number;
+  /**
+   * Spacing that differs by variety group, where one figure would mislead:
+   * French marigolds at 8-10 inches and African at 12-16 are far enough apart
+   * to matter.
+   */
+  readonly spacingByType?: readonly { readonly name: string; readonly inches: Inches }[];
 
   readonly companionPlants: readonly string[];
   readonly avoidPlanting: readonly string[];
@@ -124,6 +180,8 @@ export type Crop = {
 
   /** The page the checked fields were confirmed against, null if none was found. */
   readonly source: CropSource | null;
+  /** Further publications, where a figure needed more than one. */
+  readonly extraSources?: readonly CropSource[];
   /** Which of CHECKED_FIELDS are confirmed against `source`. */
   readonly verifiedFields: readonly CheckedField[];
   /** True only when every applicable checked field is in `verifiedFields`. */
@@ -140,7 +198,13 @@ export type Crop = {
  * which is why the crop pages show the row spacing next to it.
  */
 export function plantsPerSquareFoot(crop: Pick<Crop, 'spacingInches'>): number {
-  return Math.round((144 / (crop.spacingInches * crop.spacingInches)) * 100) / 100;
+  const inches = spacingFor(crop.spacingInches);
+  return Math.round((144 / (inches * inches)) * 100) / 100;
+}
+
+/** Every publication behind a crop's figures, in citation order. */
+export function cropSources(crop: Crop): readonly CropSource[] {
+  return crop.source ? [crop.source, ...(crop.extraSources ?? [])] : [];
 }
 
 /** Whether one checked field is confirmed, for the estimate markers on a page. */
@@ -1316,27 +1380,35 @@ export const crops: readonly Crop[] = [
     name: 'Asparagus',
     scientificName: 'Asparagus officinalis',
     type: 'vegetable',
-    spacingInches: 15,
-    rowSpacingInches: 48,
+    // Minnesota spaces crowns at 12 inches in furrows 3 feet apart; Maryland
+    // at 18 inches in rows 4 to 5 feet apart. Both are real recommendations
+    // for their own conditions, so the range is stored and the page names
+    // both rather than averaging to a figure neither gives.
+    spacingInches: [12, 18],
+    rowSpacingInches: [36, 60],
     sfgPlantsPerSquare: null,
     notes: [
-      'A perennial. A bed takes two to three years before a real harvest and then crops for fifteen to twenty years, so siting it well matters more than for anything annual.',
+      'A perennial. Minnesota puts the first harvest two years after planting crowns, or three years from seed, and Maryland advises only a light cut in years two and three.',
       'Grown from one-year-old crowns rather than seed in almost every home garden. Seed adds a year.',
+      'Maryland also describes a wide bed of three rows with plants 18 inches apart in every direction, which suits a raised bed better than a single furrow.',
     ],
     sowIndoorsWeeksBeforeLastFrost: null,
-    transplantWeeksAfterLastFrost: -4,
+    transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: null,
     timingNote:
-      'Crowns go in early, while the soil is still cool and before growth starts. Harvest nothing in the planting year, little in the second, and a full cut from the third.',
+      'Crowns go in during spring as soon as the soil is workable. Neither source expresses this as a frost offset — Minnesota gives a local window of early May to early June — so no week count is quoted here.',
     noSowIndoorsReason: 'Not usually grown from seed — plant one-year-old crowns instead.',
+    noTransplantReason:
+      'Not transplanted on a frost schedule — crowns go into a trench in spring, once the ground can be worked.',
     noDirectSowReason: 'Not direct sown — crowns are planted in a trench, not seed in a drill.',
     daysToMaturity: null,
-    sunHours: 8,
+    sunHours: 6,
     waterInchesPerWeek: 1,
     soilPh: [6.5, 7],
     fertilizerNote:
       'Feed after the harvest window closes rather than during it, so the ferns can build reserves for next year.',
-    yieldPerPlantLb: [0.5, 1],
+    yieldPerPlantLb: null,
+    yieldPer10FtRowLb: [3, 4],
     companionPlants: ['Tomato', 'Basil', 'Parsley'],
     avoidPlanting: ['Onion', 'Garlic', 'Potato'],
     commonProblems: [
@@ -1345,8 +1417,21 @@ export const crops: readonly Crop[] = [
       'Weeds in a permanent bed',
       'Spears thinning late in the season',
     ],
-    source: null,
-    verifiedFields: [],
+    source: {
+      institution: 'University of Minnesota Extension',
+      title: 'Growing asparagus in home gardens',
+      url: 'https://extension.umn.edu/vegetables/growing-asparagus',
+    },
+    extraSources: [
+      {
+        institution: 'University of Maryland Extension',
+        title: 'Growing Asparagus in a Home Garden',
+        url: 'https://extension.umd.edu/resource/asparagus/',
+      },
+    ],
+    verifiedFields: ['spacingInches', 'rowSpacingInches'],
+    // Spacing is sourced; whether the Cornell square foot gardening page
+    // names this crop has not been checked, so the roll-up stays false.
     verified: false,
   },
   {
@@ -1354,12 +1439,16 @@ export const crops: readonly Crop[] = [
     name: 'Blueberry',
     scientificName: 'Vaccinium corymbosum',
     type: 'fruit',
+    // Maryland gives 4 to 5 feet in the row and 6 to 8 feet between rows, New
+    // Hampshire at least 5 feet in rows 8 to 10 feet apart, Minnesota about 3
+    // feet. 60 and 96 inches sit inside that spread.
     spacingInches: 60,
     rowSpacingInches: 96,
     sfgPlantsPerSquare: null,
     notes: [
-      'Soil pH decides everything. Blueberries need strongly acid soil and will not take up iron above about pH 5.5, whatever else is done for them.',
+      'Soil pH decides everything. Maryland gives 4.5 to 5.5, New Hampshire a tighter 4.5 to 5.0 and Minnesota a wider 4.0 to 5.5 — the disagreement is real and the safe target is the band they share.',
       'Most varieties crop far better with a second variety nearby for cross-pollination.',
+      'Minnesota puts large harvests two or three years after planting, with a bush reaching full size at eight to ten years.',
     ],
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: -4,
@@ -1369,12 +1458,16 @@ export const crops: readonly Crop[] = [
     noSowIndoorsReason: 'Not grown from seed in a home garden — buy a two- or three-year-old bush.',
     noDirectSowReason: 'Not sown from seed — a bush from a nursery fruits years sooner.',
     daysToMaturity: null,
-    sunHours: 7,
-    waterInchesPerWeek: 1.5,
+    sunHours: 8,
+    // None of the three publications gives a weekly figure. They say to water
+    // consistently from blossom through harvest, which is what the page says.
+    waterInchesPerWeek: null,
+    waterNote:
+      'Water consistently from blossom through harvest. None of the sourced publications gives a weekly figure.',
     soilPh: [4.5, 5.5],
     fertilizerNote:
       'Use an acidifying fertilizer formulated for ericaceous plants. Never lime a blueberry, and avoid nitrate-based feeds, which they tolerate poorly.',
-    yieldPerPlantLb: [3, 10],
+    yieldPerPlantLb: [6, 8],
     companionPlants: ['Strawberry', 'Thyme'],
     avoidPlanting: ['Brassicas'],
     commonProblems: [
@@ -1383,8 +1476,26 @@ export const crops: readonly Crop[] = [
       'Drying out in a container',
       'No fruit without a pollination partner',
     ],
-    source: null,
-    verifiedFields: [],
+    source: {
+      institution: 'University of Maryland Extension',
+      title: 'Growing Blueberries in a Home Garden',
+      url: 'https://extension.umd.edu/resource/blueberries/',
+    },
+    extraSources: [
+      {
+        institution: 'University of New Hampshire Extension',
+        title: 'Growing Fruit: Highbush Blueberries',
+        url: 'https://extension.unh.edu/resource/growing-fruit-highbush-blueberries-fact-sheet',
+      },
+      {
+        institution: 'University of Minnesota Extension',
+        title: 'Growing blueberries in the home garden',
+        url: 'https://extension.umn.edu/fruit/growing-blueberries-home-garden',
+      },
+    ],
+    verifiedFields: ['spacingInches', 'rowSpacingInches'],
+    // Spacing is sourced; whether the Cornell square foot gardening page
+    // names this crop has not been checked, so the roll-up stays false.
     verified: false,
   },
   {
@@ -1392,37 +1503,53 @@ export const crops: readonly Crop[] = [
     name: 'Marigold',
     scientificName: 'Tagetes spp.',
     type: 'herb',
-    spacingInches: 10,
-    rowSpacingInches: 12,
+    // Clemson spaces French marigolds at 8 to 10 inches and African at 12 to
+    // 16 — far enough apart that one figure would mislead either way, so both
+    // are carried and spacingInches spans them.
+    spacingInches: [8, 16],
+    // The factsheet spaces plants without distinguishing rows, so there is no
+    // row figure to quote. An invented one would be worse than none.
+    rowSpacingInches: null,
     sfgPlantsPerSquare: null,
+    spacingByType: [
+      { name: 'French marigolds', inches: [8, 10] },
+      { name: 'African marigolds', inches: [12, 16] },
+    ],
     notes: [
       'An annual in every climate, despite being widely searched for as a perennial. It self-seeds freely, which is what makes people think it came back.',
-      'French marigolds are compact and the usual companion planting choice; African marigolds are tall and grown for the flower.',
+      'Clemson notes bronze spotting on the leaves where soil pH falls below 5.5.',
+      'Clemson starts seed indoors four to six weeks before the intended planting date, and eight weeks for African types.',
     ],
     sowIndoorsWeeksBeforeLastFrost: 6,
     transplantWeeksAfterLastFrost: 0,
     directSowWeeksRelativeToLastFrost: 0,
-    soilPh: [6, 7],
-    daysToMaturity: [45, 60],
+    germinationDays: [5, 7],
+    seedDepthInches: 0.25,
+    soilPh: [5.5, 7],
+    // No extension publication found gives days from sowing to flower, so
+    // none is shown rather than an estimate.
+    daysToMaturity: null,
     sunHours: 6,
     waterInchesPerWeek: 1,
     fertilizerNote:
       'Poor soil suits them. Rich or heavily fed ground gives large leafy plants and few flowers.',
-    yieldPerPlantLb: [0, 0],
+    yieldPerPlantLb: null,
     companionPlants: ['Tomato', 'Pepper', 'Bush bean', 'Cucumber', 'Squash'],
-    // The "marigolds inhibit beans" claim is persistent folklore with no
-    // support worth citing, and it contradicted the bush bean entry, which
-    // names marigold as a companion. Dropped rather than carried on both
-    // sides; the marigold page says why.
     avoidPlanting: [],
     commonProblems: [
       'Few flowers on rich soil',
-      'Slugs on young plants',
+      'Bronze spotting on leaves below pH 5.5',
       'Spider mites in hot, dry spells',
       'Damping off if sown too wet',
     ],
-    source: null,
-    verifiedFields: [],
+    source: {
+      institution: 'Clemson Cooperative Extension',
+      title: 'HGIC 1168, How to Grow and Care for Marigolds in South Carolina',
+      url: 'https://hgic.clemson.edu/factsheet/marigold/',
+    },
+    verifiedFields: ['spacingInches', 'sowIndoorsWeeksBeforeLastFrost'],
+    // Spacing is sourced; whether the Cornell square foot gardening page
+    // names this crop has not been checked, so the roll-up stays false.
     verified: false,
   },
   {
@@ -1430,20 +1557,33 @@ export const crops: readonly Crop[] = [
     name: 'Swiss chard',
     scientificName: 'Beta vulgaris subsp. vulgaris',
     type: 'vegetable',
-    spacingInches: 9,
-    rowSpacingInches: 18,
+    // Utah gives 6 inches in the row, Minnesota four to six, Maryland a
+    // thinning progression from 2 to 4 inches and then 8 to 12 for larger
+    // plants. The range spans the thinning rather than picking a point on it.
+    spacingInches: [4, 12],
+    // Utah puts rows 12 inches apart and Minnesota 18 to 30. A real
+    // disagreement between a close-planted bed and a hoed row.
+    rowSpacingInches: [12, 30],
     sfgPlantsPerSquare: null,
     notes: [
       'A cut-and-come-again crop. One sowing crops for months if the outer leaves are taken and the growing point is left alone.',
+      'Maryland sows seed 2 inches apart in all directions, thins to 4 inches when seedlings are about 2 inches high, and allows 8 to 12 inches for larger plants.',
+      'Maryland puts it at 4 to 6 hours of direct light at a minimum, growing best at 6 to 8.',
       'The same species as beetroot, bred for leaf and stalk instead of root.',
     ],
-    sowIndoorsWeeksBeforeLastFrost: 5,
-    transplantWeeksAfterLastFrost: -2,
+    sowIndoorsWeeksBeforeLastFrost: null,
+    transplantWeeksAfterLastFrost: null,
     directSowWeeksRelativeToLastFrost: -2,
-    soilPh: [6, 7],
-    daysToMaturity: [50, 60],
+    seedDepthInches: 0.5,
+    noSowIndoorsReason:
+      'Not usually started indoors — Utah State sows direct, two to three weeks before the last frost.',
+    noTransplantReason: 'Not transplanted — sow where it will grow.',
+    soilPh: null,
+    soilPhNote:
+      'pH 6.0 or above. Minnesota says chard tolerates soil somewhat more acidic than spinach, as low as pH 6, and gives no upper limit.',
+    daysToMaturity: [50, 70],
     sunHours: 6,
-    waterInchesPerWeek: 1,
+    waterInchesPerWeek: 1.5,
     fertilizerNote:
       'A steady nitrogen supply keeps leaves coming. Side-dress once mid-season rather than feeding heavily at sowing.',
     yieldPerPlantLb: [1, 2],
@@ -1455,8 +1595,26 @@ export const crops: readonly Crop[] = [
       'Downy mildew in crowded plantings',
       'Slugs on seedlings',
     ],
-    source: null,
-    verifiedFields: [],
+    source: {
+      institution: 'Utah State University Extension',
+      title: 'How to Grow Swiss Chard in Your Garden (Drost, 2020)',
+      url: 'https://extension.usu.edu/yardandgarden/research/swiss-chard-in-the-garden',
+    },
+    extraSources: [
+      {
+        institution: 'University of Maryland Extension',
+        title: 'Growing Swiss Chard in a Home Garden',
+        url: 'https://extension.umd.edu/resource/swiss-chard/',
+      },
+      {
+        institution: 'University of Minnesota Extension',
+        title: 'Growing spinach and Swiss chard in home gardens',
+        url: 'https://extension.umn.edu/vegetables/growing-spinach-and-swiss-chard',
+      },
+    ],
+    verifiedFields: ['spacingInches', 'rowSpacingInches', 'directSowWeeksRelativeToLastFrost'],
+    // Spacing is sourced; whether the Cornell square foot gardening page
+    // names this crop has not been checked, so the roll-up stays false.
     verified: false,
   },
 ];
@@ -1468,5 +1626,5 @@ export function getCrop(slug: string): Crop | undefined {
 
 /** Plants per foot of row, from in-row spacing. */
 export function plantsPerRowFoot(crop: Crop): number {
-  return 12 / crop.spacingInches;
+  return 12 / spacingFor(crop.spacingInches);
 }

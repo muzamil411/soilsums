@@ -8,6 +8,8 @@ import { DataTable } from './DataTable';
 export function CropWaterTable() {
   const byNeed = new Map<number, string[]>();
   for (const crop of crops) {
+    // A crop whose sources decline to quantify watering has no row here.
+    if (crop.waterInchesPerWeek === null) continue;
     const names = byNeed.get(crop.waterInchesPerWeek) ?? [];
     names.push(crop.name);
     byNeed.set(crop.waterInchesPerWeek, names);

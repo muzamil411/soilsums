@@ -26,14 +26,17 @@ export type BedPlanRow = {
 export function BedPlanTable({ rows }: { rows: readonly BedPlanRow[] }) {
   const resolved = rows.flatMap((row) => {
     const crop: Crop | undefined = crops.find((entry) => entry.slug === row.crop);
-    if (crop === undefined) return [];
+    // A crop with no published per-plant yield cannot appear in a bed plan
+    // whose whole point is adding those yields up.
+    if (crop === undefined || crop.yieldPerPlantLb === null) return [];
+    const yieldLb = crop.yieldPerPlantLb;
     const harvests = row.harvests ?? 1;
     return [
       {
         ...row,
         name: row.label ?? crop.name,
-        low: crop.yieldPerPlantLb[0] * row.plants * harvests,
-        high: crop.yieldPerPlantLb[1] * row.plants * harvests,
+        low: yieldLb[0] * row.plants * harvests,
+        high: yieldLb[1] * row.plants * harvests,
       },
     ];
   });

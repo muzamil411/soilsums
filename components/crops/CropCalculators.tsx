@@ -10,6 +10,7 @@ import { calculatePlantSpacing } from '@/lib/calculators/plant-spacing';
 import { calculatePlantingDates } from '@/lib/calculators/planting-date';
 import { calculateGardenYield } from '@/lib/calculators/garden-yield';
 import { inchesToCentimeters } from '@/lib/calculators/shared/units';
+import { inchesLabel, spacingFor } from '@/data/crops';
 import type { Crop } from '@/data/crops';
 
 /**
@@ -59,21 +60,22 @@ export function CropCalculators({ crop }: { crop: Crop }) {
     setUnits(next);
   }
 
+  // A ranged spacing feeds the calculator at its wide end, and a crop with no
+  // published row figure falls back to its in-row spacing on a square grid.
+  const plantInches = spacingFor(crop.spacingInches);
+  const rowInches = crop.rowSpacingInches === null ? plantInches : spacingFor(crop.rowSpacingInches);
+
   const spacing = useMemo(
     () =>
       calculatePlantSpacing({
         units,
         bedLength: toNumber(bedLength),
         bedWidth: toNumber(bedWidth),
-        plantSpacing: imperial
-          ? crop.spacingInches
-          : Math.round(inchesToCentimeters(crop.spacingInches)),
-        rowSpacing: imperial
-          ? crop.rowSpacingInches
-          : Math.round(inchesToCentimeters(crop.rowSpacingInches)),
+        plantSpacing: imperial ? plantInches : Math.round(inchesToCentimeters(plantInches)),
+        rowSpacing: imperial ? rowInches : Math.round(inchesToCentimeters(rowInches)),
         layout: 'square',
       }),
-    [units, imperial, bedLength, bedWidth, crop],
+    [units, imperial, bedLength, bedWidth, plantInches, rowInches],
   );
 
   const dates = useMemo(
@@ -138,8 +140,10 @@ export function CropCalculators({ crop }: { crop: Crop }) {
                 <p>
                   <strong className="tabular text-lg">{spacing.value.totalPlants}</strong> plants —{' '}
                   {spacing.value.rows} row{spacing.value.rows === 1 ? '' : 's'} of{' '}
-                  {spacing.value.plantsPerRow}, at {crop.spacingInches} in apart with{' '}
-                  {crop.rowSpacingInches} in between rows.
+                  {spacing.value.plantsPerRow}, at {inchesLabel(crop.spacingInches)} apart
+                  {crop.rowSpacingInches === null
+                    ? ' on a square grid.'
+                    : ` with ${inchesLabel(crop.rowSpacingInches)} between rows.`}
                 </p>
                 <p className="text-ink/80 mt-1">
                   {spacing.value.limit.explanation}

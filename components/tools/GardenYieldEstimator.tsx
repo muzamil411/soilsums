@@ -178,7 +178,9 @@ export function GardenYieldEstimator({ toolSlug, linkedCrops }: ToolProps) {
                 onChange={(value) => update(index, { cropSlug: value })}
                 options={crops.map((crop) => ({
                   value: crop.slug,
-                  label: `${crop.name} — ${crop.yieldPerPlantLb[0]}–${crop.yieldPerPlantLb[1]} lb each`,
+                  label: crop.yieldPerPlantLb
+                    ? `${crop.name} — ${crop.yieldPerPlantLb[0]}–${crop.yieldPerPlantLb[1]} lb each`
+                    : `${crop.name} — no per-plant yield published`,
                 }))}
               />
               <NumberField

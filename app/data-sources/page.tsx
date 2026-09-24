@@ -4,7 +4,7 @@ import { Container } from '@/components/layout/Container';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { Callout } from '@/components/ui/Callout';
 import { pageMetadata } from '@/lib/seo/metadata';
-import { crops } from '@/data/crops';
+import { cropSources, crops } from '@/data/crops';
 
 export const metadata: Metadata = pageMetadata({
   title: 'How this data is checked',
@@ -17,8 +17,12 @@ export const metadata: Metadata = pageMetadata({
 function institutions(): { name: string; count: number }[] {
   const counts = new Map<string, number>();
   for (const crop of crops) {
-    if (!crop.source) continue;
-    counts.set(crop.source.institution, (counts.get(crop.source.institution) ?? 0) + 1);
+    // A crop may cite more than one publication where extensions disagree, and
+    // each of them belongs in the count.
+    for (const source of cropSources(crop)) {
+      counts.set(source.institution, (counts.get(source.institution) ?? 0) + 1);
+    }
+    continue;
   }
   return [...counts.entries()]
     .map(([name, count]) => ({ name, count }))

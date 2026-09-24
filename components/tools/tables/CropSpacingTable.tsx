@@ -1,4 +1,4 @@
-import { crops, plantsPerSquareFoot, type Crop } from '@/data/crops';
+import { crops, inchesLabel, plantsPerSquareFoot, spacingFor, type Crop } from '@/data/crops';
 import { perSquare } from '@/lib/content/density';
 import { DataTable } from './DataTable';
 
@@ -22,7 +22,11 @@ export function CropSpacingTable({
 }) {
   const shown: readonly Crop[] = only
     ? only.flatMap((slug) => crops.filter((crop) => crop.slug === slug))
-    : [...crops].sort((a, b) => a.spacingInches - b.spacingInches || a.name.localeCompare(b.name));
+    : [...crops].sort(
+        (a, b) =>
+          spacingFor(a.spacingInches) - spacingFor(b.spacingInches) ||
+          a.name.localeCompare(b.name),
+      );
 
   const columns = [
     'Crop',
@@ -36,8 +40,10 @@ export function CropSpacingTable({
       {shown.map((crop) => (
         <tr key={crop.slug}>
           <td>{crop.name}</td>
-          <td>{crop.spacingInches} in</td>
-          {withRowSpacing ? <td>{crop.rowSpacingInches} in</td> : null}
+          <td>{inchesLabel(crop.spacingInches)}</td>
+          {withRowSpacing ? (
+            <td>{crop.rowSpacingInches === null ? '—' : inchesLabel(crop.rowSpacingInches)}</td>
+          ) : null}
           {withImpliedDensity ? <td>{perSquare(plantsPerSquareFoot(crop))}</td> : null}
         </tr>
       ))}
@@ -61,9 +67,10 @@ export function SpacingGridTable({
   const [widthFt, lengthFt] = bedFeet;
   const bySpacing = new Map<number, string[]>();
   for (const crop of crops) {
-    const names = bySpacing.get(crop.spacingInches) ?? [];
+    const inches = spacingFor(crop.spacingInches);
+    const names = bySpacing.get(inches) ?? [];
     names.push(crop.name);
-    bySpacing.set(crop.spacingInches, names);
+    bySpacing.set(inches, names);
   }
 
   const rows = [...bySpacing.entries()].sort(([a], [b]) => a - b);
