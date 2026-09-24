@@ -17,6 +17,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ImageResponse } from 'next/og';
 import sharp from 'sharp';
+import { nitrogenLabel, nitrogenSources } from '../data/nitrogen-sources';
 
 const OUT_DIR = join(process.cwd(), 'public', 'figures');
 const FONT_DIR = join(process.cwd(), 'assets', 'fonts');
@@ -176,6 +177,124 @@ const figure = (
   </div>
 );
 
+/**
+ * The release-rate spectrum, built from data/nitrogen-sources.ts.
+ *
+ * The table gives percentage and rating in two columns and a reader has to
+ * hold both in mind at once. Laid along a timeline the point lands
+ * immediately: the richest materials are not the fastest, and choosing by
+ * percentage alone is how people end up feeding next year's crop.
+ */
+function releaseBand(rating: string): 0 | 1 | 2 {
+  if (rating === 'Rapid' || rating === 'Medium-Rapid') return 0;
+  if (rating === 'Slow') return 2;
+  return 1;
+}
+
+const BANDS = [
+  { title: 'Under a month', sub: 'Rapid and Medium-Rapid', fill: radish },
+  { title: 'One to four months', sub: 'Medium, and either way of it', fill: kale },
+  { title: 'Four months to a year', sub: 'Slow', fill: '#3d6b52' },
+] as const;
+
+const spectrum = (
+  <div
+    style={{
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      backgroundColor: paper,
+      padding: '38px 44px',
+    }}
+  >
+    <div style={{ fontFamily: 'Fraunces', fontWeight: 600, fontSize: 34, color: ink }}>
+      How fast each material releases its nitrogen
+    </div>
+    <div
+      style={{
+        fontFamily: 'Public Sans',
+        fontSize: 20,
+        color: ink,
+        opacity: 0.8,
+        marginTop: 8,
+        marginBottom: 26,
+      }}
+    >
+      Percent nitrogen in brackets. University of Georgia Extension Circular 853, Table 1.
+    </div>
+    <div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
+      {BANDS.map((band, index) => (
+        <div
+          key={band.title}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+            marginRight: index === BANDS.length - 1 ? 0 : 16,
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              backgroundColor: band.fill,
+              color: paper,
+              padding: '12px 16px',
+            }}
+          >
+            <div style={{ fontFamily: 'Public Sans', fontWeight: 600, fontSize: 23 }}>
+              {band.title}
+            </div>
+            <div style={{ fontFamily: 'Public Sans', fontSize: 17, opacity: 0.9 }}>
+              {band.sub}
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              flex: 1,
+              border: `2px solid ${rule}`,
+              borderTop: 'none',
+              padding: '12px 16px',
+            }}
+          >
+            {nitrogenSources
+              .filter((entry) => releaseBand(entry.availability) === index)
+              .map((entry) => (
+                <div
+                  key={entry.slug}
+                  style={{
+                    display: 'flex',
+                    fontFamily: 'Public Sans',
+                    fontSize: 19,
+                    color: ink,
+                    marginBottom: 7,
+                  }}
+                >
+                  {`${entry.name} (${nitrogenLabel(entry)})`}
+                </div>
+              ))}
+          </div>
+        </div>
+      ))}
+    </div>
+    <div
+      style={{
+        display: 'flex',
+        marginTop: 22,
+        fontFamily: 'Public Sans',
+        fontSize: 20,
+        color: ink,
+      }}
+    >
+      Feather meal is the richest material on the list and one of the slowest. Percentage alone
+      does not tell you whether a crop will see it this season.
+    </div>
+  </div>
+);
+
 async function main(): Promise<void> {
   const width = 1200;
   const height = 620;
@@ -188,6 +307,15 @@ async function main(): Promise<void> {
 
   console.log(
     `Wrote public/figures/where-each-soil-product-goes.webp (${(webp.length / 1024).toFixed(0)} kB, ${width}x${height})`,
+  );
+
+  const spectrumPng = Buffer.from(
+    await new ImageResponse(spectrum, { width, height: 560, fonts }).arrayBuffer(),
+  );
+  const spectrumWebp = await sharp(spectrumPng).webp({ quality: 90 }).toBuffer();
+  writeFileSync(join(OUT_DIR, 'nitrogen-release-rate-spectrum.webp'), spectrumWebp);
+  console.log(
+    `Wrote public/figures/nitrogen-release-rate-spectrum.webp (${(spectrumWebp.length / 1024).toFixed(0)} kB, ${width}x560)`,
   );
 }
 

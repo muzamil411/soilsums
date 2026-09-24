@@ -11,6 +11,7 @@ import { CropYieldTable } from '@/components/tools/tables/CropYieldTable';
 import { GrassSeedRateTable } from '@/components/tools/tables/GrassSeedRateTable';
 import { LimeComparisonTable } from '@/components/tools/tables/LimeComparisonTable';
 import { LimeRateTable } from '@/components/tools/tables/LimeRateTable';
+import { NitrogenSourceTable } from '@/components/tools/tables/NitrogenSourceTable';
 import { PlantingOffsetTable } from '@/components/tools/tables/PlantingOffsetTable';
 import {
   DirectSowOnlyTable,
@@ -75,6 +76,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     IndoorSowingTable,
     LimeComparisonTable,
     LimeRateTable,
+    NitrogenSourceTable,
     PlantingOffsetTable,
     SfgDensityTable,
     SfgFallbackTable,
