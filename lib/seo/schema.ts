@@ -96,3 +96,37 @@ export function faqSchema(faqs: readonly { question: string; answer: string }[])
     })),
   };
 }
+
+/**
+ * HowTo schema for a page carrying a genuine ordered sequence.
+ *
+ * Only for a real procedure with steps that must happen in order. A list of
+ * tips is not a HowTo, and marking one up as though it were is the kind of
+ * structured data that gets a site's rich results withdrawn rather than
+ * granted. Every step here has to appear, in order, in the visible body.
+ */
+export function howToSchema({
+  name,
+  description,
+  path,
+  steps,
+}: {
+  name: string;
+  description: string;
+  path: string;
+  steps: readonly { name: string; text: string }[];
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name,
+    description,
+    step: steps.map((step, index) => ({
+      '@type': 'HowToStep',
+      position: index + 1,
+      name: step.name,
+      text: step.text,
+      url: `${absoluteUrl(path)}#how-to-fill-a-raised-garden-bed`,
+    })),
+  };
+}

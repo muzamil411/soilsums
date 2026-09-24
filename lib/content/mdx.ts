@@ -6,6 +6,9 @@ export type ContentKind = 'tools' | 'crops' | 'blog';
 
 export type Faq = { question: string; answer: string };
 
+/** One step of an ordered procedure, for HowTo schema. */
+export type HowToStep = { name: string; text: string };
+
 /**
  * Normalises a frontmatter date to a plain YYYY-MM-DD string.
  *
@@ -42,6 +45,11 @@ export type Frontmatter = {
    * prose, no markdown, because structured data cannot carry markup.
    */
   faqs?: Faq[];
+  /**
+   * An ordered procedure the page walks through. Emitted as HowTo schema, so
+   * every step must also appear in the body in the same order.
+   */
+  howTo?: { name: string; description: string; steps: HowToStep[] };
   [key: string]: unknown;
 };
 

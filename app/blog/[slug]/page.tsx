@@ -12,7 +12,7 @@ import { articleContent } from '@/content/blog/registry';
 import { getContent, isPublishable, listPublished } from '@/lib/content/mdx';
 import { publishedArticles } from '@/lib/content/blog';
 import { pageMetadata } from '@/lib/seo/metadata';
-import { articleSchema } from '@/lib/seo/schema';
+import { articleSchema, howToSchema } from '@/lib/seo/schema';
 import { getTool } from '@/data/tools';
 import { formatDate } from '@/lib/legal';
 
@@ -82,6 +82,17 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           updated,
         })}
       />
+
+      {entry.frontmatter.howTo ? (
+        <JsonLd
+          data={howToSchema({
+            name: entry.frontmatter.howTo.name,
+            description: entry.frontmatter.howTo.description,
+            path: `/blog/${slug}/`,
+            steps: entry.frontmatter.howTo.steps,
+          })}
+        />
+      ) : null}
 
       <Container className="pt-3 pb-8">
         <Breadcrumbs
