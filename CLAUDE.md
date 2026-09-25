@@ -9,8 +9,24 @@ docs/ for how things work.
 - **Nothing is live until `main` is fast-forwarded and pushed.** Cloudflare
   deploys from `main` only. A commit on a working branch has changed nothing
   a reader can see.
-- Before reporting any page as done, open it and confirm it returns 200.
-  A green build is not the same as a page that loads.
+- **Push `main` before pushing the working branch.** A fast-forward leaves
+  both refs on the same commit, and Cloudflare builds per commit: if it sees
+  that commit on the branch first it deploys it as a preview, and the later
+  push of `main` has nothing new to build, so production stays on the
+  previous commit. Pushing `main` first makes the production branch claim
+  the commit. This has silently failed twice.
+- After pushing, **confirm the remote** with
+  `git ls-remote origin main` — not `git status`, not `git log`, not the
+  push output. A local branch can look merged while the remote has not
+  moved.
+- Then **confirm the live page shows one specific string you changed.**
+  Not a build status, not a version ID, not a local server — the actual
+  string on `https://soilsums.com/...`. Pick the string before deploying and
+  name it in the report.
+- If `soilsums.com` cannot be reached from this environment, **say the
+  deploy is unverified and name the string to look for.** Do not report the
+  work as live. A merge that reached `origin/main` is not evidence that
+  Cloudflare built it.
 
 ## Data
 
