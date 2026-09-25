@@ -40,6 +40,13 @@ docs/ for how things work.
   quotes an unsourced number makes a stronger false claim than one that
   never deleted anything. Grep the MDX after every data deletion;
   `lib/content/crop-prose.test.ts` checks the cases it can.
+- **When a figure changes, grep for the old value as well as the field
+  name** — in words as well as digits. A number restated in another section
+  will not mention the field: a container section saying "space plants at
+  the same 9 inches" survived a spacing correction because nothing matched
+  `spacingInches`, and asparagus kept a deleted 15 by spelling it
+  "fifteen". The guard cannot see these, because the field is no longer
+  null; only reading the page or grepping the value catches them.
 - Never take a figure from a search-result summary. This was done once on
   the sulfur work and had to be undone against the primary source.
 
