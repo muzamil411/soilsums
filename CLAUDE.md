@@ -18,6 +18,12 @@ docs/ for how things work.
   or the USDA, and that source must be visible on the page.
 - A number that cannot be sourced gets a **range** with `verified: false`,
   never a precise invention. An honest range beats a false decimal.
+- **Deleting a field from the data is half the job.** The same figure is
+  usually written into the page's prose too, where no estimate marker can
+  warn anyone about it — and a page whose data says verified while its body
+  quotes an unsourced number makes a stronger false claim than one that
+  never deleted anything. Grep the MDX after every data deletion;
+  `lib/content/crop-prose.test.ts` checks the cases it can.
 - Never take a figure from a search-result summary. This was done once on
   the sulfur work and had to be undone against the primary source.
 
