@@ -21,6 +21,7 @@ import Lavender from './lavender.mdx';
 import Lettuce from './lettuce.mdx';
 import Okra from './okra.mdx';
 import Onion from './onion.mdx';
+import Oregano from './oregano.mdx';
 import Parsley from './parsley.mdx';
 import Pea from './pea.mdx';
 import Pepper from './pepper.mdx';
@@ -28,10 +29,12 @@ import Potato from './potato.mdx';
 import Pumpkin from './pumpkin.mdx';
 import Radish from './radish.mdx';
 import Rosemary from './rosemary.mdx';
+import Sage from './sage.mdx';
 import Spinach from './spinach.mdx';
 import Squash from './squash.mdx';
 import Strawberry from './strawberry.mdx';
 import SweetPotato from './sweet-potato.mdx';
+import Thyme from './thyme.mdx';
 import Tomato from './tomato.mdx';
 import Watermelon from './watermelon.mdx';
 import Zucchini from './zucchini.mdx';
@@ -79,6 +82,9 @@ export const cropContent: Record<string, ComponentType> = {
   dill: Dill,
   lavender: Lavender,
   rosemary: Rosemary,
+  sage: Sage,
+  thyme: Thyme,
+  oregano: Oregano,
   strawberry: Strawberry,
   watermelon: Watermelon,
 };

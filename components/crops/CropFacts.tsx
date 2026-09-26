@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import {
   CHECKED_FIELDS,
+  cropSources,
   daysToMaturityLabel,
   inchesLabel,
   plantsPerSquareFoot,
@@ -73,6 +74,13 @@ export function CropFacts({ crop }: { crop: Crop }) {
   const unverified = new Set(
     CHECKED_FIELDS.filter((field) => !crop.verifiedFields.includes(field)),
   );
+  const sources = cropSources(crop);
+  // Whether this crop actually shows a yield or a days-to-maturity figure, as
+  // opposed to a reason saying none is published.
+  const hasUncheckedFigures =
+    crop.daysToMaturity !== null ||
+    crop.yieldPerPlantLb !== null ||
+    crop.yieldPer10FtRowLb !== undefined;
 
   const rows: {
     label: string;
@@ -249,22 +257,44 @@ export function CropFacts({ crop }: { crop: Crop }) {
         <a href={SUN_SOURCE.url} rel="nofollow">
           {SUN_SOURCE.factsheet}
         </a>
-        ), and this row records which threshold the crop needs. The crop&rsquo;s own publication
-        says &ldquo;full sun&rdquo; without a number.
+        ), and University of Minnesota Extension puts most herbs at six hours or more as well. This
+        row records which threshold a crop needs; its own publication usually says &ldquo;full
+        sun&rdquo; without a number.
       </p>
 
       <p className="border-rule text-ink/70 border-t px-3 py-2 text-xs">
         Scientific name: <em>{crop.scientificName}</em>.{' '}
-        {crop.source ? (
+        {/* Every publication, not just the primary one. extraSources were listed
+            only on /data-sources/, so a crop whose figures come from two or three
+            publications named one of them here and the rest nowhere a reader
+            could see — marigold's Cornell citation has been invisible since it
+            was added. A source we rely on has to be visible where we rely on it. */}
+        {sources.length > 0 ? (
           <>
-            Spacing and planting dates checked against{' '}
-            <a href={crop.source.url} rel="nofollow">
-              {crop.source.institution}
-            </a>
+            Checked against{' '}
+            {sources.map((source, index) => (
+              <span key={source.url}>
+                {/* Semicolons between sources and parentheses around titles: a
+                    title like "Bulletin 1170, Herbs in Southern Gardens" carries
+                    its own comma, so comma-separating the list made the two
+                    kinds of break impossible to tell apart. */}
+                {index > 0 ? (index === sources.length - 1 ? '; and ' : '; ') : null}
+                <a href={source.url} rel="nofollow">
+                  {source.institution}
+                </a>
+                {source.title ? ` (${source.title})` : null}
+              </span>
+            ))}
             .{' '}
           </>
         ) : null}
-        Yields, days to maturity and companion lists were never systematically checked — see{' '}
+        {/* This named yields and days to maturity unconditionally, on crops that
+            now carry neither — every herb reports both as absent with a reason,
+            so telling the reader they were "never systematically checked" points
+            at figures that are not on the page. */}
+        {hasUncheckedFigures
+          ? 'Yields, days to maturity and companion lists were never systematically checked — see '
+          : 'Companion lists were never systematically checked — see '}
         <Link href="/data-sources/">how this data is checked</Link>.
       </p>
     </div>

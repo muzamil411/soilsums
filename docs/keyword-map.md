@@ -159,9 +159,37 @@ germination material still answers. The old question is kept as a supporting
 keyword and an FAQ, so nothing is lost. The page was still a draft both times,
 so no slug moved and no live URL changed.
 
-**Deliberately not built yet.** A herbs hub page and a companion planting chart
-belong together, once all eight herb pages exist. Building the hub now would
-mean building it twice.
+### Herb pages, Batch 3 part two (September 2026)
+
+The remaining four herbs. All spacing from the same UGA Bulletin 1170 herb
+table, with Cornell's list settled, so all four shipped verified on day one.
+
+| Crop     | Primary keyword             | Volume | KD  | Checked against                                                                                                                                      |
+| -------- | --------------------------- | -----: | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sage     | types of sage               |  1,300 | 17  | No page targets a "types of X" phrase. The keyword set is identification rather than cultivation, which is why the varieties section leads the page. |
+| Thyme    | thyme companion plants      |    720 | 25  | Follows the one-crop-one-companion-phrase pattern (marigold, strawberry, swiss chard, watermelon, dill, oregano).                                    |
+| Oregano  | oregano companion plants    |  1,000 | 12  | Same pattern. Lowest difficulty of the four.                                                                                                         |
+| Cilantro | cilantro growing conditions |    480 | 19  | Retargeted from "when to plant cilantro". Nothing else targets a "growing conditions" phrase.                                                        |
+
+**Cilantro's retarget, and why it beats the old keyword.** The draft targeted
+"when to plant cilantro", which the September audit passed as clear. It was
+still the weaker choice. Five of the supporting keywords are phrasings of
+"how long does cilantro take to grow", and a "when to plant" page is the wrong
+hub for them — worse, the honest answer to "when to plant cilantro" is a frost
+offset, which is what the planting date calculator owns under the rule below.
+"Cilantro growing conditions" owns the whole supporting cluster, sits clear of
+the calculator, and lets the page reframe the "how long" question as how long
+the leaf harvest lasts before bolting. The old phrase stays as a supporting
+keyword. The page was a draft, so no live URL moved.
+
+**Sage and the lavender overlap.** The lavender page already owns
+"salvia vs lavender" (590), and the sage page discusses ornamental salvias. They
+are kept apart deliberately: sage owns "types of sage" and does not target the
+comparison, and the two pages link to each other instead, since a reader
+confused about one is usually confused about the other.
+
+**Now buildable.** All eight herb pages exist, so the herbs hub and the
+companion planting chart are unblocked.
 
 ### The rule going forward
 

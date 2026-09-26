@@ -1224,7 +1224,9 @@ export const crops: readonly Crop[] = [
     name: 'Cilantro',
     scientificName: 'Coriandrum sativum',
     type: 'herb',
-    spacingInches: 6,
+    // UW-Madison gives 6 inches and UGA 4, so the range spans both. Rows stay:
+    // UW-Madison's crop page does give one, unlike either herb publication.
+    spacingInches: [4, 6],
     rowSpacingInches: 12,
     sfgPlantsPerSquare: null,
     notes: [
@@ -1235,13 +1237,24 @@ export const crops: readonly Crop[] = [
     directSowWeeksRelativeToLastFrost: -2,
     noSowIndoorsReason: 'Not started indoors — it bolts almost immediately after being moved.',
     noTransplantReason: 'Not transplanted — sow where it will grow, and sow again every few weeks.',
-    daysToMaturity: [45, 70],
+    // Deleted rather than estimated. Cilantro's useful answer is not a count of
+    // days but how long the leaf harvest lasts before heat sends it to seed,
+    // which no publication behind this page puts a number on.
+    daysToMaturity: null,
+    noDaysToMaturityReason:
+      'Bolting ends the harvest, not maturity — how long the leaf lasts depends on heat, so no day count describes it.',
+    // Lower than the other herbs on purpose: cilantro is the one that does
+    // better with some afternoon shade, which slows bolting.
     sunHours: 4,
-    waterInchesPerWeek: 1,
-    soilPh: [6.2, 6.8],
+    waterInchesPerWeek: null,
+    waterNote:
+      'No weekly figure is published for cilantro. Keep the seedbed damp until it is up; after that a dry check is what sends it to seed early.',
+    soilPh: null,
+    soilPhNote:
+      'No range is published for cilantro itself. UGA gives about 6 to 7.5 for herbs generally and Minnesota 6.0 to 7.5, which agree.',
     fertilizerNote:
       'Almost none. Resents transplanting, so sow where it will grow and sow again every few weeks.',
-    yieldPerPlantLb: [0.1, 0.25],
+    yieldPerPlantLb: null,
     companionPlants: ['Tomato', 'Spinach', 'Pepper'],
     avoidPlanting: ['Fennel'],
     commonProblems: [
@@ -1254,6 +1267,18 @@ export const crops: readonly Crop[] = [
       institution: 'University of Wisconsin-Madison Extension',
       url: 'https://hort.extension.wisc.edu/articles/cilantro-coriander-coriandrum-sativum/',
     },
+    extraSources: [
+      {
+        institution: 'University of Georgia Extension',
+        title: 'Bulletin 1170, Herbs in Southern Gardens',
+        url: 'https://extension.uga.edu/publications/detail.html?number=B1170',
+      },
+      {
+        institution: 'Cornell CALS',
+        title: 'Square Foot Gardening',
+        url: 'https://cals.cornell.edu/school-integrative-plant-science/school-sections/horticulture-section/outreach-and-extension/pandemic-vegetable-gardening/pandemic-vegetable-gardening-2021-archive/square-foot-gardening',
+      },
+    ],
     verifiedFields: [
       'spacingInches',
       'rowSpacingInches',
@@ -1270,7 +1295,13 @@ export const crops: readonly Crop[] = [
     // Minnesota gives 10 inches, UGA 6 to 8. The range spans both rather than
     // averaging them or choosing one.
     spacingInches: [6, 10],
-    rowSpacingInches: 12,
+    // Deleted, not estimated. The 12 inches here was attributed to Minnesota but
+    // never confirmed, and neither herb publication gives one: UGA's herb table
+    // publishes no row spacing for any herb, and Minnesota's "Growing herbs in
+    // home gardens" gives no per-herb figures at all, only the general
+    // instruction to space by mature size. A confirmed absence, like the other
+    // three herbs.
+    rowSpacingInches: null,
     sfgPlantsPerSquare: null,
     sowIndoorsWeeksBeforeLastFrost: 8,
     transplantWeeksAfterLastFrost: 0,
@@ -1287,7 +1318,7 @@ export const crops: readonly Crop[] = [
       'No weekly figure is published for parsley in the source behind this page. The surface must stay damp for the weeks germination takes; a settled plant is far less fussy.',
     soilPh: null,
     soilPhNote:
-      'No range is published for parsley itself. UGA gives about 6 to 7.5 as suiting most herbs.',
+      'No range is published for parsley itself. UGA gives about 6 to 7.5 for herbs generally and Minnesota 6.0 to 7.5, which agree.',
     fertilizerNote:
       'Light nitrogen through the season. Slow to germinate — be patient, keep moist.',
     yieldPerPlantLb: null,
@@ -1315,17 +1346,15 @@ export const crops: readonly Crop[] = [
         url: 'https://cals.cornell.edu/school-integrative-plant-science/school-sections/horticulture-section/outreach-and-extension/pandemic-vegetable-gardening/pandemic-vegetable-gardening-2021-archive/square-foot-gardening',
       },
     ],
-    // rowSpacingInches is the one field left open. Its 12 inches is a Phase 2
-    // figure attributed to Minnesota but never entered here, and UGA gives no
-    // row spacing for any herb, so nothing on file confirms it.
     verifiedFields: [
       'spacingInches',
+      'rowSpacingInches',
       'sfgPlantsPerSquare',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
       'directSowWeeksRelativeToLastFrost',
     ],
-    verified: false,
+    verified: true,
   },
   {
     slug: 'dill',
@@ -1360,7 +1389,7 @@ export const crops: readonly Crop[] = [
     // UGA gives a range for herbs as a group rather than for dill, so it is
     // reported as what it is rather than promoted to a per-crop figure.
     soilPhNote:
-      'No range is published for dill itself. UGA gives about 6 to 7.5 as suiting most herbs.',
+      'No range is published for dill itself. UGA gives about 6 to 7.5 for herbs generally and Minnesota 6.0 to 7.5, which agree.',
     fertilizerNote: 'Poor soil suits it. Direct sow — the taproot hates being moved.',
     yieldPerPlantLb: null,
     companionPlants: ['Cabbage', 'Cucumber', 'Onion', 'Lettuce'],
@@ -1933,6 +1962,199 @@ export const crops: readonly Crop[] = [
       },
     ],
     // Confirmed absent from the Cornell CALS page, as for every herb on it.
+    verifiedFields: ['spacingInches', 'rowSpacingInches', 'sfgPlantsPerSquare'],
+    verified: true,
+  },
+  {
+    slug: 'sage',
+    name: 'Sage',
+    scientificName: 'Salvia officinalis',
+    type: 'herb',
+    spacingInches: 18,
+    // UGA's herb table gives plant spacing without a row figure for any herb,
+    // and Minnesota's herb page gives no per-herb figures at all, so the absence
+    // is confirmed rather than unsearched.
+    rowSpacingInches: null,
+    // Confirmed absent from the Cornell CALS square foot gardening page, whose
+    // list names no herb anywhere.
+    sfgPlantsPerSquare: null,
+    notes: [
+      'Culinary sage is Salvia officinalis. The word "sage" is also sold on ornamental salvias, on Russian sage and on white sage, which are different plants — only this one is the kitchen herb.',
+      'A woody perennial that goes leggy and bare at the base with age, like lavender and rosemary, and for the same reason: it does not reshoot well from old bare wood.',
+      'UGA puts sage in as a spring or fall planting rather than naming a week relative to frost.',
+    ],
+    sowIndoorsWeeksBeforeLastFrost: null,
+    transplantWeeksAfterLastFrost: null,
+    directSowWeeksRelativeToLastFrost: null,
+    noSowIndoorsReason:
+      'Not usually grown from seed — seed is slow and variable, so buy a named plant or root a cutting.',
+    noTransplantReason:
+      'No frost offset applies — UGA gives a planting season rather than a week count.',
+    noDirectSowReason: 'Not direct sown — a plant or a cutting is years ahead of a seedling.',
+    timingNote:
+      'Planted from a container or a cutting rather than sown. UGA puts it in as a spring or fall planting rather than naming a week relative to frost.',
+    daysToMaturity: null,
+    noDaysToMaturityReason:
+      'A woody perennial — picked over years rather than reaching maturity a set number of days from planting.',
+    sunHours: 6,
+    waterInchesPerWeek: null,
+    waterNote:
+      'No weekly figure is published for sage. Water a new plant until it establishes; an established one is at more risk from wet ground than from drought.',
+    soilPh: null,
+    soilPhNote:
+      'No range is published for this crop itself. UGA gives about 6 to 7.5 for herbs generally and Minnesota 6.0 to 7.5, which agree.',
+    fertilizerNote:
+      'Very little. Rich feeding gives soft growth with less flavour, and sharp drainage matters more than fertiliser.',
+    yieldPerPlantLb: null,
+    companionPlants: ['Cabbage', 'Carrot', 'Rosemary', 'Thyme', 'Lavender'],
+    avoidPlanting: ['Cucumber'],
+    commonProblems: [
+      'Woody, bare base on an old plant',
+      'Root rot in wet or heavy ground',
+      'Powdery mildew in still, humid air',
+      'Loss of flavour on rich, well-fed soil',
+    ],
+    source: {
+      institution: 'University of Georgia Extension',
+      title: 'Bulletin 1170, Herbs in Southern Gardens',
+      url: 'https://extension.uga.edu/publications/detail.html?number=B1170',
+    },
+    extraSources: [
+      {
+        institution: 'Cornell CALS',
+        title: 'Square Foot Gardening',
+        url: 'https://cals.cornell.edu/school-integrative-plant-science/school-sections/horticulture-section/outreach-and-extension/pandemic-vegetable-gardening/pandemic-vegetable-gardening-2021-archive/square-foot-gardening',
+      },
+    ],
+    verifiedFields: ['spacingInches', 'rowSpacingInches', 'sfgPlantsPerSquare'],
+    verified: true,
+  },
+  {
+    slug: 'thyme',
+    name: 'Thyme',
+    scientificName: 'Thymus vulgaris',
+    type: 'herb',
+    spacingInches: 12,
+    // UGA's herb table gives plant spacing without a row figure for any herb,
+    // and Minnesota's herb page gives no per-herb figures at all, so the absence
+    // is confirmed rather than unsearched.
+    rowSpacingInches: null,
+    // Confirmed absent from the Cornell CALS square foot gardening page, whose
+    // list names no herb anywhere.
+    sfgPlantsPerSquare: null,
+    notes: [
+      'A low, woody, evergreen Mediterranean subshrub. It takes drought and poor stony ground better than almost anything else in the herb bed.',
+      'Shade is the common mistake. It survives in part shade and grows leggy, sparse and noticeably less aromatic, because the oils that carry the flavour build in full sun.',
+      'UGA puts thyme in as a fall or spring planting rather than naming a week relative to frost.',
+    ],
+    sowIndoorsWeeksBeforeLastFrost: null,
+    transplantWeeksAfterLastFrost: null,
+    directSowWeeksRelativeToLastFrost: null,
+    noSowIndoorsReason:
+      'Not usually grown from seed — the seed is tiny and slow, so buy a plant or root a cutting.',
+    noTransplantReason:
+      'No frost offset applies — UGA gives a planting season rather than a week count.',
+    noDirectSowReason: 'Not direct sown — the seedlings are too small to compete in open ground.',
+    timingNote:
+      'Planted from a container, a cutting or a divided clump rather than sown. UGA puts it in as a fall or spring planting rather than naming a week relative to frost.',
+    daysToMaturity: null,
+    noDaysToMaturityReason:
+      'A woody perennial — picked a little at a time over years rather than maturing a set number of days from planting.',
+    sunHours: 6,
+    waterInchesPerWeek: null,
+    waterNote:
+      'No weekly figure is published for thyme. Water it in when new, then rarely — it is one of the most drought-tolerant plants in the herb bed and rots in wet ground.',
+    soilPh: null,
+    soilPhNote:
+      'No range is published for this crop itself. UGA gives about 6 to 7.5 for herbs generally and Minnesota 6.0 to 7.5, which agree.',
+    fertilizerNote:
+      'None to speak of. Thyme is stronger flavoured on poor, gritty, sharply drained soil than on anything improved.',
+    yieldPerPlantLb: null,
+    companionPlants: ['Cabbage', 'Strawberry', 'Tomato', 'Rosemary', 'Lavender', 'Sage'],
+    avoidPlanting: [],
+    commonProblems: [
+      'Leggy, sparse growth in shade',
+      'Root rot in wet or heavy ground',
+      'Woody centre on an old clump',
+      'Dying out under a winter mulch that holds water',
+    ],
+    source: {
+      institution: 'University of Georgia Extension',
+      title: 'Bulletin 1170, Herbs in Southern Gardens',
+      url: 'https://extension.uga.edu/publications/detail.html?number=B1170',
+    },
+    extraSources: [
+      {
+        institution: 'Cornell CALS',
+        title: 'Square Foot Gardening',
+        url: 'https://cals.cornell.edu/school-integrative-plant-science/school-sections/horticulture-section/outreach-and-extension/pandemic-vegetable-gardening/pandemic-vegetable-gardening-2021-archive/square-foot-gardening',
+      },
+    ],
+    verifiedFields: ['spacingInches', 'rowSpacingInches', 'sfgPlantsPerSquare'],
+    verified: true,
+  },
+  {
+    slug: 'oregano',
+    name: 'Oregano',
+    scientificName: 'Origanum vulgare',
+    type: 'herb',
+    spacingInches: 12,
+    // UGA's herb table gives plant spacing without a row figure for any herb,
+    // and Minnesota's herb page gives no per-herb figures at all, so the absence
+    // is confirmed rather than unsearched.
+    rowSpacingInches: null,
+    // Confirmed absent from the Cornell CALS square foot gardening page, whose
+    // list names no herb anywhere.
+    sfgPlantsPerSquare: null,
+    notes: [
+      'One of the few herbs genuinely better dried than fresh: drying concentrates the oils that carry its flavour, which is why dried oregano tastes stronger rather than flatter.',
+      'Flavour is strongest just before the flowers open, which is when to cut for drying.',
+      'Spreads by runners and will colonise a bed if left alone. A container keeps it where you put it.',
+      'UGA puts oregano in as a spring or fall planting rather than naming a week relative to frost.',
+    ],
+    sowIndoorsWeeksBeforeLastFrost: null,
+    transplantWeeksAfterLastFrost: null,
+    directSowWeeksRelativeToLastFrost: null,
+    noSowIndoorsReason:
+      'Not usually grown from seed — seed-grown plants vary a great deal in flavour, so buy or divide a plant you have tasted.',
+    noTransplantReason:
+      'No frost offset applies — UGA gives a planting season rather than a week count.',
+    noDirectSowReason: 'Not direct sown — the seedlings are slow and variable.',
+    timingNote:
+      'Planted from a container or a division rather than sown. UGA puts it in as a spring or fall planting rather than naming a week relative to frost.',
+    daysToMaturity: null,
+    noDaysToMaturityReason:
+      'Cut repeatedly, not harvested once — the first cut is judged by the flower buds, not by a day count.',
+    sunHours: 6,
+    waterInchesPerWeek: null,
+    waterNote:
+      'No weekly figure is published for oregano. Water a new plant until it establishes, then only in a long dry spell.',
+    soilPh: null,
+    soilPhNote:
+      'No range is published for this crop itself. UGA gives about 6 to 7.5 for herbs generally and Minnesota 6.0 to 7.5, which agree.',
+    fertilizerNote:
+      'Very little. Rich soil and nitrogen give a big, soft, mild plant — the opposite of what oregano is grown for.',
+    yieldPerPlantLb: null,
+    companionPlants: ['Tomato', 'Pepper', 'Cabbage', 'Basil', 'Thyme'],
+    avoidPlanting: [],
+    commonProblems: [
+      'Mild, weak flavour on rich soil',
+      'Spreading into the rest of the bed by runners',
+      'Root rot in wet ground',
+      'Woody, sparse centre on an old clump',
+    ],
+    source: {
+      institution: 'University of Georgia Extension',
+      title: 'Bulletin 1170, Herbs in Southern Gardens',
+      url: 'https://extension.uga.edu/publications/detail.html?number=B1170',
+    },
+    extraSources: [
+      {
+        institution: 'Cornell CALS',
+        title: 'Square Foot Gardening',
+        url: 'https://cals.cornell.edu/school-integrative-plant-science/school-sections/horticulture-section/outreach-and-extension/pandemic-vegetable-gardening/pandemic-vegetable-gardening-2021-archive/square-foot-gardening',
+      },
+    ],
     verifiedFields: ['spacingInches', 'rowSpacingInches', 'sfgPlantsPerSquare'],
     verified: true,
   },

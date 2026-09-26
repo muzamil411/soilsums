@@ -55,6 +55,15 @@ docs/ for how things work.
   in the data and the prose. Run `npm run pins` after any figure change and
   commit what it rewrites. `lib/pins/pins.test.ts` only checks a file exists,
   not that its text is current.
+- **Publishing a page renumbers other pins, so a large pin diff is normal and
+  is not by itself evidence of a stale figure.** Each pin carries a catalogue
+  number (`No. C-07`) built from the crop's index in the published list, so a
+  new crop shifts every alphabetically-later one: publishing the four part-two
+  herbs rewrote 38 existing PNGs whose text never changed. Read
+  `docs/pinterest-pins.md` in the diff to see what actually changed — a pin
+  whose row is identical there changed only its number. The numbering is not
+  stable across batches, so pins already uploaded keep numbers that no longer
+  match the site.
 - Never take a figure from a search-result summary. This was done once on
   the sulfur work and had to be undone against the primary source.
 
