@@ -47,6 +47,14 @@ docs/ for how things work.
   `spacingInches`, and asparagus kept a deleted 15 by spelling it
   "fifteen". The guard cannot see these, because the field is no longer
   null; only reading the page or grepping the value catches them.
+- **The pin images are a third surface, and nobody was checking it.** Pin text
+  is generated from page frontmatter into PNGs committed under `public/pins/`,
+  so a corrected figure does not reach them until `npm run pins` is run again.
+  Asparagus pins were still offering the retracted 15 inches and 4-week frost
+  offset, and marigold pins the retracted 10 inches, long after both were fixed
+  in the data and the prose. Run `npm run pins` after any figure change and
+  commit what it rewrites. `lib/pins/pins.test.ts` only checks a file exists,
+  not that its text is current.
 - Never take a figure from a search-result summary. This was done once on
   the sulfur work and had to be undone against the primary source.
 

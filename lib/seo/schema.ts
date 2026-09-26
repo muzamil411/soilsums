@@ -108,12 +108,10 @@ export function faqSchema(faqs: readonly { question: string; answer: string }[])
 export function howToSchema({
   name,
   description,
-  path,
   steps,
 }: {
   name: string;
   description: string;
-  path: string;
   steps: readonly { name: string; text: string }[];
 }) {
   return {
@@ -121,12 +119,16 @@ export function howToSchema({
     '@type': 'HowTo',
     name,
     description,
+    // No per-step url. Every step carried
+    // `#how-to-fill-a-raised-garden-bed`, which was wrong on any other page
+    // and a dead fragment on that one too: the MDX pipeline runs no rehype-slug,
+    // so no heading on this site has an id to link to. A step's url is optional,
+    // and a fragment that resolves to nothing is worse than none.
     step: steps.map((step, index) => ({
       '@type': 'HowToStep',
       position: index + 1,
       name: step.name,
       text: step.text,
-      url: `${absoluteUrl(path)}#how-to-fill-a-raised-garden-bed`,
     })),
   };
 }

@@ -100,7 +100,6 @@ the splits above are applied.
    the inflated competitor claims as the contrast — but it cannot assert
    pounds-per-plant as fact.
 
-
 ---
 
 ## Crop guide keywords
@@ -118,12 +117,12 @@ against the tool pages. Three were genuinely competing with
 outright, and one with the planting date calculator. All four were re-pointed at
 a question only the crop page can own:
 
-| Crop        | Was                          | Now                                 | Why it had to move                                                                                        |
-| ----------- | ---------------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Parsley     | when to start parsley seeds  | why is parsley so slow to germinate | The seed-starting article's table answers the old question exactly. Germination is the crop's real search. |
-| Cauliflower | when to start cauliflower seeds | why is my cauliflower curd loose | Same table, same answer. The curd failure is what people actually look up and nothing else covers it.     |
-| Eggplant    | when to plant eggplant       | what temperature does eggplant need | The article covers both the 8-week count and the 50°F-nights condition. The temperature is the distinctive claim. |
-| Cabbage     | when to plant cabbage        | why do cabbage heads split          | Weaker overlap than the three above, but the article carries the 9-week figure and cabbage has no second timing condition. |
+| Crop        | Was                             | Now                                 | Why it had to move                                                                                                         |
+| ----------- | ------------------------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Parsley     | when to start parsley seeds     | why is parsley so slow to germinate | The seed-starting article's table answers the old question exactly. Germination is the crop's real search.                 |
+| Cauliflower | when to start cauliflower seeds | why is my cauliflower curd loose    | Same table, same answer. The curd failure is what people actually look up and nothing else covers it.                      |
+| Eggplant    | when to plant eggplant          | what temperature does eggplant need | The article covers both the 8-week count and the 50°F-nights condition. The temperature is the distinctive claim.          |
+| Cabbage     | when to plant cabbage           | why do cabbage heads split          | Weaker overlap than the three above, but the article carries the 9-week figure and cabbage has no second timing condition. |
 
 **Left alone deliberately.** `when to plant peas` overlaps the seed-starting
 article by one row of one table, and the pea page's 45°F soil condition is
@@ -136,6 +135,33 @@ spacing calculator targets tool intent, and its own table is organised by
 spacing distance rather than by crop, so it never competes for a crop-named
 phrase. `when to plant cilantro`, `when to plant dill`, `when to plant sweet
 potato slips` and `how long do radishes take to grow` are likewise clear.
+
+### Herb pages, Batch 3 (September 2026)
+
+Herbs were the largest single gap in coverage: 290 keywords and 59,910 monthly
+searches across the merged Semrush Keyword Gap and Keyword Magic exports, of
+which 129 keywords and 19,460 searches sit at KD 20 or below, against one herb
+page (basil). The pattern held independently across three separate sets of four
+competitors, which is what made it worth acting on.
+
+| Crop     | Primary keyword                    | Volume | KD  | Checked against                                                                                                                                                                                                    |
+| -------- | ---------------------------------- | -----: | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Lavender | how to plant lavender              | 60,500 | 20  | No page targets any "how to plant X" phrase. No overlap with the planting date calculator: lavender has no frost-offset date at all.                                                                               |
+| Dill     | dill companion plants              |  2,900 | 20  | Follows the established one-crop-one-companion-phrase pattern (marigold, strawberry, swiss chard, watermelon). The companion planting article targets "does companion planting actually work", a different intent. |
+| Rosemary | how to grow rosemary from cuttings |    880 | 20  | Nothing on the site covers propagation. No overlap with the seed-starting article, which is about frost-offset indoor sowing.                                                                                      |
+| Parsley  | parsley seeds                      |  3,600 | 11  | Retargeted from "why is parsley so slow to germinate", which is now a supporting question answered in the body and in an FAQ. Not a "when do I plant this" phrase, so the seed-starting rule below does not bite.  |
+
+**Parsley's retarget.** The September audit moved parsley from "when to start
+parsley seeds" to "why is parsley so slow to germinate" to get clear of the
+seed-starting article's schedule table. Batch 3 moves it again, to "parsley
+seeds" at 3,600 and KD 11 — a higher-volume, lower-difficulty phrase that the
+germination material still answers. The old question is kept as a supporting
+keyword and an FAQ, so nothing is lost. The page was still a draft both times,
+so no slug moved and no live URL changed.
+
+**Deliberately not built yet.** A herbs hub page and a companion planting chart
+belong together, once all eight herb pages exist. Building the hub now would
+mean building it twice.
 
 ### The rule going forward
 

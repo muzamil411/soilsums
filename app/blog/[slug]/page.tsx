@@ -88,7 +88,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           data={howToSchema({
             name: entry.frontmatter.howTo.name,
             description: entry.frontmatter.howTo.description,
-            path: `/blog/${slug}/`,
             steps: entry.frontmatter.howTo.steps,
           })}
         />

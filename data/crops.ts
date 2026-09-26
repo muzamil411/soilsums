@@ -241,6 +241,19 @@ export function daysToMaturityLabel(crop: Crop): string {
   return crop.noDaysToMaturityReason ?? 'No days-to-maturity figure is published for this crop';
 }
 
+/**
+ * Whether a crop's in-row spacing is confirmed against a publication.
+ *
+ * The tool tables and the spacing calculator state their figures flat, with no
+ * estimate marker anywhere — the marker only exists on a crop page. So a crop
+ * whose spacing is not confirmed is left out of them rather than listed as
+ * though it were checked. It still gets its own page, where the marker and the
+ * data-sources note say plainly that the figure is a typical published range.
+ */
+export function spacingConfirmed(crop: Crop): boolean {
+  return crop.verifiedFields.includes('spacingInches');
+}
+
 /** Every publication behind a crop's figures, in citation order. */
 export function cropSources(crop: Crop): readonly CropSource[] {
   return crop.source ? [crop.source, ...(crop.extraSources ?? [])] : [];
@@ -1260,13 +1273,21 @@ export const crops: readonly Crop[] = [
     sowIndoorsWeeksBeforeLastFrost: 8,
     transplantWeeksAfterLastFrost: 0,
     directSowWeeksRelativeToLastFrost: 0,
-    daysToMaturity: [70, 90],
+    // The slowest germination of any herb on the site, and the reason most
+    // people think the seed failed. Unconfirmed against a publication.
+    germinationDays: [14, 28],
+    daysToMaturity: null,
+    noDaysToMaturityReason:
+      'Picked continuously, not harvested once — and a biennial, so its second year goes to seed rather than to leaf.',
     sunHours: 5,
-    waterInchesPerWeek: 1,
-    soilPh: [6.0, 7.0],
+    waterInchesPerWeek: null,
+    waterNote:
+      'No weekly figure is published for parsley in the source behind this page. The surface must stay damp for the weeks germination takes; a settled plant is far less fussy.',
+    soilPh: null,
+    soilPhNote: 'No range is published for this crop in the source behind this page.',
     fertilizerNote:
       'Light nitrogen through the season. Slow to germinate — be patient, keep moist.',
-    yieldPerPlantLb: [0.25, 0.5],
+    yieldPerPlantLb: null,
     companionPlants: ['Tomato', 'Carrot', 'Chive', 'Corn'],
     avoidPlanting: ['Lettuce'],
     commonProblems: [
@@ -1303,12 +1324,20 @@ export const crops: readonly Crop[] = [
     directSowWeeksRelativeToLastFrost: 0,
     noSowIndoorsReason: 'Not started indoors — the taproot resents being moved.',
     noTransplantReason: 'Not transplanted — sow where it will grow.',
-    daysToMaturity: [40, 60],
+    germinationDays: [7, 21],
+    // Deleted rather than estimated, and a single pair was the wrong shape
+    // anyway: leaf, flower head and seed ripen on three different timelines.
+    daysToMaturity: null,
+    noDaysToMaturityReason:
+      'Three harvests, not one — leaf, flower head and seed ripen weeks apart, so no single figure describes maturity.',
     sunHours: 6,
-    waterInchesPerWeek: 1,
-    soilPh: [5.8, 6.5],
+    waterInchesPerWeek: null,
+    waterNote:
+      'No weekly figure is published for dill in the source behind this page. Keep the seedbed damp until it is up, then water in dry spells — a check makes it bolt.',
+    soilPh: null,
+    soilPhNote: 'No range is published for this crop in the source behind this page.',
     fertilizerNote: 'Poor soil suits it. Direct sow — the taproot hates being moved.',
-    yieldPerPlantLb: [0.2, 0.5],
+    yieldPerPlantLb: null,
     companionPlants: ['Cabbage', 'Cucumber', 'Onion', 'Lettuce'],
     avoidPlanting: ['Carrot', 'Tomato'],
     commonProblems: [
@@ -1717,6 +1746,112 @@ export const crops: readonly Crop[] = [
       'directSowWeeksRelativeToLastFrost',
     ],
     verified: true,
+  },
+  {
+    slug: 'lavender',
+    name: 'Lavender',
+    scientificName: 'Lavandula angustifolia',
+    type: 'herb',
+    // A wide range, unconfirmed, and deliberately not a point figure: published
+    // spacing for lavender varies with the cultivar's mature width, which runs
+    // from a compact English lavender to a plant three feet across. It is left
+    // out of verifiedFields, so the page carries the estimate marker.
+    spacingInches: [18, 36],
+    rowSpacingInches: null,
+    sfgPlantsPerSquare: null,
+    notes: [
+      'A woody Mediterranean subshrub, not a soft herb. It is grown for years in one place rather than sown each spring, and almost everything that kills it is a soil or drainage problem rather than a cold one.',
+      'Rich, well-fed ground produces soft, sappy growth that rots in winter. Poor, gritty, sharply drained soil produces a hard, long-lived plant.',
+      'It will not reshoot from bare old wood. A plant left unpruned goes woody at the base, splits open in the middle, and cannot be brought back by cutting into that wood.',
+      'A "lavender tree" is not a species. It is an ordinary lavender, usually a tender one, trained to a single clear stem with a mop head on top.',
+    ],
+    sowIndoorsWeeksBeforeLastFrost: null,
+    transplantWeeksAfterLastFrost: null,
+    directSowWeeksRelativeToLastFrost: null,
+    noSowIndoorsReason:
+      'Not grown from seed in a garden — seed is slow and variable, so buy a named plant or root a cutting.',
+    noTransplantReason:
+      'No frost offset applies — a container-grown plant goes in whenever the ground is workable and not frozen.',
+    noDirectSowReason:
+      'Not direct sown — seed germinates poorly in open ground and a seedling takes years to make a plant.',
+    timingNote:
+      'Planted from a container rather than sown, so it has no frost-offset date. No extension publication behind this page gives a planting window, so none is quoted.',
+    daysToMaturity: null,
+    noDaysToMaturityReason:
+      'A woody perennial — it flowers in seasons, not in a count of days from planting.',
+    sunHours: 6,
+    // No sourced weekly figure, and a weekly figure would be the wrong shape
+    // of answer for this plant: established lavender is at more risk from
+    // watering than from drought.
+    waterInchesPerWeek: null,
+    waterNote:
+      'No weekly figure is published for lavender, and it would mislead. Water a new plant until it establishes, then leave it alone — wet soil in winter kills more lavender than cold does.',
+    soilPh: null,
+    soilPhNote: 'No range is published for this crop in the sources behind this page.',
+    fertilizerNote:
+      'Do not feed it. Lavender flowers best on poor, gritty, sharply drained ground; rich soil and a nitrogen feed give a soft leafy plant that flowers less and rots in winter.',
+    yieldPerPlantLb: null,
+    companionPlants: ['Rosemary', 'Thyme', 'Sage'],
+    avoidPlanting: [],
+    commonProblems: [
+      'Rot from winter wet in heavy soil',
+      'Woody, split centre on an unpruned plant',
+      'Soft leafy growth and few flowers on rich soil',
+      'Dying back in a pot with no drainage',
+    ],
+    source: null,
+    verifiedFields: [],
+    verified: false,
+  },
+  {
+    slug: 'rosemary',
+    name: 'Rosemary',
+    scientificName: 'Salvia rosmarinus',
+    type: 'herb',
+    // Unconfirmed and left as a range. Rosemary's mature width varies from an
+    // upright cultivar to a prostrate one, and no source behind this page
+    // gives a spacing, so it is not in verifiedFields.
+    spacingInches: [24, 36],
+    rowSpacingInches: null,
+    sfgPlantsPerSquare: null,
+    notes: [
+      'A woody evergreen shrub. It is reclassified as Salvia rosmarinus rather than Rosmarinus officinalis, which is why older books and newer labels disagree about its name.',
+      'Seed is slow and unreliable, which is the honest reason cuttings are the usual method. A cutting is also a copy of a plant whose hardiness and flavour you have already seen.',
+      'Cold alone is rarely what kills it. A plant in cold, wet, heavy ground dies where the same plant in gritty, sharply drained soil in the same winter lives.',
+    ],
+    sowIndoorsWeeksBeforeLastFrost: null,
+    transplantWeeksAfterLastFrost: null,
+    directSowWeeksRelativeToLastFrost: null,
+    noSowIndoorsReason:
+      'Not usually grown from seed — germination is slow and erratic, so take a cutting instead.',
+    noTransplantReason:
+      'No frost offset applies — a rooted cutting or container plant goes out once the ground is workable and frost has finished.',
+    noDirectSowReason: 'Not direct sown — seed is too slow and unreliable to be worth a drill.',
+    timingNote:
+      'Grown from cuttings rather than seed, so it has no frost-offset sowing date. No extension publication behind this page gives a planting window, so none is quoted.',
+    daysToMaturity: null,
+    noDaysToMaturityReason:
+      'A woody perennial — a cutting takes weeks to root and seasons to become a picking plant, not a set count of days.',
+    sunHours: 6,
+    waterInchesPerWeek: null,
+    waterNote:
+      'No weekly figure is published for rosemary. Water a rooting cutting or a new plant, and an established one only in a long dry spell — it suffers far more from standing wet than from drought.',
+    soilPh: null,
+    soilPhNote: 'No range is published for this crop in the sources behind this page.',
+    fertilizerNote:
+      'Very little. A free-draining, gritty mix matters more than feeding, and a rich potting compost that holds water is the commonest way a potted rosemary is lost.',
+    yieldPerPlantLb: null,
+    companionPlants: ['Lavender', 'Thyme', 'Sage', 'Cabbage'],
+    avoidPlanting: [],
+    commonProblems: [
+      'Root rot in wet or heavy ground',
+      'Cuttings rotting before they root',
+      'Leggy, sparse growth in too little light',
+      'Powdery mildew in still, humid air indoors',
+    ],
+    source: null,
+    verifiedFields: [],
+    verified: false,
   },
 ];
 export const cropSlugs = crops.map((crop) => crop.slug);

@@ -17,6 +17,7 @@ import Dill from './dill.mdx';
 import Eggplant from './eggplant.mdx';
 import Garlic from './garlic.mdx';
 import Kale from './kale.mdx';
+import Lavender from './lavender.mdx';
 import Lettuce from './lettuce.mdx';
 import Okra from './okra.mdx';
 import Onion from './onion.mdx';
@@ -26,6 +27,7 @@ import Pepper from './pepper.mdx';
 import Potato from './potato.mdx';
 import Pumpkin from './pumpkin.mdx';
 import Radish from './radish.mdx';
+import Rosemary from './rosemary.mdx';
 import Spinach from './spinach.mdx';
 import Squash from './squash.mdx';
 import Strawberry from './strawberry.mdx';
@@ -75,6 +77,8 @@ export const cropContent: Record<string, ComponentType> = {
   cilantro: Cilantro,
   parsley: Parsley,
   dill: Dill,
+  lavender: Lavender,
+  rosemary: Rosemary,
   strawberry: Strawberry,
   watermelon: Watermelon,
 };

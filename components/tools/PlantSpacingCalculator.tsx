@@ -9,7 +9,7 @@ import { ResultTable } from '@/components/ui/ResultTable';
 import { SelectField } from '@/components/ui/SelectField';
 import { num, useToolState, type FieldKind } from '@/lib/hooks/useToolState';
 import { calculatePlantSpacing, type SpacingLayout } from '@/lib/calculators/plant-spacing';
-import { crops, getCrop, spacingFor, inchesLabel } from '@/data/crops';
+import { crops, getCrop, inchesLabel, spacingConfirmed, spacingFor } from '@/data/crops';
 import { CropDataSource } from './DataSource';
 
 const PARAMS = {
@@ -150,7 +150,7 @@ export function PlantSpacingCalculator({ toolSlug }: { toolSlug: string }) {
             <CropDataSource
               crops={(() => {
                 const chosen = getCrop(values.crop ?? '');
-                return chosen ? [chosen] : crops;
+                return chosen ? [chosen] : crops.filter(spacingConfirmed);
               })()}
               what="Spacing"
             />
@@ -165,7 +165,10 @@ export function PlantSpacingCalculator({ toolSlug }: { toolSlug: string }) {
           onChange={applyCrop}
           options={[
             { value: '', label: 'Choose a crop to fill in its spacing' },
-            ...crops.map((crop) => ({
+            // Only crops whose spacing is confirmed. This control fills the
+            // form with a figure and the result reads as fact, so a crop
+            // awaiting a source is left out rather than offered here.
+            ...crops.filter(spacingConfirmed).map((crop) => ({
               value: crop.slug,
               label: `${crop.name} — ${inchesLabel(crop.spacingInches)} apart`,
             })),

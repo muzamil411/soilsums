@@ -1,4 +1,10 @@
-import { crops, inchesLabel, plantsPerSquareFoot, spacingFor } from '@/data/crops';
+import {
+  crops,
+  inchesLabel,
+  plantsPerSquareFoot,
+  spacingConfirmed,
+  spacingFor,
+} from '@/data/crops';
 import { DENSITY_NOTE, perSquare } from '@/lib/content/density';
 import { DataTable, NotApplicable } from './DataTable';
 
@@ -15,7 +21,9 @@ import { DataTable, NotApplicable } from './DataTable';
 export function SfgDensityTable({ grouped = false }: { grouped?: boolean }) {
   if (grouped) return <GroupedByDensity />;
 
-  const ranked = [...crops].sort((a, b) => {
+  // Every row here prints the crop's spacing beside the method figure, so an
+  // unconfirmed spacing would ride in on a table about something else.
+  const ranked = crops.filter(spacingConfirmed).sort((a, b) => {
     const left = a.sfgPlantsPerSquare;
     const right = b.sfgPlantsPerSquare;
     if (left === null && right === null) return a.name.localeCompare(b.name);
@@ -77,12 +85,11 @@ function GroupedByDensity() {
  * whole point of the section this sits in — so the two never share a table.
  */
 export function SfgFallbackTable() {
-  const missing = [...crops]
-    .filter((crop) => crop.sfgPlantsPerSquare === null)
+  const missing = crops
+    .filter((crop) => crop.sfgPlantsPerSquare === null && spacingConfirmed(crop))
     .sort(
       (a, b) =>
-        spacingFor(a.spacingInches) - spacingFor(b.spacingInches) ||
-        a.name.localeCompare(b.name),
+        spacingFor(a.spacingInches) - spacingFor(b.spacingInches) || a.name.localeCompare(b.name),
     );
 
   return (
