@@ -16,6 +16,21 @@ describe('crop data', () => {
     }
   });
 
+  it("explains every missing days-to-maturity in the crop's own words", () => {
+    // The quick-facts table used to derive one sentence for every null here,
+    // and it said "a perennial". Marigold is an annual with no published
+    // figure, so the page answering "are marigolds perennial" carried the
+    // opposite claim in the box Google is most likely to lift. Any crop that
+    // omits the figure now has to say why itself.
+    for (const crop of crops) {
+      if (crop.daysToMaturity === null) {
+        expect(crop.noDaysToMaturityReason, `${crop.slug} days to maturity`).toBeTruthy();
+      } else {
+        expect(crop.noDaysToMaturityReason, crop.slug).toBeUndefined();
+      }
+    }
+  });
+
   it('writes every reason as "short phrase — full explanation"', () => {
     // A table cell shows the clause before the dash, so a reason without one
     // would spill a whole sentence into a narrow column.
@@ -24,6 +39,7 @@ describe('crop data', () => {
         [crop.slug, crop.noSowIndoorsReason],
         [crop.slug, crop.noTransplantReason],
         [crop.slug, crop.noDirectSowReason],
+        [crop.slug, crop.noDaysToMaturityReason],
       ].filter(([, reason]) => reason !== undefined),
     );
     expect(reasons.length).toBeGreaterThan(0);

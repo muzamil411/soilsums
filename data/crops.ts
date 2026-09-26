@@ -19,8 +19,12 @@
  *    started indoors (carrots, radishes, beans).
  *  - `directSowWeeksRelativeToLastFrost: null` means it is not normally direct
  *    sown (tomatoes, peppers, broccoli).
- *  - `daysToMaturity: null` means the crop does not have a meaningful
- *    days-to-maturity figure from planting — a perennial such as strawberry.
+ *  - `daysToMaturity: null` means no days-to-maturity figure is shown, which
+ *    happens for two unrelated reasons: the concept does not apply (a
+ *    perennial such as strawberry, cropping years after planting), or it
+ *    applies but nobody publishes it (marigold, where no extension source
+ *    gives days from sowing to flower). The two are not interchangeable, so
+ *    the crop says which in `noDaysToMaturityReason`.
  *  - Garlic is planted in autumn, so no last-frost offset describes it. Crops
  *    like that carry a `timingNote` and the planting date calculator shows the
  *    note instead of inventing a spring date.
@@ -153,6 +157,15 @@ export type Crop = {
   readonly noDirectSowReason?: string;
 
   readonly daysToMaturity: readonly [number, number] | null;
+  /**
+   * Why no days-to-maturity figure is shown. Required wherever
+   * `daysToMaturity` is null, because the reasons differ in kind: a perennial
+   * has no such figure, while an annual can simply have none published. The
+   * quick-facts table used to derive one sentence for both and told readers
+   * marigolds were perennials on a page whose whole purpose is saying they
+   * are not.
+   */
+  readonly noDaysToMaturityReason?: string;
   readonly sunHours: number;
   /** Inches per week. Null where no source quantifies it. */
   readonly waterInchesPerWeek: number | null;
@@ -207,6 +220,25 @@ export type Crop = {
 export function plantsPerSquareFoot(crop: Pick<Crop, 'spacingInches'>): number {
   const inches = spacingFor(crop.spacingInches);
   return Math.round((144 / (inches * inches)) * 100) / 100;
+}
+
+/**
+ * What the days-to-maturity row says, for a crop that has the figure and for
+ * one that does not.
+ *
+ * It lives here rather than inside the table because the wording for a missing
+ * figure is a claim about the plant, and a claim needs a test. The table used
+ * to build it inline as "a perennial, so it has no days-to-maturity from
+ * planting" — true of asparagus and blueberry, false of marigold, which is an
+ * annual whose days to flower nobody publishes. The fallback now says only
+ * that no figure is published, which is true of any crop that reaches it, and
+ * a crop with more to say says it in `noDaysToMaturityReason`.
+ */
+export function daysToMaturityLabel(crop: Crop): string {
+  if (crop.daysToMaturity) {
+    return `${crop.daysToMaturity[0]} to ${crop.daysToMaturity[1]} days`;
+  }
+  return crop.noDaysToMaturityReason ?? 'No days-to-maturity figure is published for this crop';
 }
 
 /** Every publication behind a crop's figures, in citation order. */
@@ -1313,6 +1345,8 @@ export const crops: readonly Crop[] = [
     noDirectSowReason:
       'Not sown from seed — set bare-root crowns out about two weeks before your last frost.',
     daysToMaturity: null,
+    noDaysToMaturityReason:
+      'A perennial — the first full crop comes the season after planting, not a set number of days from it.',
     sunHours: 8,
     waterInchesPerWeek: 1,
     soilPh: [5.5, 6.5],
@@ -1411,6 +1445,8 @@ export const crops: readonly Crop[] = [
       'Not transplanted on a frost schedule — crowns go into a trench in spring, once the ground can be worked.',
     noDirectSowReason: 'Not direct sown — crowns are planted in a trench, not seed in a drill.',
     daysToMaturity: null,
+    noDaysToMaturityReason:
+      'A perennial — the first harvest is two years after planting crowns, not a count of days from it.',
     sunHours: 6,
     waterInchesPerWeek: 1,
     soilPh: [6.5, 7],
@@ -1477,6 +1513,8 @@ export const crops: readonly Crop[] = [
     noSowIndoorsReason: 'Not grown from seed in a home garden — buy a two- or three-year-old bush.',
     noDirectSowReason: 'Not sown from seed — a bush from a nursery fruits years sooner.',
     daysToMaturity: null,
+    noDaysToMaturityReason:
+      'A perennial — a bush takes two to three years to crop properly, not a count of days from planting.',
     sunHours: 8,
     // None of the three publications gives a weekly figure. They say to water
     // consistently from blossom through harvest, which is what the page says.
@@ -1558,11 +1596,19 @@ export const crops: readonly Crop[] = [
     germinationDays: [5, 7],
     seedDepthInches: 0.25,
     soilPh: [5.5, 7],
-    // No extension publication found gives days from sowing to flower, so
-    // none is shown rather than an estimate.
+    // An annual with no published figure, which is not the same thing as a
+    // perennial having none. Marigolds flower in a season; no extension source
+    // found puts a number of days on it, so none is shown.
     daysToMaturity: null,
+    noDaysToMaturityReason:
+      'No days-to-flower figure is published — no extension source gives a count of days from sowing to bloom.',
     sunHours: 6,
-    waterInchesPerWeek: 1,
+    // Deleted rather than estimated. The 1 inch here was a default carried in
+    // with the entry, not a figure from HGIC 1168, which gives no watering
+    // quantity.
+    waterInchesPerWeek: null,
+    waterNote:
+      'No weekly figure is published for marigolds. Water enough to keep them growing and let the surface dry between waterings.',
     fertilizerNote:
       'Poor soil suits them. Rich or heavily fed ground gives large leafy plants and few flowers.',
     yieldPerPlantLb: null,

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import matter from 'gray-matter';
-import { crops, type Crop } from '@/data/crops';
+import { crops, daysToMaturityLabel, type Crop } from '@/data/crops';
 
 /**
  * A figure deleted from the dataset must not survive in the page's prose.
@@ -47,7 +47,10 @@ const DELETABLE: readonly {
   {
     fields: ['waterInchesPerWeek'],
     what: 'a weekly watering figure',
-    pattern: /\b\d+(?:\.\d+)?\s*(?:inches|inch|in)\s+(?:a|per)\s+week/gi,
+    // Words count as figures. Marigold's body read "an inch a week" after the
+    // field was questioned, and a digit-only pattern cannot see that, which is
+    // the same blind spot asparagus exploited by spelling fifteen out.
+    pattern: /\b(?:\d+(?:\.\d+)?|an|one|two|half an)\s*(?:inches|inch|in)\s+(?:a|per)\s+week/gi,
   },
   {
     // Only a crop with no sourced planting schedule at all. A page that
@@ -75,8 +78,7 @@ const DELETABLE: readonly {
   {
     fields: ['rowSpacingInches'],
     what: 'a row spacing',
-    pattern:
-      /\b(?:rows?\s+\d+\s*(?:inches|inch|in)\b|\d+\s*(?:inches|inch|in)\s+between\s+rows)/gi,
+    pattern: /\b(?:rows?\s+\d+\s*(?:inches|inch|in)\b|\d+\s*(?:inches|inch|in)\s+between\s+rows)/gi,
   },
   {
     fields: ['yieldPerPlantLb'],
@@ -136,4 +138,34 @@ describe('crop prose against the dataset', () => {
         `where no estimate marker can warn them about it:\n\n${offences.join('\n')}\n`,
     ).toEqual([]);
   });
+
+  /**
+   * The quick-facts box and the body have to agree about what the plant is.
+   *
+   * This exists because they did not. The days-to-maturity row derived its
+   * explanation from the figure being null and said "a perennial" for every
+   * crop in that position, including marigold — whose opening line is
+   * "Marigolds are annuals, not perennials" and whose primary keyword is "are
+   * marigolds perennial flowers". A reader scanning the box, or Google lifting
+   * it, got the answer the page exists to contradict.
+   */
+  it.each(withPages)(
+    '$slug does not call itself perennial in the box and annual in the body',
+    (crop) => {
+      // The rendered row, not the data field: the false claim lived in the
+      // table's fallback wording, where no crop's data file mentioned it at all.
+      const reason = daysToMaturityLabel(crop);
+      if (!/perennial/i.test(reason)) return;
+
+      const body = bodyOf(crop.slug) ?? '';
+      const claim = body.match(/\b(?:are|is)\s+(?:an?\s+)?\*{0,2}annuals?\*{0,2}\b/i);
+
+      expect(
+        claim?.[0] ?? null,
+        `${crop.slug}: the quick-facts box says "${reason}" while the body says ` +
+          `"${claim?.[0] ?? ''}". One of them is wrong, and the box is the part ` +
+          `a reader scans and a search engine lifts.`,
+      ).toBeNull();
+    },
+  );
 });

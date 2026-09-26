@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import {
   CHECKED_FIELDS,
+  daysToMaturityLabel,
   inchesLabel,
   plantsPerSquareFoot,
   type Crop,
@@ -122,9 +123,11 @@ export function CropFacts({ crop }: { crop: Crop }) {
     },
     {
       label: 'Days to maturity',
-      value: crop.daysToMaturity
-        ? `${crop.daysToMaturity[0]} to ${crop.daysToMaturity[1]} days`
-        : 'A perennial, so it has no days-to-maturity from planting',
+      // Built in data/crops.ts, not here, because the wording for a missing
+      // figure is a claim about the plant and a claim needs a test. This row
+      // used to say "a perennial" for every crop with a null figure, marigold
+      // included.
+      value: daysToMaturityLabel(crop),
       isReason: crop.daysToMaturity === null,
     },
     {
