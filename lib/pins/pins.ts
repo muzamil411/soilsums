@@ -31,7 +31,6 @@ export type Pin = {
   readonly slug: string;
   readonly variant: 'a' | 'b';
   /** Stamped on the packet band, as on the site's cards. */
-  readonly catalogue: string;
   /** The large type. A real question, kept under HEADLINE_MAX_WORDS. */
   readonly headline: string;
   /** One line under the rule. */
@@ -106,17 +105,12 @@ const HEADLINE_OVERRIDES: Readonly<Record<string, string>> = {
   'tool-raised-bed-soil-calculator-b': 'Must a raised bed be filled entirely with bought soil?',
 };
 
-function catalogueFor(kind: ContentKind, slug: string, index: number): string {
-  if (kind === 'tools') {
-    const tool = tools.find((entry) => entry.slug === slug);
-    if (tool) return tool.no;
-  }
-  const letter = kind === 'blog' ? 'A' : 'C';
-  return `No. ${letter}-${String(index + 1).padStart(2, '0')}`;
-}
-
 function pathFor(kind: ContentKind, slug: string): string {
-  return kind === 'blog' ? `/blog/${slug}/` : kind === 'tools' ? `/tools/${slug}/` : `/crops/${slug}/`;
+  return kind === 'blog'
+    ? `/blog/${slug}/`
+    : kind === 'tools'
+      ? `/tools/${slug}/`
+      : `/crops/${slug}/`;
 }
 
 /** First sentence of a block of prose, if it is short enough for a card. */
@@ -146,7 +140,10 @@ function variantsFor(
       { headline: faqs[1]?.question ?? title, faqIndex: faqs[1] ? 1 : undefined },
     ];
   }
-  return [{ headline: title }, { headline: faqs[0]?.question ?? title, faqIndex: faqs[0] ? 0 : undefined }];
+  return [
+    { headline: title },
+    { headline: faqs[0]?.question ?? title, faqIndex: faqs[0] ? 0 : undefined },
+  ];
 }
 
 /**
@@ -180,7 +177,9 @@ function keywordFor(entry: ContentEntry, kind: ContentKind): string {
   const keyword = entry.frontmatter.keyword;
   if (typeof keyword === 'string' && keyword.trim() !== '') return keyword.trim();
   if (kind === 'tools') {
-    return (tools.find((t) => t.slug === entry.slug)?.name ?? entry.frontmatter.title).toLowerCase();
+    return (
+      tools.find((t) => t.slug === entry.slug)?.name ?? entry.frontmatter.title
+    ).toLowerCase();
   }
   return entry.frontmatter.title.toLowerCase();
 }
@@ -240,9 +239,8 @@ export function buildPins(): Pin[] {
   for (const kind of ['blog', 'tools', 'crops'] as const) {
     const pages = [...listPublished(kind)].sort((a, b) => a.slug.localeCompare(b.slug));
 
-    pages.forEach((entry, index) => {
+    for (const entry of pages) {
       const variants = variantsFor(entry, kind);
-      const catalogue = catalogueFor(kind, entry.slug, index);
       const board = BOARDS[entry.slug] ?? DEFAULT_BOARD[kind];
       const prefix = kind === 'blog' ? 'article' : kind === 'tools' ? 'tool' : 'crop';
 
@@ -257,7 +255,6 @@ export function buildPins(): Pin[] {
           kind,
           slug: entry.slug,
           variant,
-          catalogue,
           headline,
           support: supportFor(entry, kind, source.faqIndex),
           title: tidy(headline).slice(0, TITLE_MAX),
@@ -266,7 +263,7 @@ export function buildPins(): Pin[] {
           board,
         });
       }
-    });
+    }
   }
 
   return pins;

@@ -7,7 +7,7 @@
  * here. Run it with `npm run pins`.
  *
  * The cards are the site's seed packet: paper stock over graph paper, a solid
- * kale band carrying the catalogue number, a hairline keyline, a radish rule
+ * kale band carrying the site name, a hairline keyline, a radish rule
  * under the question. Depth comes from the band and the keyline, never from a
  * gradient or a shadow.
  *
@@ -36,9 +36,24 @@ const radish = '#b8294a';
 const rule = '#c8ccbf';
 
 const fonts = [
-  { name: 'Fraunces', data: readFileSync(join(FONT_DIR, 'Fraunces-SemiBold.ttf')), weight: 600 as const, style: 'normal' as const },
-  { name: 'Public Sans', data: readFileSync(join(FONT_DIR, 'PublicSans-Regular.ttf')), weight: 400 as const, style: 'normal' as const },
-  { name: 'Public Sans', data: readFileSync(join(FONT_DIR, 'PublicSans-SemiBold.ttf')), weight: 600 as const, style: 'normal' as const },
+  {
+    name: 'Fraunces',
+    data: readFileSync(join(FONT_DIR, 'Fraunces-SemiBold.ttf')),
+    weight: 600 as const,
+    style: 'normal' as const,
+  },
+  {
+    name: 'Public Sans',
+    data: readFileSync(join(FONT_DIR, 'PublicSans-Regular.ttf')),
+    weight: 400 as const,
+    style: 'normal' as const,
+  },
+  {
+    name: 'Public Sans',
+    data: readFileSync(join(FONT_DIR, 'PublicSans-SemiBold.ttf')),
+    weight: 600 as const,
+    style: 'normal' as const,
+  },
 ];
 
 /**
@@ -86,7 +101,14 @@ function card(pin: Pin) {
             padding: '30px 46px',
           }}
         >
-          <div style={{ fontFamily: 'Fraunces', fontSize: 38, color: paper }}>{pin.catalogue}</div>
+          {/* This band carried a catalogue number built from the crop's index in
+              the published list, so publishing one crop rewrote the PNG of every
+              alphabetically-later one. It meant nothing to a viewer and it
+              drowned real changes in a large diff — a 27-file pin diff was once
+              read as retracted figures when it was mostly renumbering. The
+              stable identifier is the file name, recorded in
+              docs/pinterest-pins.md, which is where a record belongs. */}
+          <div style={{ fontFamily: 'Fraunces', fontSize: 38, color: paper }}>SoilSums</div>
           <div style={{ backgroundColor: radish, width: 150, height: 26, display: 'flex' }} />
         </div>
 
@@ -110,7 +132,15 @@ function card(pin: Pin) {
           >
             {pin.headline}
           </div>
-          <div style={{ backgroundColor: radish, width: 190, height: 11, margin: '46px 0', display: 'flex' }} />
+          <div
+            style={{
+              backgroundColor: radish,
+              width: 190,
+              height: 11,
+              margin: '46px 0',
+              display: 'flex',
+            }}
+          />
           <div
             style={{
               fontFamily: 'Public Sans',

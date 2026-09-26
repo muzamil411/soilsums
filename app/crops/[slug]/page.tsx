@@ -14,7 +14,7 @@ import { JsonLd } from '@/components/seo/JsonLd';
 import { CropFacts } from '@/components/crops/CropFacts';
 import { CropCalculators } from '@/components/crops/CropCalculators';
 import { cropContent } from '@/content/crops/registry';
-import { crops, getCrop } from '@/data/crops';
+import { crops, getCrop, resolveCompanion } from '@/data/crops';
 import { getTool } from '@/data/tools';
 import { getContent, isPublishable, listPublished } from '@/lib/content/mdx';
 import { pageMetadata } from '@/lib/seo/metadata';
@@ -66,9 +66,15 @@ export default async function CropPage({ params }: { params: Promise<{ slug: str
 
   const publishedCropSlugs = new Set(listPublished('crops').map((item) => item.slug));
 
-  // Companions this reader can actually click through to, matched by name.
+  // Companions this reader can actually click through to.
+  //
+  // This matched on the crop's own name, which silently failed for the three
+  // most-cited companions on the site: `bean` is named "Bush bean", `corn` is
+  // "Sweet corn" and `squash` is "Winter squash", while nineteen crops list them
+  // as plain "Bean", "Corn" and "Squash". The chip rendered as text and the link
+  // never appeared, on about twenty live pages, with nothing to flag it.
   const companionLinks = crop.companionPlants
-    .map((name) => crops.find((candidate) => candidate.name.toLowerCase() === name.toLowerCase()))
+    .map((name) => resolveCompanion(name))
     .filter(
       (candidate): candidate is NonNullable<typeof candidate> =>
         candidate !== undefined && publishedCropSlugs.has(candidate.slug),

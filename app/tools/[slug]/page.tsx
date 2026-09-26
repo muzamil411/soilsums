@@ -12,7 +12,7 @@ import { JsonLd } from '@/components/seo/JsonLd';
 import { AdSlot } from '@/components/ads/AdSlot';
 import { toolComponents } from '@/components/tools/registry';
 import { toolContent } from '@/content/tools/registry';
-import { getTool, publishedTools, toolCategories } from '@/data/tools';
+import { getTool, publishedTools, toolCategories, toolCountWord } from '@/data/tools';
 import { getContent, isPublishable, listPublished } from '@/lib/content/mdx';
 import { pageMetadata } from '@/lib/seo/metadata';
 import { webApplicationSchema } from '@/lib/seo/schema';
@@ -143,7 +143,8 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
         <SectionRule>Keep going</SectionRule>
         <ul className="space-y-2">
           <li>
-            <Link href="/tools/">All twelve calculators</Link>, grouped by the job you are doing
+            <Link href="/tools/">All {toolCountWord} calculators</Link>, grouped by the job you are
+            doing
           </li>
           <li>
             <Link href={`/tools/#${tool.category}`}>

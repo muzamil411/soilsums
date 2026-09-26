@@ -42,6 +42,24 @@
  */
 export type CropType = 'vegetable' | 'herb' | 'fruit';
 
+/** Botanical families across the dataset. Same family means shared pests. */
+export type CropFamily =
+  | 'Solanaceae'
+  | 'Cucurbitaceae'
+  | 'Brassicaceae'
+  | 'Apiaceae'
+  | 'Amaryllidaceae'
+  | 'Fabaceae'
+  | 'Amaranthaceae'
+  | 'Asteraceae'
+  | 'Asparagaceae'
+  | 'Poaceae'
+  | 'Convolvulaceae'
+  | 'Rosaceae'
+  | 'Ericaceae'
+  | 'Malvaceae'
+  | 'Lamiaceae';
+
 /** The extension page a crop's checked fields were confirmed against. */
 export type CropSource = {
   readonly institution: string;
@@ -99,6 +117,14 @@ export type Crop = {
   readonly name: string;
   readonly scientificName: string;
   readonly type: CropType;
+  /**
+   * Botanical family. Taxonomy rather than an agronomic measurement, so it
+   * needs no extension citation — but it does real work: two crops in the same
+   * family share pests and diseases, which is the one companion-planting
+   * mechanism that can be derived rather than asserted, and it is what the
+   * companion planting chart reasons from in both directions.
+   */
+  readonly family: CropFamily;
 
   /** In-row spacing between plants. A pair where sources disagree. */
   readonly spacingInches: Inches;
@@ -259,6 +285,62 @@ export function cropSources(crop: Crop): readonly CropSource[] {
   return crop.source ? [crop.source, ...(crop.extraSources ?? [])] : [];
 }
 
+/**
+ * Companion names that are not crops we have a page for.
+ *
+ * Every name in a companion list either resolves to a crop or is listed here.
+ * The test in data/crops.test.ts enforces that, because the alternative is what
+ * we had: a name that matched nothing produced a plain-text chip with no link
+ * and no warning, and nobody could tell a deliberate omission from a typo.
+ */
+export const NON_CROP_COMPANIONS = [
+  'Brassicas',
+  'Chive',
+  'Fennel',
+  'Horseradish',
+  'Hyssop',
+  'Kohlrabi',
+  'Leek',
+  'Melon',
+  'Nasturtium',
+  'Parsnip',
+  'Rue',
+  'Sunflower',
+] as const;
+
+/**
+ * Companion names that do refer to a crop we cover, under a different name.
+ *
+ * `bean` is named "Bush bean", `corn` is "Sweet corn" and `squash` is "Winter
+ * squash", while nineteen crops list them as plain "Bean", "Corn" and "Squash".
+ * Matching on the crop's name alone therefore failed for the three most-cited
+ * companions on the site, silently, on about twenty live pages: the chip
+ * rendered as text and the link never appeared.
+ */
+const COMPANION_ALIASES: Record<string, string> = {
+  bean: 'bean',
+  beans: 'bean',
+  'pole bean': 'bean',
+  'bush bean': 'bean',
+  corn: 'corn',
+  'sweet corn': 'corn',
+  squash: 'squash',
+  'winter squash': 'squash',
+  'summer squash': 'zucchini',
+};
+
+/**
+ * The crop a companion name refers to, or undefined where it is a plant we do
+ * not cover. Never guesses: an unknown name comes back undefined so the caller
+ * renders plain text rather than a broken link.
+ */
+export function resolveCompanion(name: string): Crop | undefined {
+  const key = name.trim().toLowerCase();
+  const aliased = COMPANION_ALIASES[key];
+  if (aliased) return crops.find((crop) => crop.slug === aliased);
+  return crops.find((crop) => crop.name.toLowerCase() === key);
+}
+
 /** Whether one checked field is confirmed, for the estimate markers on a page. */
 export function isFieldVerified(crop: Crop, field: CheckedField): boolean {
   return crop.verifiedFields.includes(field);
@@ -270,6 +352,7 @@ export const crops: readonly Crop[] = [
     name: 'Tomato',
     scientificName: 'Solanum lycopersicum',
     type: 'vegetable',
+    family: 'Solanaceae',
     spacingInches: 24,
     rowSpacingInches: 36,
     sfgPlantsPerSquare: 0.5,
@@ -306,6 +389,7 @@ export const crops: readonly Crop[] = [
     name: 'Pepper',
     scientificName: 'Capsicum annuum',
     type: 'vegetable',
+    family: 'Solanaceae',
     spacingInches: 18,
     rowSpacingInches: 30,
     sfgPlantsPerSquare: 1,
@@ -344,6 +428,7 @@ export const crops: readonly Crop[] = [
     name: 'Cucumber',
     scientificName: 'Cucumis sativus',
     type: 'vegetable',
+    family: 'Cucurbitaceae',
     spacingInches: 12,
     rowSpacingInches: 48,
     sfgPlantsPerSquare: 2,
@@ -381,6 +466,7 @@ export const crops: readonly Crop[] = [
     name: 'Zucchini',
     scientificName: 'Cucurbita pepo',
     type: 'vegetable',
+    family: 'Cucurbitaceae',
     spacingInches: 24,
     rowSpacingInches: 48,
     sfgPlantsPerSquare: 0.5,
@@ -416,6 +502,7 @@ export const crops: readonly Crop[] = [
     name: 'Lettuce',
     scientificName: 'Lactuca sativa',
     type: 'vegetable',
+    family: 'Asteraceae',
     spacingInches: 8,
     rowSpacingInches: 12,
     sfgPlantsPerSquare: 4,
@@ -450,6 +537,7 @@ export const crops: readonly Crop[] = [
     name: 'Spinach',
     scientificName: 'Spinacia oleracea',
     type: 'vegetable',
+    family: 'Amaranthaceae',
     spacingInches: 4,
     rowSpacingInches: 12,
     sfgPlantsPerSquare: 9,
@@ -485,6 +573,7 @@ export const crops: readonly Crop[] = [
     name: 'Kale',
     scientificName: 'Brassica oleracea var. sabellica',
     type: 'vegetable',
+    family: 'Brassicaceae',
     spacingInches: 12,
     rowSpacingInches: 24,
     sfgPlantsPerSquare: null,
@@ -518,6 +607,7 @@ export const crops: readonly Crop[] = [
     name: 'Carrot',
     scientificName: 'Daucus carota subsp. sativus',
     type: 'vegetable',
+    family: 'Apiaceae',
     spacingInches: 3,
     rowSpacingInches: 12,
     sfgPlantsPerSquare: 9,
@@ -559,6 +649,7 @@ export const crops: readonly Crop[] = [
     name: 'Radish',
     scientificName: 'Raphanus sativus',
     type: 'vegetable',
+    family: 'Brassicaceae',
     spacingInches: 2,
     rowSpacingInches: 12,
     sfgPlantsPerSquare: 16,
@@ -598,6 +689,7 @@ export const crops: readonly Crop[] = [
     name: 'Beet',
     scientificName: 'Beta vulgaris',
     type: 'vegetable',
+    family: 'Amaranthaceae',
     spacingInches: 4,
     rowSpacingInches: 12,
     sfgPlantsPerSquare: 9,
@@ -633,6 +725,7 @@ export const crops: readonly Crop[] = [
     name: 'Onion',
     scientificName: 'Allium cepa',
     type: 'vegetable',
+    family: 'Amaryllidaceae',
     spacingInches: 4,
     rowSpacingInches: 12,
     sfgPlantsPerSquare: 9,
@@ -667,6 +760,7 @@ export const crops: readonly Crop[] = [
     name: 'Garlic',
     scientificName: 'Allium sativum',
     type: 'vegetable',
+    family: 'Amaryllidaceae',
     spacingInches: 4,
     rowSpacingInches: 12,
     sfgPlantsPerSquare: 9,
@@ -710,6 +804,7 @@ export const crops: readonly Crop[] = [
     name: 'Potato',
     scientificName: 'Solanum tuberosum',
     type: 'vegetable',
+    family: 'Solanaceae',
     spacingInches: 12,
     rowSpacingInches: 30,
     sfgPlantsPerSquare: 1,
@@ -752,6 +847,7 @@ export const crops: readonly Crop[] = [
     name: 'Sweet potato',
     scientificName: 'Ipomoea batatas',
     type: 'vegetable',
+    family: 'Convolvulaceae',
     spacingInches: 12,
     rowSpacingInches: 36,
     sfgPlantsPerSquare: 1,
@@ -791,6 +887,7 @@ export const crops: readonly Crop[] = [
     name: 'Bush bean',
     scientificName: 'Phaseolus vulgaris',
     type: 'vegetable',
+    family: 'Fabaceae',
     spacingInches: 4,
     rowSpacingInches: 24,
     sfgPlantsPerSquare: 4,
@@ -829,6 +926,7 @@ export const crops: readonly Crop[] = [
     name: 'Pea',
     scientificName: 'Pisum sativum',
     type: 'vegetable',
+    family: 'Fabaceae',
     spacingInches: 3,
     rowSpacingInches: 24,
     sfgPlantsPerSquare: 9,
@@ -871,6 +969,7 @@ export const crops: readonly Crop[] = [
     name: 'Sweet corn',
     scientificName: 'Zea mays',
     type: 'vegetable',
+    family: 'Poaceae',
     spacingInches: 10,
     rowSpacingInches: 30,
     sfgPlantsPerSquare: null,
@@ -908,6 +1007,7 @@ export const crops: readonly Crop[] = [
     name: 'Winter squash',
     scientificName: 'Cucurbita maxima',
     type: 'vegetable',
+    family: 'Cucurbitaceae',
     spacingInches: 36,
     rowSpacingInches: 60,
     sfgPlantsPerSquare: null,
@@ -949,6 +1049,7 @@ export const crops: readonly Crop[] = [
     name: 'Pumpkin',
     scientificName: 'Cucurbita pepo',
     type: 'vegetable',
+    family: 'Cucurbitaceae',
     spacingInches: 48,
     rowSpacingInches: 72,
     sfgPlantsPerSquare: null,
@@ -988,6 +1089,7 @@ export const crops: readonly Crop[] = [
     name: 'Broccoli',
     scientificName: 'Brassica oleracea var. italica',
     type: 'vegetable',
+    family: 'Brassicaceae',
     spacingInches: 18,
     rowSpacingInches: 30,
     sfgPlantsPerSquare: 1,
@@ -1029,6 +1131,7 @@ export const crops: readonly Crop[] = [
     name: 'Cabbage',
     scientificName: 'Brassica oleracea var. capitata',
     type: 'vegetable',
+    family: 'Brassicaceae',
     spacingInches: 15,
     rowSpacingInches: 24,
     sfgPlantsPerSquare: 1,
@@ -1064,6 +1167,7 @@ export const crops: readonly Crop[] = [
     name: 'Cauliflower',
     scientificName: 'Brassica oleracea var. botrytis',
     type: 'vegetable',
+    family: 'Brassicaceae',
     spacingInches: 18,
     rowSpacingInches: 30,
     sfgPlantsPerSquare: 1,
@@ -1105,6 +1209,7 @@ export const crops: readonly Crop[] = [
     name: 'Eggplant',
     scientificName: 'Solanum melongena',
     type: 'vegetable',
+    family: 'Solanaceae',
     spacingInches: 18,
     rowSpacingInches: 30,
     sfgPlantsPerSquare: 0.5,
@@ -1147,6 +1252,7 @@ export const crops: readonly Crop[] = [
     name: 'Okra',
     scientificName: 'Abelmoschus esculentus',
     type: 'vegetable',
+    family: 'Malvaceae',
     spacingInches: 12,
     rowSpacingInches: 24,
     sfgPlantsPerSquare: null,
@@ -1186,6 +1292,7 @@ export const crops: readonly Crop[] = [
     name: 'Basil',
     scientificName: 'Ocimum basilicum',
     type: 'herb',
+    family: 'Lamiaceae',
     spacingInches: 10,
     rowSpacingInches: 18,
     sfgPlantsPerSquare: null,
@@ -1224,6 +1331,7 @@ export const crops: readonly Crop[] = [
     name: 'Cilantro',
     scientificName: 'Coriandrum sativum',
     type: 'herb',
+    family: 'Apiaceae',
     // UW-Madison gives 6 inches and UGA 4, so the range spans both. Rows stay:
     // UW-Madison's crop page does give one, unlike either herb publication.
     spacingInches: [4, 6],
@@ -1292,6 +1400,7 @@ export const crops: readonly Crop[] = [
     name: 'Parsley',
     scientificName: 'Petroselinum crispum',
     type: 'herb',
+    family: 'Apiaceae',
     // Minnesota gives 10 inches, UGA 6 to 8. The range spans both rather than
     // averaging them or choosing one.
     spacingInches: [6, 10],
@@ -1361,6 +1470,7 @@ export const crops: readonly Crop[] = [
     name: 'Dill',
     scientificName: 'Anethum graveolens',
     type: 'herb',
+    family: 'Apiaceae',
     // A real disagreement, shown rather than resolved: Minnesota gives 10
     // inches and UGA 12 to 18. The range spans both publications.
     spacingInches: [10, 18],
@@ -1429,6 +1539,7 @@ export const crops: readonly Crop[] = [
     name: 'Strawberry',
     scientificName: 'Fragaria × ananassa',
     type: 'fruit',
+    family: 'Rosaceae',
     spacingInches: 15,
     rowSpacingInches: 36,
     sfgPlantsPerSquare: null,
@@ -1473,6 +1584,7 @@ export const crops: readonly Crop[] = [
     name: 'Watermelon',
     scientificName: 'Citrullus lanatus',
     type: 'fruit',
+    family: 'Cucurbitaceae',
     spacingInches: 36,
     rowSpacingInches: 84,
     sfgPlantsPerSquare: null,
@@ -1521,6 +1633,7 @@ export const crops: readonly Crop[] = [
     name: 'Asparagus',
     scientificName: 'Asparagus officinalis',
     type: 'vegetable',
+    family: 'Asparagaceae',
     // Minnesota spaces crowns at 12 inches in furrows 3 feet apart; Maryland
     // at 18 inches in rows 4 to 5 feet apart. Both are real recommendations
     // for their own conditions, so the range is stored and the page names
@@ -1587,6 +1700,7 @@ export const crops: readonly Crop[] = [
     name: 'Blueberry',
     scientificName: 'Vaccinium corymbosum',
     type: 'fruit',
+    family: 'Ericaceae',
     // Maryland gives 4 to 5 feet in the row and 6 to 8 feet between rows, New
     // Hampshire at least 5 feet in rows 8 to 10 feet apart, Minnesota about 3
     // feet. 60 and 96 inches sit inside that spread.
@@ -1663,6 +1777,7 @@ export const crops: readonly Crop[] = [
     name: 'Marigold',
     scientificName: 'Tagetes spp.',
     type: 'herb',
+    family: 'Asteraceae',
     // Clemson spaces French marigolds at 8 to 10 inches and African at 12 to
     // 16 — far enough apart that one figure would mislead either way, so both
     // are carried and spacingInches spans them.
@@ -1747,6 +1862,7 @@ export const crops: readonly Crop[] = [
     name: 'Swiss chard',
     scientificName: 'Beta vulgaris subsp. vulgaris',
     type: 'vegetable',
+    family: 'Amaranthaceae',
     // Utah gives 6 inches in the row, Minnesota four to six, Maryland a
     // thinning progression from 2 to 4 inches and then 8 to 12 for larger
     // plants. The range spans the thinning rather than picking a point on it.
@@ -1823,6 +1939,7 @@ export const crops: readonly Crop[] = [
     name: 'Lavender',
     scientificName: 'Lavandula angustifolia',
     type: 'herb',
+    family: 'Lamiaceae',
     // Utah State and UGA give 18 to 24 inches independently and agree exactly,
     // which is unusual enough for the page to say so — the site's normal note
     // is that two extensions disagree.
@@ -1901,6 +2018,7 @@ export const crops: readonly Crop[] = [
     name: 'Rosemary',
     scientificName: 'Salvia rosmarinus',
     type: 'herb',
+    family: 'Lamiaceae',
     // UGA gives 2 to 3 feet and Penn State 2 feet, so the range spans both
     // rather than choosing one.
     spacingInches: [24, 36],
@@ -1970,6 +2088,7 @@ export const crops: readonly Crop[] = [
     name: 'Sage',
     scientificName: 'Salvia officinalis',
     type: 'herb',
+    family: 'Lamiaceae',
     spacingInches: 18,
     // UGA's herb table gives plant spacing without a row figure for any herb,
     // and Minnesota's herb page gives no per-herb figures at all, so the absence
@@ -2034,6 +2153,7 @@ export const crops: readonly Crop[] = [
     name: 'Thyme',
     scientificName: 'Thymus vulgaris',
     type: 'herb',
+    family: 'Lamiaceae',
     spacingInches: 12,
     // UGA's herb table gives plant spacing without a row figure for any herb,
     // and Minnesota's herb page gives no per-herb figures at all, so the absence
@@ -2098,6 +2218,7 @@ export const crops: readonly Crop[] = [
     name: 'Oregano',
     scientificName: 'Origanum vulgare',
     type: 'herb',
+    family: 'Lamiaceae',
     spacingInches: 12,
     // UGA's herb table gives plant spacing without a row figure for any herb,
     // and Minnesota's herb page gives no per-herb figures at all, so the absence

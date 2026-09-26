@@ -158,9 +158,52 @@ export const tools: readonly Tool[] = [
     related: ['potting-soil-calculator', 'raised-bed-soil-calculator', 'mulch-calculator'],
     published: true,
   },
+  {
+    no: 'No. 14',
+    slug: 'companion-planting-chart',
+    name: 'Companion planting chart',
+    summary: 'What to plant near a crop, what to keep away, and why',
+    category: 'timing-and-planning',
+    related: ['plant-spacing-calculator', 'square-foot-garden-planner', 'planting-date-calculator'],
+    published: true,
+  },
 ];
 
 export const publishedTools = tools.filter((tool) => tool.published);
+
+/**
+ * How many tools there are, in words, for prose that counts them.
+ *
+ * Three sentences said "all twelve" while thirteen were live, and adding the
+ * companion planting chart would have made it fourteen. A number written into
+ * prose is a number that goes stale, so it is derived here instead.
+ */
+const NUMBER_WORDS = [
+  'zero',
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+  'ten',
+  'eleven',
+  'twelve',
+  'thirteen',
+  'fourteen',
+  'fifteen',
+  'sixteen',
+  'seventeen',
+  'eighteen',
+  'nineteen',
+  'twenty',
+] as const;
+
+export const toolCountWord: string =
+  NUMBER_WORDS[publishedTools.length] ?? String(publishedTools.length);
 
 export function getTool(slug: string): Tool | undefined {
   return tools.find((tool) => tool.slug === slug);

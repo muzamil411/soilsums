@@ -6,7 +6,7 @@ import { SeedPacket } from '@/components/ui/SeedPacket';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { pageMetadata } from '@/lib/seo/metadata';
 import { organizationSchema, websiteSchema } from '@/lib/seo/schema';
-import { toolCategories, toolsByCategory, type ToolCategory } from '@/data/tools';
+import { toolCategories, toolCountWord, toolsByCategory, type ToolCategory } from '@/data/tools';
 
 export const metadata: Metadata = pageMetadata({
   title: 'SoilSums — gardening calculators that give real numbers',
@@ -42,8 +42,8 @@ export default function HomePage() {
         <p className="mt-4 max-w-xl">
           Most people arrive for the{' '}
           <Link href="/tools/raised-bed-soil-calculator/">raised bed soil calculator</Link> or the{' '}
-          <Link href="/tools/mulch-calculator/">mulch calculator</Link>. All twelve are below,
-          grouped by the job you are doing.
+          <Link href="/tools/mulch-calculator/">mulch calculator</Link>. All {toolCountWord} are
+          below, grouped by the job you are doing.
         </p>
       </Container>
 
@@ -131,7 +131,8 @@ export default function HomePage() {
         <SectionRule>How these calculators work</SectionRule>
         <div className="prose-notebook">
           <p>
-            All twelve tools behave the same way, because the point is to get an answer and move on.
+            All {toolCountWord} tools behave the same way, because the point is to get an answer and
+            move on.
           </p>
           <ul>
             <li>

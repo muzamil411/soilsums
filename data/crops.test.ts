@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { CHECKED_FIELDS, crops, plantsPerSquareFoot } from './crops';
+import {
+  CHECKED_FIELDS,
+  crops,
+  NON_CROP_COMPANIONS,
+  plantsPerSquareFoot,
+  resolveCompanion,
+} from './crops';
 
 describe('crop data', () => {
   it('explains every planting step it leaves out', () => {
@@ -151,6 +157,79 @@ describe('crop data', () => {
       const crop = crops.find((entry) => entry.slug === slug);
       expect(crop, slug).toBeTruthy();
       expect(crop?.soilOrAirTempNote, slug).toBeTruthy();
+    }
+  });
+});
+
+describe('companion lists', () => {
+  /**
+   * Both directions have to agree. A chart that shows "plant basil near tomato"
+   * on one page and "keep tomato away from basil" on another is worse than no
+   * chart, and with 39 crops the contradiction is invisible by eye.
+   *
+   * This did not exist until the companion planting chart was built, which is
+   * why the marigold-and-beans contradiction had to be found by hand: marigold
+   * listed bush bean as both a companion and one to avoid, while bean's own
+   * entry named marigold as a companion.
+   */
+  it('never lists a pairing as good in one direction and bad in the other', () => {
+    const offences: string[] = [];
+    for (const crop of crops) {
+      for (const name of crop.companionPlants) {
+        const other = resolveCompanion(name);
+        if (!other) continue;
+        if (other.avoidPlanting.some((entry) => resolveCompanion(entry)?.slug === crop.slug)) {
+          offences.push(
+            `${crop.name} lists ${other.name} as a good neighbour, but ${other.name} lists ${crop.name} as one to avoid`,
+          );
+        }
+      }
+    }
+    expect(offences, offences.join('\n')).toEqual([]);
+  });
+
+  it('never lists the same plant as both good and bad for one crop', () => {
+    for (const crop of crops) {
+      const both = crop.companionPlants.filter((name) => crop.avoidPlanting.includes(name));
+      expect(both, `${crop.slug}: ${both.join(', ')}`).toEqual([]);
+    }
+  });
+
+  /**
+   * Every name resolves to a crop or is declared as a plant we do not cover.
+   *
+   * Without this, a name that matched nothing rendered as a plain-text chip with
+   * no link and no warning — which is how "Bean", "Corn" and "Squash" went
+   * unlinked on about twenty live pages, because those crops are named "Bush
+   * bean", "Sweet corn" and "Winter squash". A typo looked exactly the same as
+   * a deliberate omission.
+   */
+  it('resolves every companion name, or declares it as a plant we do not cover', () => {
+    const declared = new Set<string>(NON_CROP_COMPANIONS);
+    const unknown: string[] = [];
+    for (const crop of crops) {
+      for (const name of [...crop.companionPlants, ...crop.avoidPlanting]) {
+        if (!resolveCompanion(name) && !declared.has(name)) unknown.push(`${crop.slug}: ${name}`);
+      }
+    }
+    expect(unknown, `Add to NON_CROP_COMPANIONS or fix the name:\n${unknown.join('\n')}`).toEqual(
+      [],
+    );
+  });
+
+  it('declares no non-crop name that is actually a crop', () => {
+    // Keeps the escape hatch honest: a name listed as "not a crop we cover"
+    // must not resolve, or a real crop is being denied its link.
+    for (const name of NON_CROP_COMPANIONS) {
+      expect(resolveCompanion(name), `${name} does resolve to a crop`).toBeUndefined();
+    }
+  });
+
+  it('never lists a crop as its own companion', () => {
+    for (const crop of crops) {
+      for (const name of [...crop.companionPlants, ...crop.avoidPlanting]) {
+        expect(resolveCompanion(name)?.slug, `${crop.slug} lists itself`).not.toBe(crop.slug);
+      }
     }
   });
 });

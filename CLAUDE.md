@@ -55,17 +55,26 @@ docs/ for how things work.
   in the data and the prose. Run `npm run pins` after any figure change and
   commit what it rewrites. `lib/pins/pins.test.ts` only checks a file exists,
   not that its text is current.
-- **Publishing a page renumbers other pins, so a large pin diff is normal and
-  is not by itself evidence of a stale figure.** Each pin carries a catalogue
-  number (`No. C-07`) built from the crop's index in the published list, so a
-  new crop shifts every alphabetically-later one: publishing the four part-two
-  herbs rewrote 38 existing PNGs whose text never changed. Read
-  `docs/pinterest-pins.md` in the diff to see what actually changed — a pin
-  whose row is identical there changed only its number. The numbering is not
-  stable across batches, so pins already uploaded keep numbers that no longer
-  match the site.
+- **A pin diff should now only ever be the pages you changed.** Pins used to
+  print a catalogue number built from the crop's index in the published list,
+  so publishing one crop rewrote the PNG of every alphabetically-later one —
+  38 of them on one commit, with identical text. That drowned a real signal: a
+  27-file pin diff was read as retracted figures when it was mostly
+  renumbering. The number is gone. If a pin diff is now larger than the pages
+  you touched, something else changed the template, and
+  `docs/pinterest-pins.md` in the diff tells you whether any text moved. The
+  stable identifier for a pin is its file name, in that file's first column.
 - Never take a figure from a search-result summary. This was done once on
   the sulfur work and had to be undone against the primary source.
+- **"It appears in the built output" is not "a reader can see it."** Grepping
+  `out/**/index.html` matches the React payload in the `<script>` tags as well
+  as the rendered page, so a value that exists only as a serialized prop looks
+  present. `extraSources` were reported as visible on the crop pages on
+  exactly this evidence and were not: the payload carried them and the page
+  never rendered them. Strip the script tags before grepping — or check the
+  rendered text — whenever the claim is that a reader sees something. It is
+  the same class of error as a figure deleted from the data and left in the
+  prose: the data was right and what reached the reader was not.
 
 ## Content
 
