@@ -1267,7 +1267,9 @@ export const crops: readonly Crop[] = [
     name: 'Parsley',
     scientificName: 'Petroselinum crispum',
     type: 'herb',
-    spacingInches: 10,
+    // Minnesota gives 10 inches, UGA 6 to 8. The range spans both rather than
+    // averaging them or choosing one.
+    spacingInches: [6, 10],
     rowSpacingInches: 12,
     sfgPlantsPerSquare: null,
     sowIndoorsWeeksBeforeLastFrost: 8,
@@ -1284,7 +1286,8 @@ export const crops: readonly Crop[] = [
     waterNote:
       'No weekly figure is published for parsley in the source behind this page. The surface must stay damp for the weeks germination takes; a settled plant is far less fussy.',
     soilPh: null,
-    soilPhNote: 'No range is published for this crop in the source behind this page.',
+    soilPhNote:
+      'No range is published for parsley itself. UGA gives about 6 to 7.5 as suiting most herbs.',
     fertilizerNote:
       'Light nitrogen through the season. Slow to germinate — be patient, keep moist.',
     yieldPerPlantLb: null,
@@ -1300,6 +1303,13 @@ export const crops: readonly Crop[] = [
       institution: 'University of Minnesota Extension',
       url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-parsley',
     },
+    extraSources: [
+      {
+        institution: 'University of Georgia Extension',
+        title: 'Bulletin 1170, Herbs in Southern Gardens',
+        url: 'https://extension.uga.edu/publications/detail.html?number=B1170',
+      },
+    ],
     verifiedFields: [
       'spacingInches',
       'sowIndoorsWeeksBeforeLastFrost',
@@ -1313,7 +1323,10 @@ export const crops: readonly Crop[] = [
     name: 'Dill',
     scientificName: 'Anethum graveolens',
     type: 'herb',
-    spacingInches: 10,
+    // A real disagreement, shown rather than resolved: Minnesota gives 10
+    // inches and UGA 12 to 18. The range spans both publications.
+    spacingInches: [10, 18],
+    // Minnesota gives a row figure; UGA's herb table gives none for any herb.
     rowSpacingInches: 24,
     sfgPlantsPerSquare: null,
     notes: [
@@ -1335,7 +1348,10 @@ export const crops: readonly Crop[] = [
     waterNote:
       'No weekly figure is published for dill in the source behind this page. Keep the seedbed damp until it is up, then water in dry spells — a check makes it bolt.',
     soilPh: null,
-    soilPhNote: 'No range is published for this crop in the source behind this page.',
+    // UGA gives a range for herbs as a group rather than for dill, so it is
+    // reported as what it is rather than promoted to a per-crop figure.
+    soilPhNote:
+      'No range is published for dill itself. UGA gives about 6 to 7.5 as suiting most herbs.',
     fertilizerNote: 'Poor soil suits it. Direct sow — the taproot hates being moved.',
     yieldPerPlantLb: null,
     companionPlants: ['Cabbage', 'Cucumber', 'Onion', 'Lettuce'],
@@ -1350,6 +1366,13 @@ export const crops: readonly Crop[] = [
       institution: 'University of Minnesota Extension',
       url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-dill',
     },
+    extraSources: [
+      {
+        institution: 'University of Georgia Extension',
+        title: 'Bulletin 1170, Herbs in Southern Gardens',
+        url: 'https://extension.uga.edu/publications/detail.html?number=B1170',
+      },
+    ],
     verifiedFields: ['spacingInches', 'rowSpacingInches', 'directSowWeeksRelativeToLastFrost'],
     verified: false,
   },
@@ -1752,11 +1775,12 @@ export const crops: readonly Crop[] = [
     name: 'Lavender',
     scientificName: 'Lavandula angustifolia',
     type: 'herb',
-    // A wide range, unconfirmed, and deliberately not a point figure: published
-    // spacing for lavender varies with the cultivar's mature width, which runs
-    // from a compact English lavender to a plant three feet across. It is left
-    // out of verifiedFields, so the page carries the estimate marker.
-    spacingInches: [18, 36],
+    // Utah State and UGA give 18 to 24 inches independently and agree exactly,
+    // which is unusual enough for the page to say so — the site's normal note
+    // is that two extensions disagree.
+    spacingInches: [18, 24],
+    // UGA's herb cultivation table gives plant spacing without a row figure for
+    // any herb on it, so the absence is confirmed rather than unsearched.
     rowSpacingInches: null,
     sfgPlantsPerSquare: null,
     notes: [
@@ -1764,6 +1788,8 @@ export const crops: readonly Crop[] = [
       'Rich, well-fed ground produces soft, sappy growth that rots in winter. Poor, gritty, sharply drained soil produces a hard, long-lived plant.',
       'It will not reshoot from bare old wood. A plant left unpruned goes woody at the base, splits open in the middle, and cannot be brought back by cutting into that wood.',
       'A "lavender tree" is not a species. It is an ordinary lavender, usually a tender one, trained to a single clear stem with a mop head on top.',
+      'Utah State puts mature size at 1 to 2 feet tall and wide depending on variety, and gives it three years to reach full size.',
+      'Utah State prunes it by shearing back to half its size once a year, after flowering, to force bushier new growth.',
     ],
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
@@ -1775,19 +1801,19 @@ export const crops: readonly Crop[] = [
     noDirectSowReason:
       'Not direct sown — seed germinates poorly in open ground and a seedling takes years to make a plant.',
     timingNote:
-      'Planted from a container rather than sown, so it has no frost-offset date. No extension publication behind this page gives a planting window, so none is quoted.',
+      'Planted from a container rather than sown, so it has no frost-offset date. UGA puts lavender in as a spring and fall planting rather than naming a week relative to frost.',
     daysToMaturity: null,
     noDaysToMaturityReason:
       'A woody perennial — it flowers in seasons, not in a count of days from planting.',
     sunHours: 6,
-    // No sourced weekly figure, and a weekly figure would be the wrong shape
-    // of answer for this plant: established lavender is at more risk from
-    // watering than from drought.
+    // Utah State does quantify watering, but per plant in gallons rather than
+    // in inches over an area, so it cannot go in this field without being
+    // converted into a figure nobody published. The schedule is in waterNote
+    // and in the body instead.
     waterInchesPerWeek: null,
     waterNote:
-      'No weekly figure is published for lavender, and it would mislead. Water a new plant until it establishes, then leave it alone — wet soil in winter kills more lavender than cold does.',
-    soilPh: null,
-    soilPhNote: 'No range is published for this crop in the sources behind this page.',
+      'Utah State gives this per plant rather than per week over an area: 1 gallon a week while establishing, then half a gallon every two weeks until flower buds form, then once or twice a week through flowering.',
+    soilPh: [6.5, 7.5],
     fertilizerNote:
       'Do not feed it. Lavender flowers best on poor, gritty, sharply drained ground; rich soil and a nitrogen feed give a soft leafy plant that flowers less and rots in winter.',
     yieldPerPlantLb: null,
@@ -1799,8 +1825,22 @@ export const crops: readonly Crop[] = [
       'Soft leafy growth and few flowers on rich soil',
       'Dying back in a pot with no drainage',
     ],
-    source: null,
-    verifiedFields: [],
+    source: {
+      institution: 'Utah State University Extension',
+      title: 'How to Grow English Lavender in Your Garden',
+      url: 'https://extension.usu.edu/yardandgarden/research/lavender-in-the-garden',
+    },
+    extraSources: [
+      {
+        institution: 'University of Georgia Extension',
+        title: 'Bulletin 1170, Herbs in Southern Gardens',
+        url: 'https://extension.uga.edu/publications/detail.html?number=B1170',
+      },
+    ],
+    // sfgPlantsPerSquare is the one checked field still open: none of these
+    // three publications is the Cornell CALS square foot gardening page, which
+    // is what that field's null is a claim about.
+    verifiedFields: ['spacingInches', 'rowSpacingInches'],
     verified: false,
   },
   {
@@ -1808,16 +1848,19 @@ export const crops: readonly Crop[] = [
     name: 'Rosemary',
     scientificName: 'Salvia rosmarinus',
     type: 'herb',
-    // Unconfirmed and left as a range. Rosemary's mature width varies from an
-    // upright cultivar to a prostrate one, and no source behind this page
-    // gives a spacing, so it is not in verifiedFields.
+    // UGA gives 2 to 3 feet and Penn State 2 feet, so the range spans both
+    // rather than choosing one.
     spacingInches: [24, 36],
+    // UGA's herb table gives no row figure for any herb, so the absence is
+    // confirmed.
     rowSpacingInches: null,
     sfgPlantsPerSquare: null,
     notes: [
       'A woody evergreen shrub. It is reclassified as Salvia rosmarinus rather than Rosmarinus officinalis, which is why older books and newer labels disagree about its name.',
       'Seed is slow and unreliable, which is the honest reason cuttings are the usual method. A cutting is also a copy of a plant whose hardiness and flavour you have already seen.',
       'Cold alone is rarely what kills it. A plant in cold, wet, heavy ground dies where the same plant in gritty, sharply drained soil in the same winter lives.',
+      'Penn State calls it a tender perennial evergreen shrub: where winters are cold it is grown as an annual, or in a pot brought indoors two to three weeks before the first frost.',
+      'Penn State puts mature size at 2 to 6 feet tall and 2 to 6 feet wide.',
     ],
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
@@ -1828,16 +1871,15 @@ export const crops: readonly Crop[] = [
       'No frost offset applies — a rooted cutting or container plant goes out once the ground is workable and frost has finished.',
     noDirectSowReason: 'Not direct sown — seed is too slow and unreliable to be worth a drill.',
     timingNote:
-      'Grown from cuttings rather than seed, so it has no frost-offset sowing date. No extension publication behind this page gives a planting window, so none is quoted.',
+      'Grown from cuttings rather than seed, so it has no frost-offset sowing date. UGA puts rosemary in as a spring and fall planting rather than naming a week relative to frost.',
     daysToMaturity: null,
     noDaysToMaturityReason:
       'A woody perennial — a cutting takes weeks to root and seasons to become a picking plant, not a set count of days.',
     sunHours: 6,
     waterInchesPerWeek: null,
     waterNote:
-      'No weekly figure is published for rosemary. Water a rooting cutting or a new plant, and an established one only in a long dry spell — it suffers far more from standing wet than from drought.',
-    soilPh: null,
-    soilPhNote: 'No range is published for this crop in the sources behind this page.',
+      'No weekly figure is published for rosemary in either publication behind this page. Water a rooting cutting or a new plant, and an established one only in a long dry spell — it suffers far more from standing wet than from drought.',
+    soilPh: [6.5, 7],
     fertilizerNote:
       'Very little. A free-draining, gritty mix matters more than feeding, and a rich potting compost that holds water is the commonest way a potted rosemary is lost.',
     yieldPerPlantLb: null,
@@ -1849,8 +1891,21 @@ export const crops: readonly Crop[] = [
       'Leggy, sparse growth in too little light',
       'Powdery mildew in still, humid air indoors',
     ],
-    source: null,
-    verifiedFields: [],
+    source: {
+      institution: 'Penn State Extension',
+      title: 'Herb Garden Plants: Rosemary',
+      url: 'https://extension.psu.edu/herb-garden-plants-rosemary',
+    },
+    extraSources: [
+      {
+        institution: 'University of Georgia Extension',
+        title: 'Bulletin 1170, Herbs in Southern Gardens',
+        url: 'https://extension.uga.edu/publications/detail.html?number=B1170',
+      },
+    ],
+    // As with lavender, sfgPlantsPerSquare stays open until the Cornell CALS
+    // page is checked for this crop.
+    verifiedFields: ['spacingInches', 'rowSpacingInches'],
     verified: false,
   },
 ];

@@ -73,7 +73,10 @@ const DELETABLE: readonly {
     what: 'a days-to-maturity figure',
     pattern: /\b\d+\s*(?:to|–|-)\s*\d+\s*days\b/gi,
     nearby: /matur|harvest|ready|picking|from (?:sowing|transplanting|planting)/i,
-    notNearby: /germinat|sprout|emerge|soak/i,
+    // Rooting is its own clock, like germination. Penn State's "10 to 20 days"
+    // for a rosemary cutting is the same shape as a days-to-maturity figure and
+    // means something else entirely, so propagation wording is exempt.
+    notNearby: /germinat|sprout|emerge|soak|rooting|cutting/i,
   },
   {
     fields: ['rowSpacingInches'],

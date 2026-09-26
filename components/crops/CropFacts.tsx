@@ -12,6 +12,22 @@ import { Estimate } from '@/components/ui/Estimate';
 import { inchesToCentimeters, poundsToKilograms } from '@/lib/calculators/shared/units';
 import { toSignificant } from '@/lib/calculators/shared/round';
 
+/**
+ * Where the sun figures come from, which is not each crop's own publication.
+ *
+ * None of the extension pages behind these crops puts a number on sun: they say
+ * "full sun" and stop. The number in this field records which threshold a crop
+ * needs, and the threshold itself is Clemson's definition. Stating that once,
+ * here, is honest for all 36 crops at the same time; the alternative was to
+ * leave every sun figure marked as an estimate while it was really a
+ * convention, not a guess.
+ */
+const SUN_SOURCE = {
+  url: 'https://hgic.clemson.edu/factsheet/marigold/',
+  institution: 'Clemson Cooperative Extension',
+  factsheet: 'HGIC 1168',
+};
+
 function cm(inches: number): string {
   return `${Math.round(inchesToCentimeters(inches))} cm`;
 }
@@ -105,7 +121,12 @@ export function CropFacts({ crop }: { crop: Crop }) {
       field: 'sfgPlantsPerSquare' as const,
       markSecond: true,
     },
-    { label: 'Sun', value: `${crop.sunHours}+ hours a day` },
+    {
+      label: 'Sun',
+      // "6+ hours a day" is the full-sun threshold, not a measurement taken
+      // from this crop's publication. The note under the table says so.
+      value: `${crop.sunHours}+ hours a day`,
+    },
     {
       label: 'Water',
       value:
@@ -221,6 +242,16 @@ export function CropFacts({ crop }: { crop: Crop }) {
       ) : null}
 
       <p className="border-rule text-ink/70 border-t px-3 py-2 text-xs">{DENSITY_NOTE}</p>
+
+      <p className="border-rule text-ink/70 border-t px-3 py-2 text-xs">
+        Sun figures are thresholds rather than measurements: {SUN_SOURCE.institution} defines full
+        sun as six or more hours of direct sun a day (
+        <a href={SUN_SOURCE.url} rel="nofollow">
+          {SUN_SOURCE.factsheet}
+        </a>
+        ), and this row records which threshold the crop needs. The crop&rsquo;s own publication
+        says &ldquo;full sun&rdquo; without a number.
+      </p>
 
       <p className="border-rule text-ink/70 border-t px-3 py-2 text-xs">
         Scientific name: <em>{crop.scientificName}</em>.{' '}
