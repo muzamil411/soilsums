@@ -1309,9 +1309,18 @@ export const crops: readonly Crop[] = [
         title: 'Bulletin 1170, Herbs in Southern Gardens',
         url: 'https://extension.uga.edu/publications/detail.html?number=B1170',
       },
+      {
+        institution: 'Cornell CALS',
+        title: 'Square Foot Gardening',
+        url: 'https://cals.cornell.edu/school-integrative-plant-science/school-sections/horticulture-section/outreach-and-extension/pandemic-vegetable-gardening/pandemic-vegetable-gardening-2021-archive/square-foot-gardening',
+      },
     ],
+    // rowSpacingInches is the one field left open. Its 12 inches is a Phase 2
+    // figure attributed to Minnesota but never entered here, and UGA gives no
+    // row spacing for any herb, so nothing on file confirms it.
     verifiedFields: [
       'spacingInches',
+      'sfgPlantsPerSquare',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
       'directSowWeeksRelativeToLastFrost',
@@ -1372,9 +1381,19 @@ export const crops: readonly Crop[] = [
         title: 'Bulletin 1170, Herbs in Southern Gardens',
         url: 'https://extension.uga.edu/publications/detail.html?number=B1170',
       },
+      {
+        institution: 'Cornell CALS',
+        title: 'Square Foot Gardening',
+        url: 'https://cals.cornell.edu/school-integrative-plant-science/school-sections/horticulture-section/outreach-and-extension/pandemic-vegetable-gardening/pandemic-vegetable-gardening-2021-archive/square-foot-gardening',
+      },
     ],
-    verifiedFields: ['spacingInches', 'rowSpacingInches', 'directSowWeeksRelativeToLastFrost'],
-    verified: false,
+    verifiedFields: [
+      'spacingInches',
+      'rowSpacingInches',
+      'sfgPlantsPerSquare',
+      'directSowWeeksRelativeToLastFrost',
+    ],
+    verified: true,
   },
   {
     slug: 'strawberry',
@@ -1836,12 +1855,17 @@ export const crops: readonly Crop[] = [
         title: 'Bulletin 1170, Herbs in Southern Gardens',
         url: 'https://extension.uga.edu/publications/detail.html?number=B1170',
       },
+      {
+        institution: 'Cornell CALS',
+        title: 'Square Foot Gardening',
+        url: 'https://cals.cornell.edu/school-integrative-plant-science/school-sections/horticulture-section/outreach-and-extension/pandemic-vegetable-gardening/pandemic-vegetable-gardening-2021-archive/square-foot-gardening',
+      },
     ],
-    // sfgPlantsPerSquare is the one checked field still open: none of these
-    // three publications is the Cornell CALS square foot gardening page, which
-    // is what that field's null is a claim about.
-    verifiedFields: ['spacingInches', 'rowSpacingInches'],
-    verified: false,
+    // Confirmed absent from the Cornell CALS square foot gardening page, whose
+    // list names no herb at all. Every applicable checked field is confirmed,
+    // so this rolls up.
+    verifiedFields: ['spacingInches', 'rowSpacingInches', 'sfgPlantsPerSquare'],
+    verified: true,
   },
   {
     slug: 'rosemary',
@@ -1902,11 +1926,15 @@ export const crops: readonly Crop[] = [
         title: 'Bulletin 1170, Herbs in Southern Gardens',
         url: 'https://extension.uga.edu/publications/detail.html?number=B1170',
       },
+      {
+        institution: 'Cornell CALS',
+        title: 'Square Foot Gardening',
+        url: 'https://cals.cornell.edu/school-integrative-plant-science/school-sections/horticulture-section/outreach-and-extension/pandemic-vegetable-gardening/pandemic-vegetable-gardening-2021-archive/square-foot-gardening',
+      },
     ],
-    // As with lavender, sfgPlantsPerSquare stays open until the Cornell CALS
-    // page is checked for this crop.
-    verifiedFields: ['spacingInches', 'rowSpacingInches'],
-    verified: false,
+    // Confirmed absent from the Cornell CALS page, as for every herb on it.
+    verifiedFields: ['spacingInches', 'rowSpacingInches', 'sfgPlantsPerSquare'],
+    verified: true,
   },
 ];
 export const cropSlugs = crops.map((crop) => crop.slug);

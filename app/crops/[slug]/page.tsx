@@ -226,9 +226,15 @@ export default async function CropPage({ params }: { params: Promise<{ slug: str
             <Link href="/about/" className="font-semibold">
               Muzamil Ali
             </Link>
-            . The figures in the quick-facts table are typical published ranges that have not yet
-            been checked against a primary source, so treat them as a starting point and defer to
-            your local extension service. See the <Link href="/disclaimer/">disclaimer</Link> and{' '}
+            .{' '}
+            {/* This said every figure was unchecked, on every crop page, including
+                the ones where each figure is now cited to a named publication. It
+                understated rather than overstated, but it still described the page
+                wrongly and threw away the sourcing work. */}
+            {crop.verified
+              ? 'Every checked figure in the quick-facts table is confirmed against the publications named above it. Defer to your local extension service where its advice differs.'
+              : 'Figures in the quick-facts table marked as an estimate are typical published ranges not yet checked against a primary source, so treat those as a starting point and defer to your local extension service.'}{' '}
+            See the <Link href="/disclaimer/">disclaimer</Link> and{' '}
             <Link href="/about/">how these pages are made</Link>.
           </p>
         </div>
