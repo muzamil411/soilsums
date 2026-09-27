@@ -160,6 +160,15 @@ export const tools: readonly Tool[] = [
   },
   {
     no: 'No. 14',
+    slug: 'bulk-soil-calculator',
+    name: 'Bulk soil calculator',
+    summary: 'Cubic yards, coverage, bags and what it actually weighs',
+    category: 'soil-and-beds',
+    related: ['raised-bed-soil-calculator', 'soil-volume-converter', 'mulch-calculator'],
+    published: true,
+  },
+  {
+    no: 'No. 15',
     slug: 'companion-planting-chart',
     name: 'Companion planting chart',
     summary: 'What to plant near a crop, what to keep away, and why',

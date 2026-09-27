@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import { BulkSoilCalculator } from './BulkSoilCalculator';
 import { CompanionPlantingChart } from './CompanionPlantingChart';
 import { CompostRatioCalculator } from './CompostRatioCalculator';
 import { FertilizerCalculator } from './FertilizerCalculator';
@@ -46,5 +47,6 @@ export const toolComponents: Record<string, ToolComponent> = {
   'lime-calculator': LimeCalculator,
   'garden-yield-estimator': GardenYieldEstimator,
   'soil-volume-converter': SoilVolumeConverter,
+  'bulk-soil-calculator': BulkSoilCalculator,
   'companion-planting-chart': CompanionPlantingChart,
 };

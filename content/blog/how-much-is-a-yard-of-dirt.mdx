@@ -12,10 +12,12 @@ questionKeywords:
   - how big is a cubic yard
   - how much is a cubic yard of dirt
   - how much topsoil do i need
-  - calculate yards of dirt
+  - how many cubic yards in a ton
+  - cubic yards to tons
   - how much is a truck load of dirt
   - 1 cubic yard of dirt
 tools:
+  - bulk-soil-calculator
   - soil-volume-converter
   - raised-bed-soil-calculator
 faqs:
@@ -87,14 +89,14 @@ The derivation is short. One inch is a twelfth of a foot, so spreading 27 cubic 
 deep covers 27 ÷ (1/12) = 324 square feet. Spread it twice as deep and it covers half as much.
 Every figure below follows by dividing 324 by the depth.
 
-| Depth | Area one cubic yard covers |
-| ----- | -------------------------- |
-| 1 inch | 324 sq ft |
-| 2 inches | 162 sq ft |
-| 3 inches | 108 sq ft |
-| 4 inches | 81 sq ft |
-| 6 inches | 54 sq ft |
-| 12 inches | 27 sq ft |
+| Depth     | Area one cubic yard covers |
+| --------- | -------------------------- |
+| 1 inch    | 324 sq ft                  |
+| 2 inches  | 162 sq ft                  |
+| 3 inches  | 108 sq ft                  |
+| 4 inches  | 81 sq ft                   |
+| 6 inches  | 54 sq ft                   |
+| 12 inches | 27 sq ft                   |
 
 For a depth not on that list, divide 324 by the depth in inches. Five inches gives 64.8 square
 feet; eight gives 40.5. The relationship is exact at every depth, because it is arithmetic
@@ -108,12 +110,12 @@ at three inches needs 200 × 3 ÷ 324 = 1.85 cubic yards, so two.
 
 A cubic yard is 27 cubic feet, so the bag count depends entirely on the size of the bag.
 
-| Bag size | Bags per cubic yard |
-| -------- | ------------------- |
-| 0.75 cu ft | 36 |
-| 1 cu ft | 27 |
-| 1.5 cu ft | 18 |
-| 2 cu ft | 14 (13.5 rounded up) |
+| Bag size   | Bags per cubic yard  |
+| ---------- | -------------------- |
+| 0.75 cu ft | 36                   |
+| 1 cu ft    | 27                   |
+| 1.5 cu ft  | 18                   |
+| 2 cu ft    | 14 (13.5 rounded up) |
 
 **This is where orders go wrong.** Bag sizes are not standardised, and two bags of what looks
 like the same product can hold different volumes — 0.75, 1, 1.5, 2 and 3 cubic foot bags all
@@ -168,6 +170,70 @@ The crossover point differs for everyone, which is exactly why the method is mor
 a number. As a shape of the answer: small jobs favour bags because you buy only what you need
 and carry it yourself, and large jobs favour bulk because the delivery charge stops mattering.
 
+## What does a yard of dirt weigh?
+
+Here is the honest answer, and it is more useful than the one most pages give you: **nobody can
+tell you, including us.** A yard of delivered topsoil has no fixed weight, because weight is not a
+property of soil — it is a property of one supplier's pile on one particular day. How much organic
+matter is in that batch, how finely it was screened, how long it has sat, and above all how wet it
+is. Water is heavy, and the same soil after a week of rain can weigh a third more than it did dry.
+
+That is why no extension service publishes a figure for it. Every calculator that prints one —
+2,200 lb, 2,700 lb, "about a ton" — is printing a number that is wrong for most of the people
+reading it.
+
+What _is_ published is two different things, and keeping them apart is the whole trick.
+
+**Compost is published by weight per cubic yard, as supplied.** Oregon State University Extension's
+EM 9217 gives about **1,000 lb per cubic yard** as a rule of thumb for screened compost at 50%
+moisture. The full published range runs from **800 to more than 1,600 lb per cubic yard** depending
+on moisture, particle size and compaction, and very wet composts can exceed 1,500 on their own.
+That is a real answer to a real question, and it is a range because the material genuinely varies by
+a factor of two.
+
+**Soil is published by texture, for soil in the ground.** The USDA Natural Resources Conservation
+Service gives, for each soil texture, the bulk density below which roots grow well and the density
+above which they are restricted. Converted to pounds per cubic yard — one gram per cubic centimetre
+is 1,685.5 lb per cubic yard, which is exact arithmetic — a well-structured clay sits around
+**1,854 lb**, a loam around **2,360**, and a compacted sand can exceed **3,000**.
+
+**But those figures describe soil in place.** Undisturbed, settled, in situ. That is not the same
+material as loose screened topsoil tipped onto a driveway, which is looser and lighter for the same
+texture. So for a delivered load they are an **upper bound**, not an estimate. The NRCS table also
+does not apply to red clayey soils or to soils formed from volcanic ash.
+
+### Cubic yards to tons, and back
+
+This is the conversion people search for, and the reason the answers disagree everywhere is that
+there is no single one. A US short ton is 2,000 lb, so:
+
+- **Compost:** roughly **1.25 to 2.5 cubic yards to the ton**, depending on how wet it is.
+- **Soil:** **less than one** — usually somewhere between about two thirds and nine tenths of a
+  cubic yard to the ton.
+
+That second figure catches people out, and it is worth stating plainly: **a ton of soil is less than
+a yard of soil.** If a supplier quotes you by the ton and you have worked out your needs in yards,
+you are not comparing like with like.
+
+The [bulk soil calculator](/tools/bulk-soil-calculator/) does this both ways for your own area and
+depth, gives the range rather than a single figure, and shows which source each end of it comes
+from.
+
+### When the weight actually matters
+
+For spreading soil on a bed, it does not — order by volume and ignore the weight entirely. It
+matters in exactly three situations, and in all three the answer is the same:
+
+- **A truck payload**, covered in the next section.
+- **A floor or balcony loading.** A raised bed on a roof terrace is a structural question, and a
+  range from a calculator is not the right input for it.
+- **A large order priced by the ton**, where the wetness of the pile on delivery day changes what
+  you get for your money.
+
+In every one of those cases, **ask your supplier what their material weighs.** They handle it daily
+and they know, and their figure is better than any published average. That is not a cop-out — it is
+the correct answer, and no page that prints a confident single number can give it to you.
+
 ## Will a yard of dirt fit in a pickup truck?
 
 By volume, usually. A full-size pickup bed holds roughly two to two and a half cubic yards
@@ -177,8 +243,9 @@ and depth in feet, then divide by 27.** A bed 6 feet by 5 feet, loaded 1 foot de
 6 × 5 × 1 ÷ 27 = 1.1 cubic yards. Measure to the height you would actually load to rather than
 the top of the sides.
 
-**Volume is rarely what decides it.** Loose soil is heavy, and what limits a truck is its
-payload rating rather than its bed capacity — you will reach the weight the vehicle is designed
+**Volume is rarely what decides it.** Loose soil is heavy — see the section above for how heavy,
+and why the honest answer is a range — and what limits a truck is its payload rating rather than
+its bed capacity — you will reach the weight the vehicle is designed
 to carry long before you run out of room. Check the payload figure for your specific vehicle
 before you fill it, and if a supplier is loading for you, tell them what you are driving.
 

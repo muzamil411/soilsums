@@ -10,6 +10,7 @@ import PlantSpacing from './plant-spacing-calculator.mdx';
 import PlantingDate from './planting-date-calculator.mdx';
 import PottingSoil from './potting-soil-calculator.mdx';
 import RaisedBedSoil from './raised-bed-soil-calculator.mdx';
+import BulkSoil from './bulk-soil-calculator.mdx';
 import CompanionPlantingChart from './companion-planting-chart.mdx';
 import SoilVolume from './soil-volume-converter.mdx';
 import SquareFootGarden from './square-foot-garden-planner.mdx';
@@ -32,5 +33,6 @@ export const toolContent: Record<string, ComponentType> = {
   'lime-calculator': Lime,
   'garden-yield-estimator': GardenYield,
   'soil-volume-converter': SoilVolume,
+  'bulk-soil-calculator': BulkSoil,
   'companion-planting-chart': CompanionPlantingChart,
 };
