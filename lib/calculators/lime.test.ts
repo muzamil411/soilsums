@@ -51,32 +51,41 @@ describe('calculateLime', () => {
     expect(result.pounds).toBe(15);
   });
 
-  it('keeps a correction at or under 100 lb per 1,000 sq ft in one application', () => {
-    // clay, 1.0 unit: 95 lb per 1,000 sq ft, just inside Penn State's ceiling.
-    const result = value(calculateLime({ ...base, texture: 'clay' }));
-    expect(result.lbPer1000SqFt).toBe(95);
+  /**
+   * These four assert the CONSERVATIVE ceiling, Maryland's 50 lb per 1,000 sq
+   * ft, not Penn State's 100. The two publications disagree by a factor of two
+   * and the calculator deliberately takes the safer one: exceeding a ceiling
+   * harms the lawn, while staying under it only means waiting six months for the
+   * second half. They were written against 100 and moved when that decision was
+   * taken.
+   */
+  it('keeps a correction at or under the conservative ceiling in one application', () => {
+    // sandy, 1.0 unit: 25 lb per 1,000 sq ft, well inside Maryland's 50.
+    const result = value(calculateLime({ ...base, texture: 'sandy' }));
+    expect(result.lbPer1000SqFt).toBe(25);
     expect(result.applications).toBe(1);
-    expect(result.poundsPerApplication).toBe(95);
+    expect(result.poundsPerApplication).toBe(25);
   });
 
-  it('splits a correction that exceeds the single-application limit', () => {
-    // clay, 1.5 units: 142.5 lb per 1,000 sq ft, over the ceiling.
-    const result = value(calculateLime({ ...base, texture: 'clay', targetPh: 7 }));
-    expect(result.lbPer1000SqFt).toBe(142.5);
+  it('splits a correction that exceeds the conservative ceiling', () => {
+    // clay, 1.0 unit: 95 lb per 1,000 sq ft. Inside Penn State's 100 and over
+    // Maryland's 50, which is exactly the case the two publications disagree on.
+    const result = value(calculateLime({ ...base, texture: 'clay' }));
+    expect(result.lbPer1000SqFt).toBe(95);
     expect(result.applications).toBe(2);
-    expect(result.poundsPerApplication).toBe(71.3);
+    expect(result.poundsPerApplication).toBe(47.5);
   });
 
   it('splits on the rate, not the total, so a small bed at a heavy rate still splits', () => {
     const result = value(calculateLime({ ...base, area: 100, texture: 'clay', targetPh: 7 }));
     expect(result.pounds).toBe(14.25);
-    expect(result.applications).toBe(2);
+    expect(result.applications).toBe(3);
   });
 
-  it('needs three applications for a very large correction', () => {
+  it('needs more applications the larger the correction', () => {
     const result = value(calculateLime({ ...base, texture: 'clay', currentPh: 4, targetPh: 6.5 }));
     expect(result.lbPer1000SqFt).toBe(237.5);
-    expect(result.applications).toBe(3);
+    expect(result.applications).toBe(5);
   });
 
   it('scales with the size of the pH change', () => {

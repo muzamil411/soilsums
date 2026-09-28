@@ -8,6 +8,7 @@ import { SelectField } from '@/components/ui/SelectField';
 import { num, useToolState, type FieldKind } from '@/lib/hooks/useToolState';
 import { calculateLime } from '@/lib/calculators/lime';
 import {
+  CONSERVATIVE_CEILING_LB_PER_1000SQFT,
   COLORADO,
   LIME_RATE_SOURCE,
   SINGLE_APPLICATION_LIMIT_LB_PER_1000SQFT,
@@ -119,16 +120,21 @@ export function LimeCalculator({ toolSlug }: { toolSlug: string }) {
             <Callout title={`Split this across ${output.applications} applications`}>
               <p>
                 At {output.lbPer1000SqFt} lb per 1,000 sq ft this is above the{' '}
-                {SINGLE_APPLICATION_LIMIT_LB_PER_1000SQFT} lb per 1,000 sq ft that Penn State
-                Extension sets as the ceiling for a single application on turf. Put down about{' '}
-                {perApplication} {unit} in spring and the same again in autumn, four to six months
-                apart, rather than all of it at once.
+                {CONSERVATIVE_CEILING_LB_PER_1000SQFT} lb per 1,000 sq ft above which University of
+                Maryland Extension advises splitting a lawn application in two, six months apart.
+                Put down about {perApplication} {unit} now and the same again in six months rather
+                than all of it at once.
               </p>
               <p>
-                Colorado State University Extension is stricter still on established turf, advising
-                no more than {COLORADO.establishedTurfLimitLbPer1000SqFt} lb per 1,000 sq ft in one
-                go. If you are liming an existing lawn rather than a bare bed, work to that lower
-                figure.
+                {/* The two publications disagree by a factor of two, so both are
+                    named rather than one being presented as the ceiling. */}
+                Penn State Extension allows up to {SINGLE_APPLICATION_LIMIT_LB_PER_1000SQFT} lb per
+                1,000 sq ft in a single application on an established lawn, so this split is the
+                cautious reading of two sourced figures rather than the only one. We use the lower
+                because exceeding a ceiling harms the lawn while staying under it only costs you six
+                months. Colorado State University Extension also caps established turf at{' '}
+                {COLORADO.establishedTurfLimitLbPer1000SqFt} lb per 1,000 sq ft. If you are liming
+                an existing lawn rather than a bare bed, work to that lower figure.
               </p>
             </Callout>
           ) : null}

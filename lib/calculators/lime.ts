@@ -11,9 +11,9 @@
  * a soil test giving buffer pH or a direct lime recommendation beats this.
  */
 import {
+  CONSERVATIVE_CEILING_LB_PER_1000SQFT,
   MAX_RELIABLE_PH_CHANGE,
   PH_RANGE,
-  SINGLE_APPLICATION_LIMIT_LB_PER_1000SQFT,
   getLimeRate,
   type SoilTexture,
 } from '@/data/lime-rates';
@@ -107,13 +107,16 @@ export function calculateLime(input: LimeInput): Calculation<LimeOutput> {
   const lowPounds = lowRate * phChange * perArea;
   const highPounds = highRate * phChange * perArea;
 
-  // Penn State's limit is a rate, not a total, so it is the per-1,000 sq ft
-  // figure that decides whether the correction has to be split — a small bed
-  // at a heavy rate still needs splitting.
-  const applications = Math.max(
-    1,
-    Math.ceil(lbPer1000SqFt / SINGLE_APPLICATION_LIMIT_LB_PER_1000SQFT),
-  );
+  // The ceiling is a rate, not a total, so it is the per-1,000 sq ft figure
+  // that decides whether the correction has to be split — a small bed at a
+  // heavy rate still needs splitting.
+  //
+  // It caps at the CONSERVATIVE of the two published ceilings: Maryland's 50
+  // rather than Penn State's 100. Exceeding a ceiling harms the lawn, while
+  // staying under it only means waiting six months for the second half, so the
+  // asymmetry justifies taking the safer figure instead of showing a midpoint.
+  // Both publications are named on the page.
+  const applications = Math.max(1, Math.ceil(lbPer1000SqFt / CONSERVATIVE_CEILING_LB_PER_1000SQFT));
 
   const warnings: string[] = [];
   if (phChange > MAX_RELIABLE_PH_CHANGE) {

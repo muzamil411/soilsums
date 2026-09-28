@@ -148,6 +148,69 @@ raking decides the outcome, starter feed versus nitrogen, aeration — is kept i
 `docs/notes-lawn-renovation.md` for a future page, held until the aeration-timing
 sources are in hand.
 
+## Lawn keywords, Batch 4 part two (September 2026)
+
+Three articles plus an audit of the lime calculator, which had been live with no
+supporting content and rate data never checked against a publication.
+
+| Article                   | Primary keyword           | Volume | KD  | Cluster it owns                                                                                                            |
+| ------------------------- | ------------------------- | -----: | --- | -------------------------------------------------------------------------------------------------------------------------- |
+| lime-for-your-lawn        | lime for your lawn        |  3,600 | 12  | Eight phrasings — lime for lawns, garden lime, lawn lime, dolomite lime, dolomitic lime, what does lime do for lawns, lime for your yard — about 24,200 searches at KD 11-22. |
+| fall-lawn-fertilizer      | fall lawn fertilizer      |  3,600 | 20  | Five phrasings including the British "autumn fertiliser lawn" and both winterizer variants, about 18,300 searches at KD 16-20. |
+| best-times-to-water-grass | best times to water grass |  1,900 | 19  | Five phrasings across time-of-day and how-often intent, about 5,800 searches at KD 19-25.                                    |
+
+**The fertilising page is American-spelled and there is no British sibling.**
+"autumn fertiliser lawn" carries more volume than the primary at lower
+difficulty, but it is the same question asked in a different dialect, and two
+pages would compete. The page uses American spelling as its own and lets the
+British variant sit once in the body.
+
+**Lime is one page and it leads with the instruction not to lime.** Penn State
+Extension's "do not lime unless a lime requirement test shows that limestone is
+needed" is the spine, because the whole cluster's search intent assumes the
+reader already knows they need lime and almost none of them do. The two
+publications disagree on the single-application ceiling — Penn State 100 lb per
+1,000 sq ft, Maryland 50 — and both are named on the page rather than averaged.
+
+**Watering contradicts "one inch a week" rather than repeating it.** Missouri
+G6720 publishes weekly water use by grass from 0.3 to 1.5 inches, so the folk
+figure is too much for three of the five species it covers and short for the
+other two. The table renders the comparison column from the data.
+
+**Cannibalisation checks.** `lime-for-your-lawn` against
+`how-to-raise-soil-ph` (pH for garden beds, wood ashes, keyword "how to raise ph
+in soil") and against the lime calculator — the article owns the lawn intent and
+the decision of whether to lime at all, the calculator owns the arithmetic.
+`best-times-to-water-grass` against `how-much-to-water-a-vegetable-garden`,
+which is a vegetable bed rather than turf. `fall-lawn-fertilizer` against
+`how-often-should-you-fertilize-vegetables` and
+`what-the-three-numbers-on-fertilizer-mean`, which owns the label-reading
+intent.
+
+### Held for part three: new sod
+
+"how often to water new sod" and its siblings carry about 5,400 searches at KD 3
+to 10 and get their own page. `best-times-to-water-grass` therefore carries
+exactly one new-sod figure — Missouri's wet the sod and the soil beneath it to a
+depth of 6 inches — and says a new lawn from sod deserves its own page, rather
+than building the material out and then competing with it.
+
+### Open: the site gives three different answers for how long lime takes
+
+Not resolved by this batch, and it predates it. `/blog/how-to-raise-soil-ph/`
+says three to six months, in its meta description, its opening, an FAQ answer,
+a section heading's answer and its closing — with no citation anywhere on the
+page; the only source it carries is Iowa State for wood ashes. The lime
+calculator says six months to a year, also uncited. `scripts/generate-figures.tsx`
+renders "Soil pH rises over three to six months" into a figure graphic, and two
+pin images carry the three-to-six months line in their description.
+`/blog/lime-for-your-lawn/` says, correctly for the publications we hold, that
+no sourced figure exists.
+
+Retracting an unsourced figure from a live page's meta description and from two
+pin images is a content decision, so it is recorded here rather than made
+quietly. It wants deciding before more pages cite either number.
+
 ## Crop guide keywords
 
 The 30 crop guides each target one long-tail question. The 10 original guides

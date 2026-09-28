@@ -5,6 +5,7 @@ import { crops } from '@/data/crops';
 import { compostMaterials } from '@/data/compost-materials';
 import { grassSeedRates } from '@/data/grass-seed-rates';
 import { limeRates } from '@/data/lime-rates';
+import { ANNUAL_NITROGEN, WATER_NEEDS } from '@/data/lawn-care';
 
 /**
  * No agronomic figure is written into Markdown by hand where a data file
@@ -60,6 +61,11 @@ function coveredNames(): string[] {
     ...compostMaterials.map((material) => material.name),
     ...grassSeedRates.map((grass) => grass.name),
     ...limeRates.map((rate) => rate.name),
+    // Lawn feeding and watering rates: the grass names here overlap
+    // grassSeedRates but not exactly, and a hand-written calendar table would
+    // restate them the same way the planting-date table restated its offsets.
+    ...ANNUAL_NITROGEN.map((row) => row.grass),
+    ...WATER_NEEDS.map((row) => row.grass),
   ].map((name) => name.toLowerCase());
 
   const expanded = names.flatMap((name) => [

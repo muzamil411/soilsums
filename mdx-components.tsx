@@ -17,6 +17,11 @@ import {
   DirectSowOnlyTable,
   IndoorSowingTable,
 } from '@/components/tools/tables/SeedStartingTables';
+import {
+  AnnualNitrogenTable,
+  FeedCalendarTable,
+  LawnWaterTable,
+} from '@/components/tools/tables/LawnCareTables';
 import { SeedingRateTable } from '@/components/tools/tables/SeedingRateTable';
 import { SfgDensityTable, SfgFallbackTable } from '@/components/tools/tables/SfgDensityTable';
 import { isDraftContentHref } from '@/lib/content/draft-links';
@@ -79,6 +84,9 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     LimeRateTable,
     NitrogenSourceTable,
     PlantingOffsetTable,
+    AnnualNitrogenTable,
+    FeedCalendarTable,
+    LawnWaterTable,
     SeedingRateTable,
     SfgDensityTable,
     SfgFallbackTable,

@@ -95,6 +95,80 @@ export const LIME_RATE_SOURCE = {
 export const SINGLE_APPLICATION_LIMIT_LB_PER_1000SQFT = 100;
 
 /**
+ * The single-application ceiling, as two publications give it.
+ *
+ * They disagree by a factor of two on an established lawn, and the difference
+ * is real rather than an error: Penn State allows 100 lb of ground limestone
+ * per 1,000 sq ft in one go, Maryland says a recommendation above 50 lb should
+ * be split into two applications six months apart. Both are recorded, neither
+ * is averaged, and both are named on the page — the same treatment
+ * data/turfgrass.ts gives the seeding-rate disagreement.
+ *
+ * The calculator caps at the CONSERVATIVE figure, which is the one place in
+ * this project where we take the safer of two sourced numbers rather than
+ * showing a midpoint. The asymmetry is the reason: exceeding a ceiling harms
+ * the lawn, while staying under it only means waiting six months for the second
+ * half.
+ */
+export const LAWN_LIME_CEILINGS = [
+  {
+    lbPer1000SqFt: 100,
+    institution: 'Penn State Extension',
+    title: 'Liming Turfgrass Areas',
+    url: 'https://extension.psu.edu/liming-turfgrass-areas',
+    note: 'The maximum in any single application on an established lawn. Where the requirement exceeds it, Penn State advises semiannual applications until it is met. On golf greens the limit is 25 lb.',
+  },
+  {
+    lbPer1000SqFt: 50,
+    institution: 'University of Maryland Extension',
+    title: 'Lime and Lawns',
+    url: 'https://extension.umd.edu/resource/lime-and-lawns',
+    note: 'A recommendation above 50 lb per 1,000 sq ft should be split into two applications six months apart.',
+  },
+] as const;
+
+/** The cap the calculator actually applies: the lower of the two, deliberately. */
+export const CONSERVATIVE_CEILING_LB_PER_1000SQFT = Math.min(
+  ...LAWN_LIME_CEILINGS.map((ceiling) => ceiling.lbPer1000SqFt),
+);
+
+/**
+ * Target pH by grass, from Penn State's "Liming Turfgrass Areas", with
+ * Maryland's own range beside it. Neither is a rate; both are the test a
+ * reader should measure against before liming at all.
+ */
+export const LAWN_PH_TARGETS = [
+  { label: 'Cool-season turfgrass generally', range: [6.0, 7.2] as const, source: 'Penn State' },
+  { label: 'Kentucky bluegrass', range: [6.5, 7.2] as const, source: 'Penn State' },
+  {
+    label: 'Fine fescues, bentgrasses and ryegrasses',
+    range: [6.0, 6.5] as const,
+    source: 'Penn State',
+  },
+  { label: 'Optimal range for lawns', range: [6.0, 6.8] as const, source: 'Maryland' },
+] as const;
+
+/** Maryland: below this, turf growth is compromised. */
+export const PH_GROWTH_COMPROMISED_BELOW = 5.5;
+
+/**
+ * The instruction Penn State puts in its own words and almost nobody writing
+ * about lawn lime repeats. It is the spine of the lime article rather than a
+ * footnote, so it lives here and is rendered rather than paraphrased.
+ */
+export const DO_NOT_GUESS =
+  'Do not lime unless a lime requirement test shows that limestone is needed, and never guess at the amount of limestone needed.';
+
+/** Maryland: how often a soil test should be the basis for liming. */
+export const SOIL_TEST_INTERVAL_YEARS = [3, 4] as const;
+
+/**
+ * A new seeding is the exception to the ceiling: Penn State allows the whole
+ * requirement at once where it is mixed into the top 4 to 6 inches of soil.
+ */
+export const NEW_SEEDING_INCORPORATION_INCHES = [4, 6] as const;
+
+/**
  * Colorado is stricter again on established turf, and caps hydrated or burned
  * lime far lower because it is caustic and acts fast. The organic matter
  * uplift is from the same source.
