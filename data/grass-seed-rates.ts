@@ -18,14 +18,27 @@
  * Every rate is in pounds of bulk seed, not pure live seed. Divide by
  * (purity x germination), both printed on the bag, to get the amount to buy.
  */
+import { PENN_STATE, TURF_SPECIES, type Rate } from './turfgrass';
+
 export type GrassSeason = 'cool' | 'warm';
 
 export type GrassSeedRate = {
   readonly slug: string;
   readonly name: string;
   readonly season: GrassSeason;
-  /** Pounds per 1,000 sq ft for a new lawn from bare soil. */
+  /**
+   * Pounds per 1,000 sq ft for a new lawn from bare soil.
+   *
+   * DERIVED, not stored, for every species data/turfgrass.ts covers: it is the
+   * midpoint of Penn State's published range, so there is one place in the repo
+   * where a seeding rate lives. It is arithmetic on a published range rather
+   * than a recommendation of its own, and every page that shows it says so.
+   */
   readonly newLawnLbPer1000SqFt: number;
+  /** The published range the figure above is the midpoint of. */
+  readonly newLawnRange: Rate;
+  /** Who published that range, for the label beside it. */
+  readonly newLawnBasis: string;
   /** Pounds per 1,000 sq ft for overseeding existing turf. */
   readonly overseedLbPer1000SqFt: number;
   /**
@@ -51,12 +64,25 @@ export const POOR_CONDITIONS_UPLIFT = 0.5;
 /** 1 lb per 1,000 sq ft in metric, for UK and Australian readers. */
 export const G_PER_SQM_PER_LB_PER_1000SQFT = 4.9;
 
-export const grassSeedRates: readonly GrassSeedRate[] = [
+/**
+ * What this file stores. The new-lawn rate is absent for any species
+ * data/turfgrass.ts publishes a range for, and supplied here only for the
+ * warm-season grasses and annual ryegrass that Penn State's table does not
+ * cover.
+ */
+type GrassSeedSeed = Omit<
+  GrassSeedRate,
+  'newLawnLbPer1000SqFt' | 'newLawnRange' | 'newLawnBasis'
+> & {
+  /** Only for species turfgrass.ts does not cover. */
+  readonly ownNewLawnLbPer1000SqFt?: number;
+};
+
+const seeds: readonly GrassSeedSeed[] = [
   {
     slug: 'kentucky-bluegrass',
     name: 'Kentucky bluegrass',
     season: 'cool',
-    newLawnLbPer1000SqFt: 2.5,
     overseedLbPer1000SqFt: 2,
     region: 'Pennsylvania, New York and Nebraska',
     note: 'Slow to germinate — two to three weeks. Spreads by rhizomes once established.',
@@ -69,7 +95,6 @@ export const grassSeedRates: readonly GrassSeedRate[] = [
     slug: 'tall-fescue',
     name: 'Tall fescue',
     season: 'cool',
-    newLawnLbPer1000SqFt: 7,
     overseedLbPer1000SqFt: 3.5,
     region: 'Pennsylvania, New York and Nebraska',
     note: 'Large seed, so it needs a high rate by weight. Deep roots and good drought tolerance.',
@@ -82,7 +107,6 @@ export const grassSeedRates: readonly GrassSeedRate[] = [
     slug: 'fine-fescue',
     name: 'Fine fescue',
     season: 'cool',
-    newLawnLbPer1000SqFt: 4.5,
     overseedLbPer1000SqFt: 3,
     region: 'Pennsylvania and New England',
     note: 'The usual choice for shade. Includes creeping red, chewings and hard fescue.',
@@ -95,8 +119,10 @@ export const grassSeedRates: readonly GrassSeedRate[] = [
     slug: 'perennial-ryegrass',
     name: 'Perennial ryegrass',
     season: 'cool',
-    newLawnLbPer1000SqFt: 7,
-    overseedLbPer1000SqFt: 5,
+    // Penn State's renovation range for turf-type perennial ryegrass is 2 to 5 lb,
+    // and this was its top end — which exceeded the new-lawn rate once that
+    // became the midpoint of 4 to 5. Midpoint of the same range instead.
+    overseedLbPer1000SqFt: 3.5,
     region: 'Pennsylvania, New York and New England',
     note: 'Germinates fast, often in under a week. Frequently blended for quick cover.',
     source:
@@ -108,7 +134,7 @@ export const grassSeedRates: readonly GrassSeedRate[] = [
     slug: 'annual-ryegrass',
     name: 'Annual ryegrass',
     season: 'cool',
-    newLawnLbPer1000SqFt: 9,
+    ownNewLawnLbPer1000SqFt: 9,
     overseedLbPer1000SqFt: 6,
     region: 'New England (as a full cover); far lower where it is a temporary winter crop',
     note: 'A temporary cover or winter overseed for dormant warm-season lawns. Dies out within a year.',
@@ -121,7 +147,6 @@ export const grassSeedRates: readonly GrassSeedRate[] = [
     slug: 'creeping-bentgrass',
     name: 'Creeping bentgrass',
     season: 'cool',
-    newLawnLbPer1000SqFt: 1,
     overseedLbPer1000SqFt: 0.5,
     region: 'Pennsylvania and New England, golf turf rather than home lawns',
     note: 'Tiny seed and a very low rate. High maintenance — more a putting-green grass than a lawn grass.',
@@ -134,7 +159,7 @@ export const grassSeedRates: readonly GrassSeedRate[] = [
     slug: 'bermudagrass',
     name: 'Bermudagrass (hulled seed)',
     season: 'warm',
-    newLawnLbPer1000SqFt: 1.5,
+    ownNewLawnLbPer1000SqFt: 1.5,
     overseedLbPer1000SqFt: 1,
     region: 'North Carolina and Florida',
     note: 'Needs warm soil to germinate. Unhulled seed is sown at a higher rate and germinates more slowly.',
@@ -147,7 +172,7 @@ export const grassSeedRates: readonly GrassSeedRate[] = [
     slug: 'zoysiagrass',
     name: 'Zoysiagrass',
     season: 'warm',
-    newLawnLbPer1000SqFt: 1.5,
+    ownNewLawnLbPer1000SqFt: 1.5,
     overseedLbPer1000SqFt: 1,
     region: 'Arkansas and North Carolina',
     note: 'Slow to establish from seed — plugs or sod are more common and much faster.',
@@ -160,7 +185,7 @@ export const grassSeedRates: readonly GrassSeedRate[] = [
     slug: 'centipedegrass',
     name: 'Centipedegrass',
     season: 'warm',
-    newLawnLbPer1000SqFt: 0.4,
+    ownNewLawnLbPer1000SqFt: 0.4,
     overseedLbPer1000SqFt: 0.25,
     region: 'North Carolina and Florida',
     note: 'Very fine seed at a very low rate. Mixing with sand helps spread it evenly.',
@@ -173,7 +198,7 @@ export const grassSeedRates: readonly GrassSeedRate[] = [
     slug: 'bahiagrass',
     name: 'Bahiagrass',
     season: 'warm',
-    newLawnLbPer1000SqFt: 6,
+    ownNewLawnLbPer1000SqFt: 6,
     overseedLbPer1000SqFt: 4,
     region: 'North Carolina and Florida',
     note: 'Tolerates poor sandy soil. Coarse texture and tall seed heads.',
@@ -186,7 +211,7 @@ export const grassSeedRates: readonly GrassSeedRate[] = [
     slug: 'buffalograss',
     name: 'Buffalograss',
     season: 'warm',
-    newLawnLbPer1000SqFt: 4,
+    ownNewLawnLbPer1000SqFt: 4,
     overseedLbPer1000SqFt: 2,
     region: 'Colorado; Kansas publishes 1-2 for the same grass',
     note: 'A low-water native for the Great Plains. Sold as treated burs rather than bare seed.',
@@ -196,6 +221,59 @@ export const grassSeedRates: readonly GrassSeedRate[] = [
     overseedVerified: false,
   },
 ];
+
+/** Midpoint of a published range, or the figure itself where it is a single one. */
+function midpoint(rate: Rate): number {
+  // typeof rather than Array.isArray: the latter narrows to any[] and leaves a
+  // readonly tuple in the negative branch, which TypeScript then rejects.
+  if (typeof rate === 'number') return rate;
+  const [low, high] = rate;
+  return Math.round(((low + high) / 2) * 100) / 100;
+}
+
+/**
+ * The rates the calculator works from.
+ *
+ * For every species Penn State's table covers, the figure is the midpoint of
+ * that published range, derived here rather than copied — so correcting
+ * data/turfgrass.ts corrects the calculator, the rate table, and the article,
+ * with no chance of the three disagreeing. Penn State's new-seeding column is
+ * the basis because establishing a lawn is the job this calculator does.
+ *
+ * Missouri's higher autumn and spring figures stay visible on the germination
+ * article as a disagreement a reader can see. They are deliberately not the
+ * calculator's default: a single blended number would be one neither service
+ * publishes.
+ */
+export const grassSeedRates: readonly GrassSeedRate[] = seeds.map((seed) => {
+  const published = TURF_SPECIES.find((species) => species.slug === seed.slug)?.pennState;
+
+  if (published !== undefined) {
+    // A species cannot have both. If turfgrass.ts publishes a range for it, that
+    // range is the only source, and an own figure alongside it would be a second
+    // place a seeding rate lives — which is the exact condition this refactor
+    // removed. Fail loudly at import rather than silently preferring one.
+    if (seed.ownNewLawnLbPer1000SqFt !== undefined) {
+      throw new Error(
+        `${seed.slug} carries its own new-lawn rate while turfgrass.ts publishes a range for it. Remove the own figure; the range is the source.`,
+      );
+    }
+    return {
+      ...seed,
+      newLawnLbPer1000SqFt: midpoint(published),
+      newLawnRange: published,
+      newLawnBasis: PENN_STATE.institution,
+    };
+  }
+
+  const own = seed.ownNewLawnLbPer1000SqFt;
+  if (own === undefined) {
+    throw new Error(
+      `${seed.slug} has no new-lawn rate: it is not in turfgrass.ts and carries no own figure`,
+    );
+  }
+  return { ...seed, newLawnLbPer1000SqFt: own, newLawnRange: own, newLawnBasis: seed.region };
+});
 
 export function getGrassSeedRate(slug: string): GrassSeedRate | undefined {
   return grassSeedRates.find((rate) => rate.slug === slug);

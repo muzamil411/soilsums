@@ -7,6 +7,7 @@ import { NumberField } from '@/components/ui/NumberField';
 import { RadioGroup } from '@/components/ui/RadioGroup';
 import { SelectField } from '@/components/ui/SelectField';
 import { num, useToolState, type FieldKind } from '@/lib/hooks/useToolState';
+import { rateLabel } from '@/data/turfgrass';
 import { calculateGrassSeed, type SeedingPurpose } from '@/lib/calculators/grass-seed';
 import {
   G_PER_SQM_PER_LB_PER_1000SQFT,
@@ -73,8 +74,15 @@ export function GrassSeedCalculator({ toolSlug }: { toolSlug: string }) {
                 what={`the ${purpose === 'new-lawn' ? 'establishment' : 'overseeding'} rate for ${output.grassName.toLowerCase()}`}
               />
             )}
-            . Sow half in one direction and half at right angles to it — that covers the gaps a
-            single pass leaves.
+            .{' '}
+            {/* A midpoint is arithmetic on a published range, not a
+                recommendation of its own, and the page has to say which it is
+                showing. */}
+            {output.rateIsMidpoint
+              ? `That figure is the midpoint of ${output.newLawnBasis}'s published ${rateLabel(output.newLawnRange)} per 1,000 sq ft, not a recommendation of its own. `
+              : ''}
+            Sow half in one direction and half at right angles to it — that covers the gaps a single
+            pass leaves.
           </p>
         ) : null
       }

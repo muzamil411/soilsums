@@ -23,7 +23,6 @@ import SuccessionPlantingSchedule from './succession-planting-schedule.mdx';
 import WhatDoesLastFrostDateMean from './what-does-last-frost-date-mean.mdx';
 import WhatTheThreeNumbersOnFertilizerMean from './what-the-three-numbers-on-fertilizer-mean.mdx';
 import WhatToFillRaisedGardenBedsWith from './what-to-fill-raised-garden-beds-with.mdx';
-import WhenToOverseedALawn from './when-to-overseed-a-lawn.mdx';
 import WhyIsMyCompostNotBreakingDown from './why-is-my-compost-not-breaking-down.mdx';
 
 /**
@@ -59,7 +58,6 @@ export const articleContent: Record<string, ComponentType> = {
   'what-does-last-frost-date-mean': WhatDoesLastFrostDateMean,
   'what-the-three-numbers-on-fertilizer-mean': WhatTheThreeNumbersOnFertilizerMean,
   'what-to-fill-raised-garden-beds-with': WhatToFillRaisedGardenBedsWith,
-  'when-to-overseed-a-lawn': WhenToOverseedALawn,
   'why-is-my-compost-not-breaking-down': WhyIsMyCompostNotBreakingDown,
   'can-you-mow-wet-grass': CanYouMowWetGrass,
   'clover-in-lawns': CloverInLawns,

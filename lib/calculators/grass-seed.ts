@@ -6,6 +6,7 @@
  * overseed of existing turf.
  */
 import { getGrassSeedRate } from '@/data/grass-seed-rates';
+import type { Rate } from '@/data/turfgrass';
 import {
   OUNCES_PER_POUND,
   areaToSquareFeet,
@@ -59,6 +60,15 @@ export type GrassSeedOutput = {
    */
   readonly rateVerified: boolean;
   readonly source: string;
+  /**
+   * The published range the new-lawn rate is the midpoint of, and who published
+   * it. Shown beside the figure so the reader sees the range rather than only
+   * the arithmetic taken from it.
+   */
+  readonly newLawnRange: Rate;
+  readonly newLawnBasis: string;
+  /** True when the rate shown is a midpoint rather than a published figure. */
+  readonly rateIsMidpoint: boolean;
 };
 
 export function calculateGrassSeed(input: GrassSeedInput): Calculation<GrassSeedOutput> {
@@ -97,6 +107,9 @@ export function calculateGrassSeed(input: GrassSeedInput): Calculation<GrassSeed
     kilograms: toSignificant(poundsToKilograms(pounds), 4),
     grams: toSignificant(poundsToGrams(pounds), 4),
     alternateRateLbPer1000SqFt: alternateRate,
+    newLawnRange: rate.newLawnRange,
+    newLawnBasis: rate.newLawnBasis,
+    rateIsMidpoint: input.purpose === 'new-lawn' && Array.isArray(rate.newLawnRange),
     note: rate.note,
     region: rate.region,
     rateVerified: input.purpose === 'new-lawn' ? rate.verified : rate.overseedVerified,

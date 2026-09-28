@@ -4,15 +4,16 @@ description: How many pounds of grass seed a lawn needs, by grass type, for a ne
 heading: Grass seed calculator
 updated: 2026-09-17
 articles:
-  - when-to-overseed-a-lawn
+  - how-long-does-grass-seed-take-to-grow
 faqs:
   - question: >-
       How much grass seed do I need for 1,000 square feet?
     answer: >-
-      It depends entirely on the grass. Tall fescue and perennial ryegrass have large seeds and
-      want around 7 pounds per 1,000 square feet for a new lawn. Kentucky bluegrass has much
-      smaller seed and needs around 2.5 pounds for the same area. Centipedegrass is finer still
-      at under half a pound. Always check the rate for your species rather than using a general
+      It depends entirely on the grass, and the differences are large. Penn State gives turf-type
+      tall fescue 6 to 8 pounds per 1,000 square feet for a new lawn, perennial ryegrass 4 to 5,
+      Kentucky bluegrass 2 to 3, and creeping bentgrass 1. Centipedegrass is finer still at under
+      half a pound. Seed size is most of the reason: a pound of bluegrass contains far more seeds
+      than a pound of fescue. Always check the rate for your species rather than using a general
       figure.
   - question: >-
       Why is the overseeding rate lower than the new lawn rate?
@@ -73,19 +74,20 @@ pounds of seed = rate (lb per 1,000 sq ft) x (area / 1000)
 ```
 
 The whole question is which rate. Rates come from
-`data/grass-seed-rates.ts`, one figure per species for a new lawn and one for
-overseeding, and the note under the result explains anything particular about that
-grass.
+`data/grass-seed-rates.ts`. For the grasses Penn State's table covers, the new-lawn
+figure is the midpoint of its published range and the result says so, with the range
+itself in the table below. The note under the result explains anything particular
+about that grass.
 
 ### A worked example
 
 A 5,000 square foot lawn, new, in tall fescue:
 
-- Rate: **7 lb per 1,000 sq ft**
+- Rate: **7 lb per 1,000 sq ft** — the midpoint of Penn State's published 6 to 8
 - Seed needed: 7 x (5,000 / 1,000) = **35 pounds**
 
-Overseeding the same lawn instead uses the lower rate of 5 lb per 1,000 sq ft, so
-**25 pounds**. Switch the species to Kentucky bluegrass and the new-lawn figure drops to
+Overseeding the same lawn instead uses tall fescue's lower rate of 3.5 lb per 1,000 sq ft, so
+**17.5 pounds**. Switch the species to Kentucky bluegrass and the new-lawn figure drops to
 **12.5 pounds**, because bluegrass seed is so much smaller that a pound goes far further.
 
 ## Seeding rates by grass type

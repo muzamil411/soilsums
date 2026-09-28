@@ -61,9 +61,16 @@ docs/ for how things work.
   38 of them on one commit, with identical text. That drowned a real signal: a
   27-file pin diff was read as retracted figures when it was mostly
   renumbering. The number is gone. If a pin diff is now larger than the pages
-  you touched, something else changed the template, and
-  `docs/pinterest-pins.md` in the diff tells you whether any text moved. The
-  stable identifier for a pin is its file name, in that file's first column.
+  you touched, something else changed the template. The stable identifier for a
+  pin is its file name, in `docs/pinterest-pins.md`'s first column.
+- **A pin can change with no diff in `docs/pinterest-pins.md`, and that is not a
+  bug.** The image renders `pin.support` — the first sentence of the FAQ answer
+  the pin was built from — and that file has no column for it, carrying only
+  file, title, description, url and board. Correcting a single FAQ answer on the
+  grass seed calculator rewrote its pin with the doc untouched. So "the row is
+  identical, therefore only the number changed" was wrong guidance while the
+  number existed, and is still the wrong test now: to see what moved in a pin,
+  compare `buildPins()` output rather than the doc.
 - Never take a figure from a search-result summary. This was done once on
   the sulfur work and had to be undone against the primary source.
 - **"It appears in the built output" is not "a reader can see it."** Grepping

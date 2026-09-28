@@ -1,4 +1,5 @@
 import { grassSeedRates } from '@/data/grass-seed-rates';
+import { rateLabel } from '@/data/turfgrass';
 import { Estimate } from '@/components/ui/Estimate';
 import { DataTable } from './DataTable';
 
@@ -17,13 +18,18 @@ export function GrassSeedRateTable() {
   );
 
   return (
-    <DataTable columns={['Grass', 'Season', 'New lawn', 'Overseeding', 'Rate written for']}>
+    <DataTable
+      columns={['Grass', 'Season', 'New lawn, as published', 'Overseeding', 'Rate written for']}
+    >
       {ordered.map((grass) => (
         <tr key={grass.slug}>
           <td>{grass.name}</td>
           <td>{grass.season === 'cool' ? 'Cool' : 'Warm'}</td>
           <td>
-            {grass.newLawnLbPer1000SqFt} lb
+            {/* The published range, not the midpoint the calculator works from.
+                Showing only the derived figure would hide that Penn State gives
+                a band rather than a number. */}
+            {rateLabel(grass.newLawnRange)}
             {!grass.verified ? <Estimate what={`the new-lawn rate for ${grass.name}`} /> : null}
           </td>
           <td>
