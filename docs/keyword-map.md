@@ -102,6 +102,49 @@ the splits above are applied.
 
 ---
 
+## Lawn keywords, Batch 4 part one (September 2026)
+
+Lawn run as its own extraction rather than as spillover from other seeds:
+3,415 raw keywords across six seeds, 2,386 after cleaning, 2,047,660 monthly
+searches. Roughly four times the earlier estimate, which had come from lawn
+keywords falling out of vegetable seeds. Largest clusters are overseeding and
+seeding (512 keywords / 550,560), fertilising (414 / 381,490) and weeds
+(278 / 267,330).
+
+| Article                               | Primary keyword                              | Volume | KD  | Cluster it owns                                                                                                 |
+| ------------------------------------- | -------------------------------------------- | -----: | --- | --------------------------------------------------------------------------------------------------------------- |
+| how-long-does-grass-seed-take-to-grow | how long does it take for grass seed to grow |  5,400 | 16  | Nine phrasings of one question, about 25,600 searches at KD 16-25. The largest single question in the lawn set. |
+| can-you-mow-wet-grass                 | can you cut wet grass                        |  4,400 | 21  | Six phrasings, about 21,900 searches at KD 11-24.                                                               |
+| clover-in-lawns                       | how to get rid of clover in lawn             |  3,600 | 21  | Both intents at once: four removal phrasings and four planting phrasings, about 29,000 searches together.       |
+
+**Clover is one page, not two.** Competitors split removal and planting into
+unrelated articles. They share an answer — clover fixes nitrogen, holds colour
+in drought and feeds pollinators, and became a weed by convention when
+selective herbicides made a uniform grass lawn achievable — so a reader
+arriving to kill it and a reader arriving to sow it both need the same facts
+first. The page then gives both methods properly, including the downsides of a
+clover lawn that seed sellers omit.
+
+**Germination is written as an absence.** No extension service publishes a
+table of germination days by species; the only numeric statement found across
+Penn State, Missouri, Iowa State, UMass and NC State is Missouri's two to
+three weeks for Kentucky bluegrass in spring. The page says so and explains
+what actually governs the wait, on the same principle as the bulk soil
+weight section.
+
+### Outstanding: the overseeding draft now overlaps
+
+`when-to-overseed-a-lawn` is still a draft, and its sections "Timing by grass
+type", "How much seed" and "Watering, which decides the outcome" are now
+covered by the germination article, which carries the sourced windows, the
+two-publication seeding rates and the Iowa State watering guidance. Its
+keyword is under 100 searches with no calculated KD, against 25,600 for the
+germination cluster, so publishing it as written would put the weaker page in
+competition with the stronger one. It needs re-scoping to what only it can own
+— preparing existing turf, raking, aeration, whether to feed at the same time
+— or retiring. Not blocking: nothing is live, so nothing is cannibalised
+today.
+
 ## Crop guide keywords
 
 The 30 crop guides each target one long-tail question. The 10 original guides

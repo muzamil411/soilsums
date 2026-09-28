@@ -1,5 +1,8 @@
 import type { ComponentType } from 'react';
 import BestMulchForAVegetableGarden from './best-mulch-for-a-vegetable-garden.mdx';
+import CanYouMowWetGrass from './can-you-mow-wet-grass.mdx';
+import CloverInLawns from './clover-in-lawns.mdx';
+import HowLongDoesGrassSeedTakeToGrow from './how-long-does-grass-seed-take-to-grow.mdx';
 import DoesCompanionPlantingActuallyWork from './does-companion-planting-actually-work.mdx';
 import GardenSoilVsPottingSoil from './garden-soil-vs-potting-soil-vs-topsoil.mdx';
 import GreensVsBrownsInCompost from './greens-vs-browns-in-compost.mdx';
@@ -58,4 +61,7 @@ export const articleContent: Record<string, ComponentType> = {
   'what-to-fill-raised-garden-beds-with': WhatToFillRaisedGardenBedsWith,
   'when-to-overseed-a-lawn': WhenToOverseedALawn,
   'why-is-my-compost-not-breaking-down': WhyIsMyCompostNotBreakingDown,
+  'can-you-mow-wet-grass': CanYouMowWetGrass,
+  'clover-in-lawns': CloverInLawns,
+  'how-long-does-grass-seed-take-to-grow': HowLongDoesGrassSeedTakeToGrow,
 };
