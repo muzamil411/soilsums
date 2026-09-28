@@ -195,21 +195,22 @@ exactly one new-sod figure — Missouri's wet the sod and the soil beneath it to
 depth of 6 inches — and says a new lawn from sod deserves its own page, rather
 than building the material out and then competing with it.
 
-### Open: the site gives three different answers for how long lime takes
+### Resolved: how long lime takes to move pH
 
-Not resolved by this batch, and it predates it. `/blog/how-to-raise-soil-ph/`
-says three to six months, in its meta description, its opening, an FAQ answer,
-a section heading's answer and its closing — with no citation anywhere on the
-page; the only source it carries is Iowa State for wood ashes. The lime
-calculator says six months to a year, also uncited. `scripts/generate-figures.tsx`
-renders "Soil pH rises over three to six months" into a figure graphic, and two
-pin images carry the three-to-six months line in their description.
-`/blog/lime-for-your-lawn/` says, correctly for the publications we hold, that
-no sourced figure exists.
+Settled 28 September 2026. The site had held three answers at once — three to
+six months on `/blog/how-to-raise-soil-ph/` and in the generated timeline figure,
+six months to a year on the lime calculator, and "no sourced figure exists" on
+`/blog/lime-for-your-lawn/` — and neither of the two that named a figure carried
+a citation on its page.
 
-Retracting an unsourced figure from a live page's meta description and from two
-pin images is a content decision, so it is recorded here rather than made
-quietly. It wants deciding before more pages cite either number.
+It was not a retraction. Muzamil sourced the figure: UMass Amherst gives four to
+six months, and Ohio State corroborates it qualitatively ("it may be several
+months before the soil pH changes"). The figure now lives once, in `LIME_TIMING`
+in `data/lime-rates.ts`, and every surface reads it — including a seventh nobody
+had counted, the pH article's meta description appearing as a card excerpt on
+four crop pages and on `/blog/page/2/`. `docs/lime-sources.md` records both
+publications and their quotes; `lib/content/lime-timing.test.ts` and
+`npm run seo-audit` fail on any rendered page that states a different one.
 
 ## Crop guide keywords
 

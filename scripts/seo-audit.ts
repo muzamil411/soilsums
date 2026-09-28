@@ -11,6 +11,8 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { publishedTools, toolCountWord } from '../data/tools';
+import { LIME_TIMING } from '../data/lime-rates';
+import { wrongTimingStatements } from '../lib/content/lime-timing';
 
 process.stdout.on('error', (error: NodeJS.ErrnoException) => {
   if (error.code !== 'EPIPE') throw error;
@@ -266,6 +268,25 @@ for (const page of pages) {
     failures.push(
       `${page.route} tells the reader "${match[0]}" while the registry has ${publishedTools.length} ` +
         `published tools ("${toolCountWord}"). Use toolCountWord from data/tools.ts instead of a literal word.`,
+    );
+  }
+}
+
+/**
+ * One answer to how long lime takes, in the rendered copy.
+ *
+ * The same shape as the tool-count check above and for the same reason: the
+ * figure lived in prose and in frontmatter on seven surfaces, the site held
+ * three different answers at once, and nothing connected any of them to
+ * `LIME_TIMING`. Two of those surfaces are YAML that cannot import a module, and
+ * the pH article's meta description is echoed as a card excerpt on five other
+ * pages, so the only place that catches all of them is what shipped.
+ */
+for (const page of pages) {
+  for (const finding of wrongTimingStatements(page.visibleText)) {
+    failures.push(
+      `${page.route} tells the reader lime takes "${finding.phrase}" while data/lime-rates.ts ` +
+        `holds ${LIME_TIMING.label} (${LIME_TIMING.source.institution}). Context: …${finding.context.slice(0, 160)}…`,
     );
   }
 }

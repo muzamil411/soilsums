@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { calculateLime } from './lime';
+import {
+  CAUSTIC_CEILING_LB_PER_1000SQFT,
+  CEILING_AGREEMENT,
+  CONSERVATIVE_CEILING_LB_PER_1000SQFT,
+  LAWN_LIME_CEILINGS,
+  LAWN_PH_OVERLAP,
+  LAWN_PH_OVERLAP_LABEL,
+  LAWN_PH_TARGETS,
+} from '@/data/lime-rates';
 
 const base = {
   units: 'imperial',
@@ -154,5 +163,60 @@ describe('calculateLime', () => {
   it('stays finite for a very large field', () => {
     const result = value(calculateLime({ ...base, area: 1e9 }));
     expect(Number.isFinite(result.pounds)).toBe(true);
+  });
+});
+
+/**
+ * The ceiling the calculator applies is derived, and the derivation has to
+ * ignore the caustic materials.
+ *
+ * Ohio State publishes its ceilings per material — 50 lb per 1,000 sq ft for
+ * ground, dolomitic and pelletized limestone, 20 for hydrated lime, 10 for
+ * burned — and Colorado caps hydrated or burned lime at 10. A `Math.min` across
+ * the whole list would therefore cap a limestone user at 10 lb and split a
+ * routine correction into five applications, so the filter is load-bearing
+ * rather than tidy. This fails if a caustic figure ever reaches the calculator's
+ * cap, and if the conservative choice stops being the conservative one.
+ */
+describe('the derived single-application ceiling', () => {
+  it('is the lowest published figure for a limestone, not for any lime', () => {
+    const limestone = LAWN_LIME_CEILINGS.filter((ceiling) => !ceiling.caustic).map(
+      (ceiling) => ceiling.lbPer1000SqFt,
+    );
+
+    expect(CONSERVATIVE_CEILING_LB_PER_1000SQFT).toBe(Math.min(...limestone));
+    expect(CONSERVATIVE_CEILING_LB_PER_1000SQFT).toBe(50);
+  });
+
+  it('is not dragged down by a caustic material', () => {
+    const caustic = LAWN_LIME_CEILINGS.filter((ceiling) => ceiling.caustic);
+
+    expect(caustic.length).toBeGreaterThan(0);
+    expect(CAUSTIC_CEILING_LB_PER_1000SQFT).toBeLessThan(CONSERVATIVE_CEILING_LB_PER_1000SQFT);
+    expect(
+      CONSERVATIVE_CEILING_LB_PER_1000SQFT,
+      'a caustic ceiling has reached the calculator, which prices limestone only',
+    ).toBeGreaterThan(Math.min(...caustic.map((ceiling) => ceiling.lbPer1000SqFt)));
+  });
+
+  it('is the figure three of the four publications give', () => {
+    expect(CEILING_AGREEMENT.length).toBe(3);
+    expect(CEILING_AGREEMENT).not.toContain('Penn State Extension');
+    for (const institution of CEILING_AGREEMENT) {
+      const theirs = LAWN_LIME_CEILINGS.filter(
+        (ceiling) => ceiling.institution === institution && !ceiling.caustic,
+      );
+      expect(theirs.every((ceiling) => ceiling.lbPer1000SqFt === 50)).toBe(true);
+    }
+  });
+
+  it('keeps the three services pH ranges overlapping where the pages say they do', () => {
+    expect(LAWN_PH_OVERLAP_LABEL).toBe('6.0 to 6.8');
+    const general = LAWN_PH_TARGETS.filter((target) => target.scope === 'general');
+    expect(general.length).toBe(3);
+    for (const target of general) {
+      expect(target.range[0]).toBeLessThanOrEqual(LAWN_PH_OVERLAP[0]);
+      expect(target.range[1]).toBeGreaterThanOrEqual(LAWN_PH_OVERLAP[1]);
+    }
   });
 });

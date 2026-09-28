@@ -18,6 +18,7 @@ import { join } from 'node:path';
 import { ImageResponse } from 'next/og';
 import sharp from 'sharp';
 import { nitrogenLabel, nitrogenSources } from '../data/nitrogen-sources';
+import { LIME_TIMING } from '../data/lime-rates';
 
 const OUT_DIR = join(process.cwd(), 'public', 'figures');
 const FONT_DIR = join(process.cwd(), 'assets', 'fonts');
@@ -343,8 +344,9 @@ const timeline = (
         marginBottom: 30,
       }}
     >
-      Soil pH rises over three to six months. How far it rises depends on your soil, so the
-      axis is deliberately unscaled.
+      {/* One expression, not several children: satori requires an explicit
+          display on any div with more than one child node. */}
+      {`Soil pH rises over ${LIME_TIMING.label} (${LIME_TIMING.source.shortName}). How far it rises depends on your soil, so the axis is deliberately unscaled.`}
     </div>
 
     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', height: PLOT_HEIGHT }}>

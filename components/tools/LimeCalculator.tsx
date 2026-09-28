@@ -8,10 +8,14 @@ import { SelectField } from '@/components/ui/SelectField';
 import { num, useToolState, type FieldKind } from '@/lib/hooks/useToolState';
 import { calculateLime } from '@/lib/calculators/lime';
 import {
+  CAUSTIC_CEILING_LB_PER_1000SQFT,
+  CEILING_AGREEMENT,
   CONSERVATIVE_CEILING_LB_PER_1000SQFT,
   COLORADO,
   LIME_RATE_SOURCE,
+  LIME_TIMING,
   SINGLE_APPLICATION_LIMIT_LB_PER_1000SQFT,
+  ceilingFor,
   limeRates,
   type SoilTexture,
 } from '@/data/lime-rates';
@@ -101,9 +105,10 @@ export function LimeCalculator({ toolSlug }: { toolSlug: string }) {
               your own soil can sit anywhere in it.
             </p>
             <p className="text-ink/75 mt-2 text-sm">
-              Assumes ground agricultural limestone, calcitic or dolomitic, worked into the top 6
-              inches of a mineral soil low in organic matter. Expect six months to a year before the
-              pH has fully moved.
+              Assumes ground, dolomitic or pelletized limestone, worked into the top 6 inches of a
+              mineral soil low in organic matter — not hydrated or burned lime, which are capped
+              several times lower. Expect {LIME_TIMING.label} before the pH has fully moved, which is{' '}
+              {LIME_TIMING.source.institution}&rsquo;s range.
             </p>
           </>
         ) : null
@@ -130,11 +135,12 @@ export function LimeCalculator({ toolSlug }: { toolSlug: string }) {
                     named rather than one being presented as the ceiling. */}
                 Penn State Extension allows up to {SINGLE_APPLICATION_LIMIT_LB_PER_1000SQFT} lb per
                 1,000 sq ft in a single application on an established lawn, so this split is the
-                cautious reading of two sourced figures rather than the only one. We use the lower
+                cautious reading of sourced figures rather than the only one. We use the lower
                 because exceeding a ceiling harms the lawn while staying under it only costs you six
-                months. Colorado State University Extension also caps established turf at{' '}
-                {COLORADO.establishedTurfLimitLbPer1000SqFt} lb per 1,000 sq ft. If you are liming
-                an existing lawn rather than a bare bed, work to that lower figure.
+                months — and because {CEILING_AGREEMENT.length} of the{' '}
+                {CEILING_AGREEMENT.length + 1} publications behind this tool put the ceiling at{' '}
+                {CONSERVATIVE_CEILING_LB_PER_1000SQFT} lb rather than 100:{' '}
+                {CEILING_AGREEMENT.join(', ')}. Penn State is the outlier rather than the consensus.
               </p>
             </Callout>
           ) : null}
@@ -150,9 +156,15 @@ export function LimeCalculator({ toolSlug }: { toolSlug: string }) {
               </li>
               <li>
                 <strong>Hydrated and burned lime are not this product.</strong> They are caustic and
-                act fast, and the rate above does not apply to them. Colorado advises halving the
-                rate and applying no more than {COLORADO.hydratedLimeLimitLbPer1000SqFt} lb per
-                1,000 sq ft. Ground or pelletised limestone is the safer choice for a garden.
+                act fast, and the rate above does not apply to them. Ohio State University Extension
+                publishes its ceilings by material rather than one figure for lime in general:{' '}
+                {ceilingFor('Ohio State', 'Ground limestone')} lb per 1,000 sq ft for ground,
+                dolomitic and pelletized limestone, {ceilingFor('Ohio State', 'Hydrated lime')} for
+                hydrated lime and {ceilingFor('Ohio State', 'Burned lime')} for burned. Colorado is
+                stricter again and caps hydrated or burned lime at{' '}
+                {COLORADO.hydratedLimeLimitLbPer1000SqFt} lb, so{' '}
+                {CAUSTIC_CEILING_LB_PER_1000SQFT} lb is the figure to work to. Neither is what a homeowner should be spreading: ground
+                or pelletized limestone is the material these rates are for.
               </li>
             </ul>
           </div>

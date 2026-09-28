@@ -2,6 +2,11 @@ import type { MDXComponents } from 'mdx/types';
 import Link from 'next/link';
 import { Callout } from '@/components/ui/Callout';
 import { Figure } from '@/components/ui/Figure';
+import {
+  LimeMonths,
+  LimeMonthsCapitalised,
+  LimeTimingNote,
+} from '@/components/content/LimeTiming';
 import { BagVolumeTable } from '@/components/tools/tables/BagVolumeTable';
 import { BedPlanTable } from '@/components/tools/tables/BedPlanTable';
 import { CompostMaterialTable } from '@/components/tools/tables/CompostMaterialTable';
@@ -67,6 +72,11 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     Callout,
     Figure,
+    // The lime timing figure, read from data/lime-rates.ts wherever prose
+    // states it. See lib/content/lime-timing.ts for why.
+    LimeMonths,
+    LimeMonthsCapitalised,
+    LimeTimingNote,
     // Tables generated from the data files. An agronomic figure that a data
     // file covers is never written into Markdown by hand: that is how four
     // tool pages ended up contradicting their own calculators, and

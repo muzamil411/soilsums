@@ -95,24 +95,48 @@ export const LIME_RATE_SOURCE = {
 export const SINGLE_APPLICATION_LIMIT_LB_PER_1000SQFT = 100;
 
 /**
- * The single-application ceiling, as two publications give it.
+ * The single-application ceiling, as four publications give it, by material.
  *
- * They disagree by a factor of two on an established lawn, and the difference
- * is real rather than an error: Penn State allows 100 lb of ground limestone
- * per 1,000 sq ft in one go, Maryland says a recommendation above 50 lb should
- * be split into two applications six months apart. Both are recorded, neither
- * is averaged, and both are named on the page — the same treatment
- * data/turfgrass.ts gives the seeding-rate disagreement.
+ * Penn State allows 100 lb of ground limestone per 1,000 sq ft in one go.
+ * Maryland says a recommendation above 50 lb should be split into two
+ * applications six months apart. Colorado caps established turf at 50. Ohio
+ * State publishes a ceiling per material rather than one figure for lime in
+ * general, and its three limestone figures are 50. Nothing is averaged and
+ * every figure is named on the page — the same treatment data/turfgrass.ts
+ * gives the seeding-rate disagreement.
  *
- * The calculator caps at the CONSERVATIVE figure, which is the one place in
- * this project where we take the safer of two sourced numbers rather than
- * showing a midpoint. The asymmetry is the reason: exceeding a ceiling harms
- * the lawn, while staying under it only means waiting six months for the second
- * half.
+ * The calculator caps at the CONSERVATIVE non-caustic figure, which is the one
+ * place in this project where we take the safer of several sourced numbers
+ * rather than showing a midpoint. The asymmetry is the reason: exceeding a
+ * ceiling harms the lawn, while staying under it only means waiting six months
+ * for the second half. Three of the four publications put that figure at 50,
+ * which is independent confirmation rather than a house preference.
+ *
+ * `caustic` is load-bearing rather than descriptive. Hydrated and burned lime
+ * are capped several-fold lower than limestone, so a ceiling derived across
+ * every material would hand a limestone user 10 lb and a `Math.min` over the
+ * whole list would silently retune the calculator the next time a caustic
+ * figure is added. The calculator's scope is the three limestones, and
+ * lib/calculators/lime.test.ts asserts that the derivation ignores the caustic
+ * rows.
  */
-export const LAWN_LIME_CEILINGS = [
+export type LimeCeiling = {
+  readonly lbPer1000SqFt: number;
+  /** The material the publication attaches the figure to, in its own terms. */
+  readonly material: string;
+  /** Caustic materials: capped far lower, and outside the calculator's scope. */
+  readonly caustic: boolean;
+  readonly institution: string;
+  readonly title: string;
+  readonly url?: string;
+  readonly note: string;
+};
+
+export const LAWN_LIME_CEILINGS: readonly LimeCeiling[] = [
   {
     lbPer1000SqFt: 100,
+    material: 'Ground limestone',
+    caustic: false,
     institution: 'Penn State Extension',
     title: 'Liming Turfgrass Areas',
     url: 'https://extension.psu.edu/liming-turfgrass-areas',
@@ -120,33 +144,235 @@ export const LAWN_LIME_CEILINGS = [
   },
   {
     lbPer1000SqFt: 50,
+    material: 'Lime, material not broken out',
+    caustic: false,
     institution: 'University of Maryland Extension',
     title: 'Lime and Lawns',
     url: 'https://extension.umd.edu/resource/lime-and-lawns',
     note: 'A recommendation above 50 lb per 1,000 sq ft should be split into two applications six months apart.',
   },
+  {
+    lbPer1000SqFt: 50,
+    material: 'Lime on established turf',
+    caustic: false,
+    institution: 'Colorado State University Extension',
+    title: 'Changing Soil pH, CMG GardenNotes #222',
+    url: 'https://extension.colostate.edu/resource/changing-soil-ph/',
+    note: 'The established-turf limit. Colorado publishes no texture table at all, so this ceiling is how it expresses a lime recommendation.',
+  },
+  {
+    lbPer1000SqFt: 50,
+    material: 'Ground limestone',
+    caustic: false,
+    institution: 'Ohio State University Extension',
+    title: 'Lime and the Home Lawn',
+    url: 'https://ohioline.osu.edu/factsheet/hyg-4026',
+    note: 'Maximum single application. Ohio State gives a figure per material rather than one for lime in general.',
+  },
+  {
+    lbPer1000SqFt: 50,
+    material: 'Dolomitic limestone',
+    caustic: false,
+    institution: 'Ohio State University Extension',
+    title: 'Lime and the Home Lawn',
+    url: 'https://ohioline.osu.edu/factsheet/hyg-4026',
+    note: 'Maximum single application, the same as ground limestone.',
+  },
+  {
+    lbPer1000SqFt: 50,
+    material: 'Pelletized limestone',
+    caustic: false,
+    institution: 'Ohio State University Extension',
+    title: 'Lime and the Home Lawn',
+    url: 'https://ohioline.osu.edu/factsheet/hyg-4026',
+    note: 'Maximum single application, the same as ground and dolomitic limestone — pelletizing is a handling difference, not a chemical one.',
+  },
+  {
+    lbPer1000SqFt: 20,
+    material: 'Hydrated lime',
+    caustic: true,
+    institution: 'Ohio State University Extension',
+    title: 'Lime and the Home Lawn',
+    url: 'https://ohioline.osu.edu/factsheet/hyg-4026',
+    note: 'Maximum single application. Less than half the limestone figure, because hydrated lime is caustic and acts fast.',
+  },
+  {
+    lbPer1000SqFt: 10,
+    material: 'Burned lime',
+    caustic: true,
+    institution: 'Ohio State University Extension',
+    title: 'Lime and the Home Lawn',
+    url: 'https://ohioline.osu.edu/factsheet/hyg-4026',
+    note: 'Maximum single application, a fifth of the limestone figure.',
+  },
+  {
+    lbPer1000SqFt: 10,
+    material: 'Hydrated or burned lime',
+    caustic: true,
+    institution: 'Colorado State University Extension',
+    title: 'Changing Soil pH, CMG GardenNotes #222',
+    url: 'https://extension.colostate.edu/resource/changing-soil-ph/',
+    note: 'Halve the rate and never exceed 10 lb per 1,000 sq ft. Colorado does not separate hydrated from burned, and its hydrated figure is half of Ohio State\'s 20 — recorded rather than reconciled.',
+  },
+];
+
+/** The materials every rate and ceiling this calculator applies is for. */
+export const CALCULATOR_MATERIALS = [
+  'ground limestone',
+  'dolomitic limestone',
+  'pelletized limestone',
 ] as const;
 
-/** The cap the calculator actually applies: the lower of the two, deliberately. */
+/**
+ * The cap the calculator actually applies: the lowest published figure for a
+ * non-caustic limestone, deliberately, rather than the most permissive.
+ */
 export const CONSERVATIVE_CEILING_LB_PER_1000SQFT = Math.min(
-  ...LAWN_LIME_CEILINGS.map((ceiling) => ceiling.lbPer1000SqFt),
+  ...LAWN_LIME_CEILINGS.filter((ceiling) => !ceiling.caustic).map(
+    (ceiling) => ceiling.lbPer1000SqFt,
+  ),
 );
 
 /**
- * Target pH by grass, from Penn State's "Liming Turfgrass Areas", with
- * Maryland's own range beside it. Neither is a rate; both are the test a
- * reader should measure against before liming at all.
+ * The caustic materials' ceiling, which the calculator does not use because it
+ * does not price those materials. It exists so the pages can say how much lower
+ * it is instead of implying the amount is the same whatever bag you buy.
  */
-export const LAWN_PH_TARGETS = [
-  { label: 'Cool-season turfgrass generally', range: [6.0, 7.2] as const, source: 'Penn State' },
-  { label: 'Kentucky bluegrass', range: [6.5, 7.2] as const, source: 'Penn State' },
+export const CAUSTIC_CEILING_LB_PER_1000SQFT = Math.min(
+  ...LAWN_LIME_CEILINGS.filter((ceiling) => ceiling.caustic).map(
+    (ceiling) => ceiling.lbPer1000SqFt,
+  ),
+);
+
+/**
+ * One publication's ceiling for one material, so copy naming a specific figure
+ * reads it rather than repeating it. Throws rather than returning undefined: a
+ * missing row means the copy is describing something the data no longer holds,
+ * and a page that silently drops a number is how this file's figures drifted
+ * before.
+ */
+export function ceilingFor(institutionStartsWith: string, material: string): number {
+  const found = LAWN_LIME_CEILINGS.find(
+    (ceiling) =>
+      ceiling.institution.startsWith(institutionStartsWith) && ceiling.material === material,
+  );
+  if (found === undefined) {
+    throw new Error(`No published lime ceiling for ${material} from ${institutionStartsWith}`);
+  }
+  return found.lbPer1000SqFt;
+}
+
+/** The services that publish the conservative figure, for naming them in copy. */
+export const CEILING_AGREEMENT: readonly string[] = [
+  ...new Set(
+    LAWN_LIME_CEILINGS.filter(
+      (ceiling) =>
+        !ceiling.caustic && ceiling.lbPer1000SqFt === CONSERVATIVE_CEILING_LB_PER_1000SQFT,
+    ).map((ceiling) => ceiling.institution),
+  ),
+];
+
+/**
+ * How long lime takes to move soil pH: four to six months.
+ *
+ * This is the site's only answer to that question and every surface reads it
+ * from here, because the site held three answers at once for months. The pH
+ * article said three to six, the lime calculator said six months to a year, a
+ * generated figure said three to six, and neither of the two that named a
+ * figure carried a citation anywhere on its page. The lawn lime article,
+ * written later against publications that gave no figure, said no sourced
+ * figure existed.
+ *
+ * UMass states the range; Ohio State corroborates it qualitatively without
+ * naming one. It is a range rather than a number because how fast the reaction
+ * runs depends on the fineness of the material, how well it is incorporated and
+ * soil moisture — none of which a reader controls precisely.
+ */
+export const UMASS_TIMING = {
+  institution: 'UMass Amherst Soil and Plant Nutrient Testing Laboratory',
+  /** For a figure subtitle, where the full name does not fit. */
+  shortName: 'UMass Amherst',
+  title: 'Timing of Lime and Fertilizer Applications',
+  quote:
+    "limestone can take a long time (4-6 months) to raise soil pH, it's best to start as soon as possible",
+  /** Established plantings may be limed twice a year, spring and autumn, with the amount limited to avoid damage. */
+  twiceAYearOnEstablishedPlantings: true,
+} as const;
+
+export const OHIO_STATE_LAWN = {
+  institution: 'Ohio State University Extension',
+  title: 'Lime and the Home Lawn',
+  detail: 'Ohioline HYG-4026',
+  url: 'https://ohioline.osu.edu/factsheet/hyg-4026',
+  quote: 'it may be several months before the soil pH changes',
+} as const;
+
+export const LIME_TIMING = {
+  monthsToMovePh: [4, 6] as const,
+  /** Spelled out, because that is how it reads in prose on every page. */
+  words: 'four to six',
+  label: 'four to six months',
+  source: UMASS_TIMING,
+  corroboration: OHIO_STATE_LAWN,
+  whyARange:
+    'how fast it moves depends on the fineness of the material, how well it is incorporated and soil moisture, none of which you control precisely',
+} as const;
+
+/**
+ * Target pH for a lawn, as three services give it, plus Penn State's
+ * per-species rows.
+ *
+ * The three general ranges are close but not identical — Penn State 6.0 to 7.2,
+ * Maryland 6.0 to 6.8, Ohio State 6.0 to 7.0 — so the site states the overlap
+ * rather than adopting one service's range as its own. `scope` is what makes
+ * that derivable: the overlap is taken across the general ranges only, since a
+ * species range is a narrower claim about one grass rather than a competing
+ * answer to the same question.
+ */
+export type LawnPhTarget = {
+  readonly label: string;
+  readonly range: readonly [number, number];
+  readonly source: string;
+  readonly scope: 'general' | 'species';
+};
+
+export const LAWN_PH_TARGETS: readonly LawnPhTarget[] = [
+  {
+    label: 'Cool-season turfgrass generally',
+    range: [6.0, 7.2],
+    source: 'Penn State',
+    scope: 'general',
+  },
+  { label: 'Kentucky bluegrass', range: [6.5, 7.2], source: 'Penn State', scope: 'species' },
   {
     label: 'Fine fescues, bentgrasses and ryegrasses',
-    range: [6.0, 6.5] as const,
+    range: [6.0, 6.5],
     source: 'Penn State',
+    scope: 'species',
   },
-  { label: 'Optimal range for lawns', range: [6.0, 6.8] as const, source: 'Maryland' },
-] as const;
+  { label: 'Optimal range for lawns', range: [6.0, 6.8], source: 'Maryland', scope: 'general' },
+  { label: 'Ideal range for a home lawn', range: [6.0, 7.0], source: 'Ohio State', scope: 'general' },
+];
+
+/**
+ * Where the three services' general ranges all agree, which is the practical
+ * answer the pages give: a lawn inside this band is inside every one of them.
+ */
+export const LAWN_PH_OVERLAP: readonly [number, number] = [
+  Math.max(
+    ...LAWN_PH_TARGETS.filter((target) => target.scope === 'general').map(
+      (target) => target.range[0],
+    ),
+  ),
+  Math.min(
+    ...LAWN_PH_TARGETS.filter((target) => target.scope === 'general').map(
+      (target) => target.range[1],
+    ),
+  ),
+];
+
+/** The overlap written the way prose writes it: one decimal place, always. */
+export const LAWN_PH_OVERLAP_LABEL = `${LAWN_PH_OVERLAP[0].toFixed(1)} to ${LAWN_PH_OVERLAP[1].toFixed(1)}`;
 
 /** Maryland: below this, turf growth is compromised. */
 export const PH_GROWTH_COMPROMISED_BELOW = 5.5;
