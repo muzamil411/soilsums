@@ -98,3 +98,17 @@ docs/ for how things work.
 
 `npm run lint`, `npm test`, `npm run build`, `npm run content-report`,
 `npm run verify-data`, `npm run seo-audit`. Run them before merging.
+
+- **Never pipe `npm run build` somewhere that hides a failure.** A failed
+  build leaves the previous `out/` in place, so every check that reads
+  rendered output then passes on stale HTML. This happened while testing the
+  tool-count guard: the build failed on an unused import, the output was
+  suppressed with `tail -1`, and `seo-audit` cheerfully passed on the
+  previous good render. Check the build actually succeeded before trusting
+  anything downstream of it.
+- **A count in prose belongs to the registry, not to a sentence.** The number
+  of calculators was wrong on live pages four times — at twelve, thirteen,
+  fourteen and fifteen — because each fix found the sentences a source grep
+  happened to reach. `toolCountWord` and `ToolCountWord` in `data/tools.ts`
+  derive it, and `seo-audit` now fails on any spelled-out count in the
+  rendered copy that disagrees with `publishedTools.length`.

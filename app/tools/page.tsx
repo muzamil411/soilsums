@@ -4,7 +4,13 @@ import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { SectionRule } from '@/components/ui/SectionRule';
 import { SeedPacket } from '@/components/ui/SeedPacket';
 import { pageMetadata } from '@/lib/seo/metadata';
-import { publishedTools, toolCategories, toolsByCategory, type ToolCategory } from '@/data/tools';
+import {
+  ToolCountWord,
+  publishedTools,
+  toolCategories,
+  toolsByCategory,
+  type ToolCategory,
+} from '@/data/tools';
 
 export const metadata: Metadata = pageMetadata({
   title: 'All gardening calculators',
@@ -27,9 +33,9 @@ export default function ToolsIndexPage() {
       <Breadcrumbs trail={[{ name: 'Tools', href: '/tools/' }]} />
       <h1 className="text-3xl sm:text-4xl">All calculators</h1>
       <p className="mt-4 max-w-xl text-lg">
-        Twelve calculators, grouped by the job you are doing. Each one shows its formula, works in
-        imperial or metric, and keeps your numbers in the page address so you can send a result to
-        whoever is holding the wheelbarrow.
+        {ToolCountWord} calculators, grouped by the job you are doing. Each one shows its formula,
+        works in imperial or metric, and keeps your numbers in the page address so you can send a
+        result to whoever is holding the wheelbarrow.
       </p>
 
       {categoryOrder.map((category) => (

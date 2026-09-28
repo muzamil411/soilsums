@@ -6,7 +6,13 @@ import { SeedPacket } from '@/components/ui/SeedPacket';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { pageMetadata } from '@/lib/seo/metadata';
 import { organizationSchema, websiteSchema } from '@/lib/seo/schema';
-import { toolCategories, toolCountWord, toolsByCategory, type ToolCategory } from '@/data/tools';
+import {
+  ToolCountWord,
+  toolCategories,
+  toolCountWord,
+  toolsByCategory,
+  type ToolCategory,
+} from '@/data/tools';
 
 export const metadata: Metadata = pageMetadata({
   title: 'SoilSums — gardening calculators that give real numbers',
@@ -30,9 +36,10 @@ export default function HomePage() {
       <Container className="pt-8 pb-2">
         <h1 className="text-[2.125rem] sm:text-5xl">How much do you actually need?</h1>
         <p className="mt-4 max-w-xl text-lg">
-          Twelve gardening calculators for the questions you hit standing in the garden centre with
-          a phone in one hand. Soil for a raised bed, bags of mulch, pounds of fertilizer, how many
-          plants fit, when to sow. Answers in imperial or metric, with the formula shown.
+          {ToolCountWord} gardening calculators for the questions you hit standing in the garden
+          centre with a phone in one hand. Soil for a raised bed, bags of mulch, pounds of
+          fertilizer, how many plants fit, when to sow. Answers in imperial or metric, with the
+          formula shown.
         </p>
 
         {/* A line rather than a panel of shortcuts. The four most-used tools

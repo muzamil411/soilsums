@@ -10,6 +10,7 @@
  */
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { publishedTools, toolCountWord } from '../data/tools';
 
 process.stdout.on('error', (error: NodeJS.ErrnoException) => {
   if (error.code !== 'EPIPE') throw error;
@@ -38,6 +39,8 @@ type Page = {
   ogImage: string | null;
   twitterCard: string | null;
   schemaTypes: string[];
+  /** The page as a reader sees it: tags and script payload removed. */
+  visibleText: string;
   h1Count: number;
   /** Every same-site href in the body, for the broken-link check. */
   internalHrefs: string[];
@@ -95,6 +98,13 @@ function readPage(file: string): Page {
     bodyStart === -1 ? html : html.slice(bodyStart, bodyEnd === -1 ? undefined : bodyEnd)
   ).replace(/<script[\s\S]*?<\/script>/g, '');
   const imgTags = [...body.matchAll(/<img\b[^>]*>/g)].map((match) => match[0]);
+  // Rendered copy: tags gone, whitespace collapsed. The body above already has
+  // its <script> blocks stripped, so this is what a reader actually reads and
+  // not the React payload, which looks identical to a naive grep.
+  const visibleText = body
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&[a-z]+;|&#\d+;/gi, ' ')
+    .replace(/\s+/g, ' ');
 
   return {
     route,
@@ -105,6 +115,7 @@ function readPage(file: string): Page {
     ogImage: attr(head, /<meta property="og:image" content="([^"]*)"/),
     twitterCard: attr(head, /<meta name="twitter:card" content="([^"]*)"/),
     schemaTypes,
+    visibleText,
     h1Count: (body.match(/<h1\b/g) ?? []).length,
     internalHrefs: [...body.matchAll(/href="(\/[^"#?]*)"/g)].flatMap((match) =>
       match[1] === undefined ? [] : [match[1]],
@@ -228,6 +239,34 @@ for (const page of pages) {
     if (!builtRoutes.has(route) && !existsSync(join(OUT, href.replace(/^\//, '')))) {
       failures.push(`${page.route} links to ${href}, which the export did not build`);
     }
+  }
+}
+
+/**
+ * A spelled-out count of the calculators has to match the registry.
+ *
+ * This has been wrong four times without anyone noticing — at twelve, thirteen,
+ * fourteen and fifteen tools — because the sentence lives in prose and nothing
+ * connected it to `publishedTools`. Deriving it from the registry was not
+ * enough on its own: two more sentences carried the literal word, on the home
+ * page and on /tools/, and a source grep for the ones already fixed did not
+ * find them.
+ *
+ * So this checks the RENDERED copy instead. A count that reaches a reader is
+ * caught here whatever produced it, and the fix is always to use
+ * `toolCountWord` or `ToolCountWord` from data/tools.ts rather than a word.
+ */
+const NUMBER_WORD =
+  /\b(zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)\s+(?:gardening\s+)?(calculators?|tools?)\b/gi;
+
+for (const page of pages) {
+  for (const match of page.visibleText.matchAll(NUMBER_WORD)) {
+    const word = (match[1] ?? '').toLowerCase();
+    if (word === toolCountWord) continue;
+    failures.push(
+      `${page.route} tells the reader "${match[0]}" while the registry has ${publishedTools.length} ` +
+        `published tools ("${toolCountWord}"). Use toolCountWord from data/tools.ts instead of a literal word.`,
+    );
   }
 }
 

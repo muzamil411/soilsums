@@ -214,6 +214,9 @@ const NUMBER_WORDS = [
 export const toolCountWord: string =
   NUMBER_WORDS[publishedTools.length] ?? String(publishedTools.length);
 
+/** The same word capitalised, for the sentences that open with it. */
+export const ToolCountWord: string = toolCountWord.charAt(0).toUpperCase() + toolCountWord.slice(1);
+
 export function getTool(slug: string): Tool | undefined {
   return tools.find((tool) => tool.slug === slug);
 }
