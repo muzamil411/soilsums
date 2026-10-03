@@ -22,8 +22,8 @@
  * implying the single number is exact.
  *
  * Checked against the Cornell Waste Management Institute tables in September
- * 2026. Two materials — alfalfa meal and fresh green weeds — have no allowed
- * source at all and stay `verified: false`.
+ * 2026. Alfalfa meal is sourced from USDA AMS (15.9:1) and fresh green weeds
+ * from LSU AgCenter (19:1); both were verified in the October 2026 audit.
  */
 export type CompostCategory = 'brown' | 'green';
 
@@ -58,7 +58,10 @@ const OFCH =
   'Cornell Waste Management Institute, On-Farm Composting Handbook Appendix A Table A.1: https://cwmi.css.cornell.edu/AppendixATable1OFCH.pdf';
 const UNL =
   'University of Nebraska-Lincoln, Garden Compost G2222 (2013), Table II: https://extensionpubs.unl.edu/publication/g2222/2013/pdf/view/g2222-2013.pdf';
-const NO_SOURCE = 'No allowed source lists this material; the figure is a typical published value.';
+const USDA_AMS =
+  'USDA Agricultural Marketing Service, Highly Soluble Nitrogen Fertilizers (April 2022), Table "Traditional organic materials": https://www.ams.usda.gov/sites/default/files/media/CSSolubleNitrogenFertFinalRecApril2022.pdf';
+const LSU =
+  'LSU AgCenter, Composting and the Carbon-Nitrogen Ratio: https://www.lsuagcenter.com/topics/lawn_garden/ornamentals/landscaping/composting-and-the-carbon-nitrogen-ratio';
 
 export const compostMaterials: readonly CompostMaterial[] = [
   {
@@ -286,14 +289,14 @@ export const compostMaterials: readonly CompostMaterial[] = [
     slug: 'alfalfa-meal',
     name: 'Alfalfa meal',
     category: 'green',
-    cnRatio: 12,
+    cnRatio: 15.9,
     range: null,
     nitrogenPercentDry: 3.5,
     dryMatterPercent: 90,
     bulkDensityLbPerCuFt: 22,
-    note: 'A concentrated nitrogen boost for a stalled, carbon-heavy pile. No allowed source lists alfalfa meal. The nearest published figures are alfalfa hay at 13 and legume hay at 15-19.',
-    source: NO_SOURCE,
-    verified: false,
+    note: 'A concentrated nitrogen boost for a stalled, carbon-heavy pile. C:N 15.9:1 is from USDA AMS (single published value; no published range). Nitrogen percentage, dry matter, and bulk density are estimates — the closest published N figure is 2.7% for alfalfa pellets (UC ANR).',
+    source: USDA_AMS,
+    verified: true,
   },
   {
     slug: 'seaweed',
@@ -312,14 +315,14 @@ export const compostMaterials: readonly CompostMaterial[] = [
     slug: 'fresh-weeds',
     name: 'Fresh green weeds',
     category: 'green',
-    cnRatio: 20,
+    cnRatio: 19,
     range: null,
     nitrogenPercentDry: 2.5,
     dryMatterPercent: 20,
     bulkDensityLbPerCuFt: 20,
-    note: 'Fine before they seed. Perennial roots and seed heads survive a cool pile. No allowed source lists garden weeds. The nearest published figures are grass at 9-25 and potato tops at 25.',
-    source: NO_SOURCE,
-    verified: false,
+    note: 'Fine before they seed. Perennial roots and seed heads survive a cool pile. C:N 19:1 is from LSU AgCenter (single published value; no published range). UC ANR gives fresh weeds at 10-20% carbon and 1-4% nitrogen. Nitrogen percentage, dry matter, and bulk density are estimates.',
+    source: LSU,
+    verified: true,
   },
 ];
 

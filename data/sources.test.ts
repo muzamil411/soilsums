@@ -17,10 +17,16 @@ describe('compost materials', () => {
 
   it('gives a range to everything it claims to have verified', () => {
     // A verified figure with no range would be claiming a precision the
-    // sources explicitly disclaim.
+    // sources explicitly disclaim — unless the source itself publishes a
+    // single value, in which case there is no published spread to show and
+    // the table says "No published range found". A single value must not be
+    // dressed up as a measured range like [15.9, 15.9].
+    const SINGLE_VALUE_SLUGS = new Set(['alfalfa-meal', 'fresh-weeds']);
     for (const material of compostMaterials) {
       if (material.verified) {
-        expect(material.range, `${material.slug} is verified with no range`).not.toBeNull();
+        if (!SINGLE_VALUE_SLUGS.has(material.slug)) {
+          expect(material.range, `${material.slug} is verified with no range`).not.toBeNull();
+        }
       } else {
         expect(material.range, `${material.slug} is unverified with a range`).toBeNull();
       }

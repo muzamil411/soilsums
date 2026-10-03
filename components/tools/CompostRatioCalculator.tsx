@@ -197,8 +197,8 @@ export function CompostRatioCalculator({ toolSlug }: { toolSlug: string }) {
                   label: `${material.name} — ${
                     material.range
                       ? `${material.range[0]}–${material.range[1]}:1`
-                      : `${material.cnRatio}:1 (estimate)`
-                  }`,
+                      : `${material.cnRatio}:1`
+                  }${material.verified ? '' : ' (estimate)'}`,
                 }))}
               />
               <NumberField

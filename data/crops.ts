@@ -37,8 +37,9 @@
  * which is arithmetic, and the square-foot-gardening figure, which is a
  * convention from Mel Bartholomew's method rather than a research finding. The
  * first is computed by `plantsPerSquareFoot()`; the second is
- * `sfgPlantsPerSquare`, null wherever the Cornell CALS page does not name the
- * crop.
+ * `sfgPlantsPerSquare`, null where the crop is not listed in the checked
+ * Cornell CALS source — not proof that no square-foot recommendation exists
+ * elsewhere.
  */
 export type CropType = 'vegetable' | 'herb' | 'fruit';
 
@@ -762,11 +763,12 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     family: 'Amaryllidaceae',
     spacingInches: 4,
-    rowSpacingInches: 12,
+    rowSpacingInches: 6,
     sfgPlantsPerSquare: 9,
     plantingSeason: 'fall',
     notes: [
       'Planted 1 to 2 weeks after the first killing frost in autumn, which is why the spring frost-date fields are empty. It overwinters in the ground and is lifted the following summer.',
+      'UMN Extension describes double rows 6 inches apart (beds centered 30 inches apart) and shows garlic at 6-inch row spacing in raised beds; the 6-inch row figure is used here.',
     ],
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
@@ -796,11 +798,17 @@ export const crops: readonly Crop[] = [
       institution: 'University of Minnesota Extension',
       url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-garlic',
     },
-    verifiedFields: ['spacingInches', 'sfgPlantsPerSquare'],
-    verified: false,
+    extraSources: [
+      {
+        institution: 'University of Minnesota Extension',
+        title: 'Tips for garlic planting season (Fruit and Vegetable IPM blog)',
+        url: 'https://blog-fruit-vegetable-ipm.extension.umn.edu/2021/10/stick-to-your-regular-garlic-planting.html',
+      },
+    ],
+    verifiedFields: ['spacingInches', 'sfgPlantsPerSquare', 'rowSpacingInches'],
+    verified: true,
   },
-  {
-    slug: 'potato',
+  {    slug: 'potato',
     name: 'Potato',
     scientificName: 'Solanum tuberosum',
     type: 'vegetable',
@@ -999,8 +1007,8 @@ export const crops: readonly Crop[] = [
       institution: 'University of Illinois Extension',
       url: 'https://extension.illinois.edu/gardening/corn',
     },
-    verifiedFields: ['spacingInches', 'rowSpacingInches', 'directSowWeeksRelativeToLastFrost'],
-    verified: false,
+    verifiedFields: ['spacingInches', 'rowSpacingInches', 'directSowWeeksRelativeToLastFrost', 'sfgPlantsPerSquare'],
+    verified: true,
   },
   {
     slug: 'squash',
@@ -1080,9 +1088,8 @@ export const crops: readonly Crop[] = [
       'rowSpacingInches',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
-      'directSowWeeksRelativeToLastFrost',
-    ],
-    verified: false,
+      'directSowWeeksRelativeToLastFrost', 'sfgPlantsPerSquare'],
+    verified: true,
   },
   {
     slug: 'broccoli',
@@ -1322,8 +1329,7 @@ export const crops: readonly Crop[] = [
       'spacingInches',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
-      'directSowWeeksRelativeToLastFrost',
-    ],
+      'directSowWeeksRelativeToLastFrost', 'sfgPlantsPerSquare'],
     verified: false,
   },
   {
@@ -1617,9 +1623,8 @@ export const crops: readonly Crop[] = [
       'rowSpacingInches',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
-      'directSowWeeksRelativeToLastFrost',
-    ],
-    verified: false,
+      'directSowWeeksRelativeToLastFrost', 'sfgPlantsPerSquare'],
+    verified: true,
   },
   // ---------------------------------------------------------------------
   // Added September 2026 for the Batch 2 crop pages. None of these four is
