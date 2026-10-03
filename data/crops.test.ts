@@ -139,6 +139,23 @@ describe('crop data', () => {
     }
   });
 
+  it('keeps audit-corrected figures on their own crop', () => {
+    // The October 2026 audit once changed spinach's row spacing while aiming
+    // at garlic, because the edit matched a repeated numeric value instead of
+    // the crop slug. Pin the corrected figures to their slugs.
+    const pinned: Record<string, { rowSpacingInches: number }> = {
+      spinach: { rowSpacingInches: 12 },
+      garlic: { rowSpacingInches: 6 },
+    };
+    for (const [slug, expected] of Object.entries(pinned)) {
+      const crop = crops.find((entry) => entry.slug === slug);
+      expect(crop, slug).toBeTruthy();
+      expect(crop?.rowSpacingInches, `${slug} rowSpacingInches`).toBe(
+        expected.rowSpacingInches,
+      );
+    }
+  });
+
   it('gives a temperature trigger to every warm-season crop the report named', () => {
     // A frost-date offset alone tells a reader to sow melon seed into 50°F
     // soil, where it simply rots. These crops need the second condition.
