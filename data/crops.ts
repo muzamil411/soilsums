@@ -539,7 +539,7 @@ export const crops: readonly Crop[] = [
     type: 'vegetable',
     family: 'Amaranthaceae',
     spacingInches: 4,
-    rowSpacingInches: 12,
+    rowSpacingInches: 30,
     sfgPlantsPerSquare: 9,
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
@@ -767,6 +767,7 @@ export const crops: readonly Crop[] = [
     plantingSeason: 'fall',
     notes: [
       'Planted 1 to 2 weeks after the first killing frost in autumn, which is why the spring frost-date fields are empty. It overwinters in the ground and is lifted the following summer.',
+      'UMN describes double rows 6 inches apart centered on beds 30 inches apart; the 30-inch bed spacing is the row figure used here.',
     ],
     sowIndoorsWeeksBeforeLastFrost: null,
     transplantWeeksAfterLastFrost: null,
@@ -796,8 +797,8 @@ export const crops: readonly Crop[] = [
       institution: 'University of Minnesota Extension',
       url: 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-garlic',
     },
-    verifiedFields: ['spacingInches', 'sfgPlantsPerSquare'],
-    verified: false,
+    verifiedFields: ['spacingInches', 'sfgPlantsPerSquare', 'rowSpacingInches'],
+    verified: true,
   },
   {
     slug: 'potato',
@@ -999,8 +1000,8 @@ export const crops: readonly Crop[] = [
       institution: 'University of Illinois Extension',
       url: 'https://extension.illinois.edu/gardening/corn',
     },
-    verifiedFields: ['spacingInches', 'rowSpacingInches', 'directSowWeeksRelativeToLastFrost'],
-    verified: false,
+    verifiedFields: ['spacingInches', 'rowSpacingInches', 'directSowWeeksRelativeToLastFrost', 'sfgPlantsPerSquare'],
+    verified: true,
   },
   {
     slug: 'squash',
@@ -1080,9 +1081,8 @@ export const crops: readonly Crop[] = [
       'rowSpacingInches',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
-      'directSowWeeksRelativeToLastFrost',
-    ],
-    verified: false,
+      'directSowWeeksRelativeToLastFrost', 'sfgPlantsPerSquare'],
+    verified: true,
   },
   {
     slug: 'broccoli',
@@ -1322,8 +1322,7 @@ export const crops: readonly Crop[] = [
       'spacingInches',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
-      'directSowWeeksRelativeToLastFrost',
-    ],
+      'directSowWeeksRelativeToLastFrost', 'sfgPlantsPerSquare'],
     verified: false,
   },
   {
@@ -1617,9 +1616,8 @@ export const crops: readonly Crop[] = [
       'rowSpacingInches',
       'sowIndoorsWeeksBeforeLastFrost',
       'transplantWeeksAfterLastFrost',
-      'directSowWeeksRelativeToLastFrost',
-    ],
-    verified: false,
+      'directSowWeeksRelativeToLastFrost', 'sfgPlantsPerSquare'],
+    verified: true,
   },
   // ---------------------------------------------------------------------
   // Added September 2026 for the Batch 2 crop pages. None of these four is
