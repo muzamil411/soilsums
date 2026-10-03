@@ -67,7 +67,7 @@ export type BulkSoilInput = {
   /**
    * Supplier-quoted weight in lb per cubic yard, for the soil case.
    *
-   * No publication gives a delivered-topsoil weight, so the tool refuses to
+   * We have no sourced delivered-topsoil weight, so the tool refuses to
    * invent one: it only computes a soil weight from a figure the reader's own
    * supplier supplied. Absent, there is no weight — see weightFor.
    */
@@ -107,7 +107,7 @@ export type BulkSoilResult = {
   readonly coveragePerYard: number;
   readonly bags: readonly { readonly cubicFeet: number; readonly count: number }[];
   /**
-   * Null for soil where no supplier figure was entered: there is no published
+   * Null for soil where no supplier figure was entered: we have no sourced
    * delivered-topsoil weight, so the honest result is no weight at all rather
    * than a range built from something else.
    */
