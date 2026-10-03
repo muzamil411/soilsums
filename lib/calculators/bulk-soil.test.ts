@@ -5,7 +5,7 @@ import {
   POUNDS_PER_TON,
   SQUARE_FEET_PER_YARD_INCH,
 } from './bulk-soil';
-import { COMPOST_DENSITY, gramsPerCm3ToLbPerCubicYard, SOIL_TEXTURES } from '@/data/densities';
+import { COMPOST_DENSITY } from '@/data/densities';
 
 function run(input: Parameters<typeof calculateBulkSoil>[0]) {
   const result = calculateBulkSoil(input);
@@ -72,65 +72,97 @@ describe('bulk soil volume', () => {
 
 describe('bulk soil weight', () => {
   /**
-   * The point of the tool: a range with its reason, never one confident figure.
-   * Both of these assertions exist because every competing calculator prints a
-   * single number that is wrong for most readers.
+   * The point of the tool: a range with its reason where one is published, and
+   * no weight at all where none is — never one confident invented figure.
    */
-  it('always gives a range, never a point figure', () => {
-    for (const material of ['compost', 'soil'] as const) {
-      const { weight } = run({ ...BED, material, texture: 'sandy-loam' });
-      expect(weight.highLbPerCubicYard).toBeGreaterThan(weight.lowLbPerCubicYard);
-      expect(weight.highLb).toBeGreaterThan(weight.lowLb);
-    }
+  it('gives compost as a range, never a point figure', () => {
+    const { weight } = run({ ...BED, material: 'compost' });
+    if (weight === null) throw new Error('compost must have a weight');
+    expect(weight.highLbPerCubicYard).toBeGreaterThan(weight.lowLbPerCubicYard);
+    expect(weight.highLb).toBeGreaterThan(weight.lowLb);
+    expect(weight.supplierFigure).toBe(false);
   });
 
   it('uses Oregon State figures directly for compost, with no conversion', () => {
     const { weight } = run({ ...BED, material: 'compost' });
+    if (weight === null) throw new Error('compost must have a weight');
     expect(weight.lowLbPerCubicYard).toBe(COMPOST_DENSITY.lowLbPerCubicYard);
     expect(weight.highLbPerCubicYard).toBe(COMPOST_DENSITY.highLbPerCubicYard);
     expect(weight.typicalLbPerCubicYard).toBe(COMPOST_DENSITY.typicalLbPerCubicYard);
   });
 
-  it('marks soil as in-place only, and compost as not', () => {
-    // Compost is published as supplied; the NRCS soil figures are for soil in
-    // the ground, which is not what a supplier tips on a driveway.
-    expect(run({ ...BED, material: 'compost' }).weight.inPlaceOnly).toBe(false);
-    expect(run({ ...BED, material: 'soil', texture: 'clay' }).weight.inPlaceOnly).toBe(true);
-    expect(run({ ...BED, material: 'soil', texture: 'clay' }).weight.typicalLbPerCubicYard).toBe(
-      undefined,
-    );
+  it('marks the compost high end as open, not a maximum', () => {
+    // Oregon State publishes "800 to more than 1,600" — 1,600 is where the
+    // published range stops, not where compost stops. The flag drives the "+"
+    // on every high-end figure the page prints.
+    const { weight } = run({ ...BED, material: 'compost' });
+    if (weight === null) throw new Error('compost must have a weight');
+    expect(weight.highOpenEnded).toBe(true);
+    expect(weight.supplierFigure).toBe(false);
   });
 
-  it('converts NRCS grams per cubic centimetre exactly', () => {
-    // 1.40 g/cm3 is about 2,360 lb per cubic yard and 1.10 about 1,854.
-    expect(Math.round(gramsPerCm3ToLbPerCubicYard(1.4))).toBe(2360);
-    expect(Math.round(gramsPerCm3ToLbPerCubicYard(1.1))).toBe(1854);
+  it('marks a supplier figure as closed', () => {
+    const { weight } = run({ ...BED, material: 'soil', supplierLbPerCubicYard: 2200 });
+    if (weight === null) throw new Error('supplier figure must produce a weight');
+    expect(weight.highOpenEnded).toBe(false);
   });
 
-  it('spans a texture from its ideal figure to its root-restricting one', () => {
-    for (const texture of SOIL_TEXTURES) {
-      const { weight } = run({ ...BED, material: 'soil', texture: texture.slug });
-      expect(weight.lowLbPerCubicYard).toBe(
-        Math.round(gramsPerCm3ToLbPerCubicYard(texture.idealBelow)),
-      );
-      expect(weight.highLbPerCubicYard).toBe(
-        Math.round(gramsPerCm3ToLbPerCubicYard(texture.restrictingAbove)),
-      );
-    }
+  it('ignores an invalid supplier figure when compost is selected', () => {
+    // The supplier field is hidden for compost, but its value persists in the
+    // form state when the reader switches material. A leftover invalid entry
+    // from soil must not block the compost calculation.
+    const result = calculateBulkSoil({
+      ...BED,
+      material: 'compost',
+      supplierLbPerCubicYard: -50,
+    });
+    if (!result.ok) throw new Error(`compost blocked: ${JSON.stringify(result.errors)}`);
+    expect(result.value.weight?.highOpenEnded).toBe(true);
+  });
+
+  it('prints no soil weight without a supplier figure', () => {
+    // We have no sourced delivered-topsoil weight, so the honest result is
+    // null rather than a range built from root-growth thresholds.
+    const { weight } = run({ ...BED, material: 'soil' });
+    expect(weight).toBe(null);
+  });
+
+  it('computes a soil weight from the supplier figure alone', () => {
+    const { weight } = run({ ...BED, material: 'soil', supplierLbPerCubicYard: 2200 });
+    if (weight === null) throw new Error('supplier figure must produce a weight');
+    // 100 sq ft x 3 in = 25 cu ft = 25/27 cu yd; at 2200 lb/yd that is one figure.
+    expect(weight.lowLbPerCubicYard).toBe(2200);
+    expect(weight.highLbPerCubicYard).toBe(2200);
+    expect(weight.lowLb).toBe(weight.highLb);
+    expect(weight.lowLb).toBe(Math.round((25 / 27) * 2200));
+    expect(weight.lowTons).toBe(1.02); // toSignificant(2037.04 / 2000, 3)
+    expect(weight.lowYardsPerTon).toBeCloseTo(POUNDS_PER_TON / 2200, 3);
+    expect(weight.supplierFigure).toBe(true);
+    expect(weight.typicalLbPerCubicYard).toBe(undefined);
+  });
+
+  it('rejects a non-positive supplier figure', () => {
+    expect(
+      calculateBulkSoil({ ...BED, material: 'soil', supplierLbPerCubicYard: 0 }).ok,
+    ).toBe(false);
+    expect(
+      calculateBulkSoil({ ...BED, material: 'soil', supplierLbPerCubicYard: -50 }).ok,
+    ).toBe(false);
   });
 
   it('inverts to yards per ton the right way round', () => {
     // Heavier material means fewer cubic yards to the ton, so the high density
     // has to produce the LOW yards-per-ton figure. Getting this backwards would
     // be invisible on the page and wrong by a factor of two or more.
-    const { weight } = run({ ...BED, material: 'soil', texture: 'sandy-loam' });
+    const { weight } = run({ ...BED, material: 'compost' });
+    if (weight === null) throw new Error('compost must have a weight');
     expect(weight.lowYardsPerTon).toBeLessThan(weight.highYardsPerTon);
     expect(weight.lowYardsPerTon).toBeCloseTo(POUNDS_PER_TON / weight.highLbPerCubicYard, 2);
     expect(weight.highYardsPerTon).toBeCloseTo(POUNDS_PER_TON / weight.lowLbPerCubicYard, 2);
   });
 
   it('counts whole truck loads, rounding up', () => {
-    const result = run({ ...BED, material: 'soil', texture: 'sandy-loam', truckCubicYards: 0.5 });
+    const result = run({ ...BED, material: 'soil', truckCubicYards: 0.5 });
     // 0.926 cubic yards into a 0.5 yard bed is two trips, not one and a bit.
     expect(result.truckLoads).toBe(2);
   });

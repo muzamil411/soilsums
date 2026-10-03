@@ -40,6 +40,42 @@ describe('calculateGrassSeed', () => {
     expect(value(calculateGrassSeed({ ...base, grassSlug: 'bahiagrass' })).rateVerified).toBe(true);
   });
 
+  it('marks zoysiagrass as pure-live-seed denominated, and every other rate as bulk', () => {
+    // Arkansas MP476 publishes zoysiagrass as 1–2 lb pure live seed per
+    // 1,000 sq ft; every other stored rate is bulk seed as sold. The
+    // calculator must never present the PLS figure as bulk weight to buy.
+    for (const purpose of ['new-lawn', 'overseed'] as const) {
+      const zoysia = value(calculateGrassSeed({ ...base, grassSlug: 'zoysiagrass', purpose }));
+      expect(zoysia.rateBasis).toBe('pls');
+    }
+    const slugs = [
+      'kentucky-bluegrass',
+      'tall-fescue',
+      'fine-fescue',
+      'perennial-ryegrass',
+      'annual-ryegrass',
+      'creeping-bentgrass',
+      'bermudagrass',
+      'centipedegrass',
+      'bahiagrass',
+      'buffalograss',
+    ];
+    for (const grassSlug of slugs) {
+      const result = value(calculateGrassSeed({ ...base, grassSlug }));
+      expect(result.rateBasis).toBe('bulk');
+    }
+  });
+
+  it('does not adjust the arithmetic for a PLS rate — it labels the basis instead', () => {
+    // The pounds figure is still rate × area; what changes is the meaning
+    // attached to it. 1.5 lb PLS per 1,000 sq ft over 5,000 sq ft is 7.5 lb
+    // of pure live seed, and the page says so rather than calling it bulk.
+    const result = value(calculateGrassSeed({ ...base, grassSlug: 'zoysiagrass' }));
+    expect(result.rateLbPer1000SqFt).toBe(1.5);
+    expect(result.pounds).toBe(7.5);
+    expect(result.rateBasis).toBe('pls');
+  });
+
   it('names the region every rate covers', () => {
     for (const purpose of ['new-lawn', 'overseed'] as const) {
       const result = value(calculateGrassSeed({ ...base, purpose }));

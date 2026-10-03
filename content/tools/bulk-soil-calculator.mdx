@@ -1,6 +1,6 @@
 ---
 title: 'Cubic Yard Calculator for Bulk Soil, Compost and Bags'
-description: Cubic yards of bulk soil or compost you need, what it covers, and what it weighs — as a sourced range, because a yard of topsoil has no fixed weight.
+description: Cubic yards of bulk soil or compost you need and what it covers — plus weight, from a published compost range or your supplier's figure for soil.
 heading: Bulk soil calculator
 draft: false
 published: 2026-09-27
@@ -36,11 +36,12 @@ faqs:
   - question: >-
       How much does a cubic yard of soil weigh?
     answer: >-
-      There is no single honest answer, which is why this calculator gives a range. The USDA
-      publishes bulk densities by soil texture, and they run from about 1,854 lb per cubic yard for
-      a well-structured clay to over 3,000 for compacted sand — but those are figures for soil in
-      the ground, not for loose screened topsoil on a driveway. If the weight matters, ask your
-      supplier.
+      There is no sourced figure we can defend. The USDA publishes dry bulk densities by soil texture, but
+      those are root-growth thresholds for undisturbed soil in the ground — measured without
+      water, not a minimum and maximum of what soil weighs, and not a weight for loose delivered
+      topsoil. We do not have a source supporting a reliable delivered-topsoil weight for this
+      calculator. If the weight matters, ask your supplier what their material weighs, and enter
+      their figure above to get your total.
   - question: >-
       How much does a cubic yard of compost weigh?
     answer: >-
@@ -52,9 +53,12 @@ faqs:
       How many cubic yards are in a ton?
     answer: >-
       It depends entirely on the material and its moisture, which is why the answer is a range
-      rather than a number. For screened compost it is roughly 1.25 to 2.5 cubic yards to the ton.
-      For soil it is under one — usually between about two thirds and nine tenths of a yard — so a
-      ton of soil is less than a yard of it.
+      rather than a number. For screened compost it is roughly 1.25 to 2.5 cubic yards to the ton,
+      and fewer than 1.25 when very wet — Oregon State's published range runs "800 to more than
+      1,600" lb per cubic yard, so 1,600 is where their range stops, not where compost stops.
+      For soil there is no sourced figure to convert from — it depends on the supplier's
+      material. If your supplier quotes a weight per cubic yard, divide 2,000 by it: at 2,000 lb
+      per yard a ton is a yard, at 2,500 it is eight tenths.
   - question: >-
       Will a cubic yard fit in my pickup?
     answer: >-
@@ -66,10 +70,12 @@ faqs:
       Why does this calculator not just give me one weight?
     answer: >-
       Because one weight would be wrong for most readers. A yard of delivered topsoil is not a
-      property of soil, it is a property of one supplier's pile on one day, and no extension
-      service publishes a figure for it. Every competing calculator prints a confident number
-      anyway. We would rather give you the sourced range, the reason for it, and the advice to ask
-      your supplier.
+      property of soil, it is a property of one supplier's pile on one day, and we do not have
+      a source supporting a reliable delivered-topsoil weight for this calculator. Every
+      competing calculator prints a confident number anyway. We would rather give you the
+      published compost range where one exists, say plainly that soil has no sourced figure
+      here, work from your supplier's figure where you have one, and tell you to ask
+      your supplier where you do not.
 ---
 
 The volume half of this calculator is exact. Twenty-seven cubic feet to the cubic yard is a
@@ -84,7 +90,7 @@ Ask any other calculator what a cubic yard of topsoil weighs and it will tell yo
 2,200 lb, or 2,700, or 1 ton, stated flatly. That number is wrong for most people who read it, and
 the reason is worth understanding because it changes what you should do.
 
-**No extension service publishes a weight for a yard of delivered topsoil.** Not because nobody
+**We do not have a source supporting a reliable delivered-topsoil weight.** Not because nobody
 has measured it, but because it is not a property of soil. It is a property of one supplier's pile
 on one particular day: how much organic matter is in that batch, how finely it was screened, how
 long it has sat, and above all how wet it is. Water is heavy, and the same soil after a week of
@@ -99,16 +105,15 @@ with the full range from **800 to more than 1,600** depending on moisture, parti
 compaction, and very wet composts exceeding 1,500 on their own. That is a real answer to a real
 question, and it is a range because the material genuinely varies by a factor of two.
 
-**Soil, by texture, in grams per cubic centimetre, for soil in place.** The USDA Natural Resources
-Conservation Service publishes ideal and root-restricting bulk densities for each soil texture —
-the density below which roots grow well, and the density above which they are restricted. A
-well-structured clay sits below 1.10 g/cm³, which is about 1,854 lb per cubic yard; a sandy loam
-can reach 1.80 before roots struggle, which is over 3,000.
-
-**But that table describes soil in the ground.** Undisturbed, settled, in situ. It is not the same
-material as loose screened topsoil tipped onto a driveway, which is looser and lighter for the same
-texture. So for delivered soil those figures are an **upper bound**, not an estimate — and the
-calculator says so rather than converting them into a false precision.
+**Soil, by texture, in grams per cubic centimetre, for soil in place — and that is a different
+question from what a delivered load weighs.** The USDA Natural Resources Conservation Service
+publishes, for each soil texture, the dry bulk density below which roots grow well and the density
+above which they are restricted. Those are thresholds for diagnosing compaction in undisturbed
+field soil, measured ovendry: the "ideal below" figure is not a minimum weight, the "restricting
+above" figure is not a maximum — compacted soils exceed it routinely — and a wet delivered pile
+carries water the dry-basis figure excludes, so it can outweigh it. They cannot be turned into a
+delivered weight, and an earlier version of this calculator did exactly that. It no longer does:
+for soil the tool prints a weight only from a figure your own supplier gives you.
 
 The NRCS table also does not apply to red clayey soils or to soils formed from volcanic ash, which
 is stated in the publication and worth repeating rather than quietly extending.
@@ -136,13 +141,15 @@ calculator that prints a single number can give it to you.
    Metric works throughout with the toggle.
 2. **Give the depth.** Three inches is a typical topdressing over an existing bed; six or more for
    a new one. Depth is what most people underestimate, and it scales the answer linearly.
-3. **Pick the material.** Compost has a published weight per cubic yard; soil has a texture-based
-   range with the in-place caveat. The choice changes the weight only, never the volume.
+3. **Pick the material.** Compost has a published weight per cubic yard; for soil, enter your
+   supplier's weight per cubic yard if you have one — otherwise the tool gives volume only, which
+   is the honest answer. The choice changes the weight only, never the volume.
 4. **Add your truck capacity if you are hauling it.** Measure the bed rather than trusting a
    figure: length × width × the depth you would actually load to, in feet, divided by 27.
 
 The result gives cubic yards and cubic feet, what one yard covers at your depth, bag counts at the
-four sizes bulk material is sold in, and the weight range with its source.
+four sizes bulk material is sold in, and the weight — a published range for compost, your
+supplier's figure for soil — with its source.
 
 ## Bulk or bags
 

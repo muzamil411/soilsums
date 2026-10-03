@@ -28,12 +28,14 @@ export function GrassSeedRateTable() {
           <td>
             {/* The published range, not the midpoint the calculator works from.
                 Showing only the derived figure would hide that Penn State gives
-                a band rather than a number. */}
+                a band rather than a number. The PLS marker matters: Arkansas
+                publishes zoysiagrass as pure live seed, not bulk. */}
             {rateLabel(grass.newLawnRange)}
+            {grass.rateBasis === 'pls' ? ' PLS' : ''}
             {!grass.verified ? <Estimate what={`the new-lawn rate for ${grass.name}`} /> : null}
           </td>
           <td>
-            {grass.overseedLbPer1000SqFt} lb
+            {grass.overseedLbPer1000SqFt} lb{grass.rateBasis === 'pls' ? ' PLS' : ''}
             {!grass.overseedVerified ? (
               <Estimate what={`the overseeding rate for ${grass.name}`} />
             ) : null}

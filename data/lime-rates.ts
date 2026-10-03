@@ -156,9 +156,8 @@ export const LAWN_LIME_CEILINGS: readonly LimeCeiling[] = [
     material: 'Lime on established turf',
     caustic: false,
     institution: 'Colorado State University Extension',
-    title: 'Changing Soil pH, CMG GardenNotes #222',
-    url: 'https://extension.colostate.edu/resource/changing-soil-ph/',
-    note: 'The established-turf limit. Colorado publishes no texture table at all, so this ceiling is how it expresses a lime recommendation.',
+    title: 'CMG GardenNotes #222, Soil pH',
+    note: 'The established-turf limit: individual applications to turf should not exceed 50 lb of limestone per 1,000 sq ft. Colorado publishes no texture table at all, so this ceiling is how it expresses a lime recommendation. (The extension site has since redesigned its soil-pH page; the figures are from GardenNotes #222 as published.)',
   },
   {
     lbPer1000SqFt: 50,
@@ -210,9 +209,8 @@ export const LAWN_LIME_CEILINGS: readonly LimeCeiling[] = [
     material: 'Hydrated or burned lime',
     caustic: true,
     institution: 'Colorado State University Extension',
-    title: 'Changing Soil pH, CMG GardenNotes #222',
-    url: 'https://extension.colostate.edu/resource/changing-soil-ph/',
-    note: 'Halve the rate and never exceed 10 lb per 1,000 sq ft. Colorado does not separate hydrated from burned, and its hydrated figure is half of Ohio State\'s 20 — recorded rather than reconciled.',
+    title: 'CMG GardenNotes #222, Soil pH',
+    note: 'Apply no more than 10 lb of hydrated or burned lime per 1,000 sq ft of turf. Colorado does not separate hydrated from burned, and its hydrated figure is half of Ohio State\'s 20 — recorded rather than reconciled. (The extension site has since redesigned its soil-pH page; the figures are from GardenNotes #222 as published.)',
   },
 ];
 
@@ -293,6 +291,7 @@ export const UMASS_TIMING = {
   /** For a figure subtitle, where the full name does not fit. */
   shortName: 'UMass Amherst',
   title: 'Timing of Lime and Fertilizer Applications',
+  url: 'https://www.umass.edu/agriculture-food-environment/soil-plant-nutrient-testing-laboratory/fact-sheets/timing-of-lime-fertilizer-applications',
   quote:
     "limestone can take a long time (4-6 months) to raise soil pH, it's best to start as soon as possible",
   /** Established plantings may be limed twice a year, spring and autumn, with the amount limited to avoid damage. */
@@ -399,8 +398,8 @@ export const NEW_SEEDING_INCORPORATION_INCHES = [4, 6] as const;
  * lime far lower because it is caustic and acts fast. The organic matter
  * uplift is from the same source.
  *
- * Colorado State University Extension, Changing Soil pH (CMG GardenNotes #222):
- * https://extension.colostate.edu/resource/changing-soil-ph/
+ * Colorado State University Extension, CMG GardenNotes #222, Soil pH. (The extension site has
+ * since redesigned its soil-pH page; the figures below are from GardenNotes #222 as published.)
  */
 export const COLORADO = {
   establishedTurfLimitLbPer1000SqFt: 50,

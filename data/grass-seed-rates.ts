@@ -15,8 +15,12 @@
  * rest carry `overseedVerified: false` and the calculator marks the result as
  * an estimate rather than quietly presenting it as checked.
  *
- * Every rate is in pounds of bulk seed, not pure live seed. Divide by
- * (purity x germination), both printed on the bag, to get the amount to buy.
+ * Rates are pounds of seed as sold (bulk weight), except zoysiagrass, whose
+ * Arkansas source publishes in pure live seed (see its source note). The
+ * published rates assume seed of normal quality — at or above the publisher's
+ * minimum purity and germination — so no purity/germination adjustment is
+ * needed with an ordinary bag. Only a below-standard bag calls for one: buy
+ * rate ÷ (purity × germination) instead.
  */
 import { PENN_STATE, TURF_SPECIES, type Rate } from './turfgrass';
 
@@ -46,6 +50,14 @@ export type GrassSeedRate = {
    * rate from Florida is not advice for New England.
    */
   readonly region: string;
+  /**
+   * Whether the stored rates are denominated in bulk seed as sold, or in pure
+   * live seed. Only zoysiagrass is PLS — Arkansas MP476 publishes 1–2 lb pure
+   * live seed per 1,000 sq ft — and every other stored rate is bulk. The
+   * calculator labels a PLS figure as such rather than presenting it as bulk
+   * weight to buy; see lib/calculators/grass-seed.ts.
+   */
+  readonly rateBasis: 'bulk' | 'pls';
   readonly note: string;
   readonly source: string;
   /** Whether the new-lawn rate has a source that could be opened. */
@@ -54,9 +66,9 @@ export type GrassSeedRate = {
   readonly overseedVerified: boolean;
 };
 
-/** Divide a bulk rate by this to get pure live seed, both figures off the bag. */
+/** Divide a bulk rate by (purity x germination) only for a below-standard bag; zoysiagrass's stored rate is already pure live seed. */
 export const PLS_NOTE =
-  'Rates are for bulk seed. Divide by purity x germination — both printed on the bag — to get the weight of pure live seed you actually need. A bag at 95% purity and 85% germination needs about 24% more by weight than the rate says.';
+  'Rates are pounds of seed as sold, and they already assume normal, decent-quality seed — so with an ordinary bag, buy the weight the calculator gives. The two numbers on the label — purity and germination — matter when seed is poor: their product is the pure live seed (PLS) share, the part of the bag that can actually grow. If your bag is well below normal quality, divide the rate by (purity × germination) to get the bulk weight to buy. Zoysiagrass is the exception: Arkansas publishes its 1–2 lb rate as pure live seed, so for zoysiagrass divide the rate by (purity × germination) whatever the bag.';
 
 /** UMass: poor seedbeds, late sowing or heavy traffic need more. */
 export const POOR_CONDITIONS_UPLIFT = 0.5;
@@ -85,9 +97,10 @@ const seeds: readonly GrassSeedSeed[] = [
     season: 'cool',
     overseedLbPer1000SqFt: 2,
     region: 'Pennsylvania, New York and Nebraska',
+    rateBasis: 'bulk',
     note: 'Slow to germinate — two to three weeks. Spreads by rhizomes once established.',
     source:
-      'Penn State, Turfgrass Seed and Seed Mixtures (2-3); Cornell sports fields (1-3); Nebraska, Overseeding in the Fall (~2 overseed): https://extension.psu.edu/turfgrass-seed-and-seed-mixtures',
+      'Penn State, Turfgrass Seed and Seed Mixtures (2-3); Cornell sports fields (1-3, PLS-denominated); Nebraska, Overseeding in the Fall (~2 overseed): https://extension.psu.edu/turfgrass-seed-and-seed-mixtures',
     verified: true,
     overseedVerified: true,
   },
@@ -97,6 +110,7 @@ const seeds: readonly GrassSeedSeed[] = [
     season: 'cool',
     overseedLbPer1000SqFt: 3.5,
     region: 'Pennsylvania, New York and Nebraska',
+    rateBasis: 'bulk',
     note: 'Large seed, so it needs a high rate by weight. Deep roots and good drought tolerance.',
     source:
       'Penn State, Turfgrass Seed and Seed Mixtures (6-8); Nebraska, Overseeding in the Fall (3-4 overseed): https://extension.psu.edu/turfgrass-seed-and-seed-mixtures',
@@ -109,6 +123,7 @@ const seeds: readonly GrassSeedSeed[] = [
     season: 'cool',
     overseedLbPer1000SqFt: 3,
     region: 'Pennsylvania and New England',
+    rateBasis: 'bulk',
     note: 'The usual choice for shade. Includes creeping red, chewings and hard fescue.',
     source:
       'Penn State, Turfgrass Seed and Seed Mixtures (4-5); UMass red fescue 4-6: https://extension.psu.edu/turfgrass-seed-and-seed-mixtures',
@@ -124,6 +139,7 @@ const seeds: readonly GrassSeedSeed[] = [
     // became the midpoint of 4 to 5. Midpoint of the same range instead.
     overseedLbPer1000SqFt: 3.5,
     region: 'Pennsylvania, New York and New England',
+    rateBasis: 'bulk',
     note: 'Germinates fast, often in under a week. Frequently blended for quick cover.',
     source:
       'UMass, Seeding Rate Considerations (7-9 new, 6-8 athletic overseed); Penn State renovation 2-5: https://www.umass.edu/agriculture-food-environment/home-lawn-garden/fact-sheets/seeding-rate-considerations',
@@ -137,6 +153,7 @@ const seeds: readonly GrassSeedSeed[] = [
     ownNewLawnLbPer1000SqFt: 9,
     overseedLbPer1000SqFt: 6,
     region: 'New England (as a full cover); far lower where it is a temporary winter crop',
+    rateBasis: 'bulk',
     note: 'A temporary cover or winter overseed for dormant warm-season lawns. Dies out within a year.',
     source:
       'UMass, Seeding Rate Considerations (7-9): https://www.umass.edu/agriculture-food-environment/home-lawn-garden/fact-sheets/seeding-rate-considerations',
@@ -149,6 +166,7 @@ const seeds: readonly GrassSeedSeed[] = [
     season: 'cool',
     overseedLbPer1000SqFt: 0.5,
     region: 'Pennsylvania and New England, golf turf rather than home lawns',
+    rateBasis: 'bulk',
     note: 'Tiny seed and a very low rate. High maintenance — more a putting-green grass than a lawn grass.',
     source:
       'Penn State, Turfgrass Seed and Seed Mixtures (greens 1); UMass 0.5-1: https://extension.psu.edu/turfgrass-seed-and-seed-mixtures',
@@ -162,6 +180,7 @@ const seeds: readonly GrassSeedSeed[] = [
     ownNewLawnLbPer1000SqFt: 1.5,
     overseedLbPer1000SqFt: 1,
     region: 'North Carolina and Florida',
+    rateBasis: 'bulk',
     note: 'Needs warm soil to germinate. Unhulled seed is sown at a higher rate and germinates more slowly.',
     source:
       'NC State, Extension Gardener Handbook ch. 9, Table 9-4 (1-2); UF/IFAS LH013 (1-4): https://content.ces.ncsu.edu/extension-gardener-handbook/9-lawns',
@@ -175,6 +194,7 @@ const seeds: readonly GrassSeedSeed[] = [
     ownNewLawnLbPer1000SqFt: 1.5,
     overseedLbPer1000SqFt: 1,
     region: 'Arkansas and North Carolina',
+    rateBasis: 'pls',
     note: 'Slow to establish from seed — plugs or sod are more common and much faster.',
     source:
       'University of Arkansas MP476 (1-2 lb pure live seed); NC State Table 9-4 (1-2): https://horticulture.uark.edu/_resources/pdf/turf/extension-pubs/establishing-seeded-zoysiagrass-on-lawns-and-golf-courses-mp476.pdf',
@@ -188,6 +208,7 @@ const seeds: readonly GrassSeedSeed[] = [
     ownNewLawnLbPer1000SqFt: 0.4,
     overseedLbPer1000SqFt: 0.25,
     region: 'North Carolina and Florida',
+    rateBasis: 'bulk',
     note: 'Very fine seed at a very low rate. Mixing with sand helps spread it evenly.',
     source:
       'NC State, Extension Gardener Handbook ch. 9, Table 9-4 (0.25-0.5); UF/IFAS LH013 (0.25-1): https://content.ces.ncsu.edu/extension-gardener-handbook/9-lawns',
@@ -201,6 +222,7 @@ const seeds: readonly GrassSeedSeed[] = [
     ownNewLawnLbPer1000SqFt: 6,
     overseedLbPer1000SqFt: 4,
     region: 'North Carolina and Florida',
+    rateBasis: 'bulk',
     note: 'Tolerates poor sandy soil. Coarse texture and tall seed heads.',
     source:
       'NC State, Extension Gardener Handbook ch. 9, Table 9-4 (5); UF/IFAS LH013 (5-10): https://content.ces.ncsu.edu/extension-gardener-handbook/9-lawns',
@@ -214,6 +236,7 @@ const seeds: readonly GrassSeedSeed[] = [
     ownNewLawnLbPer1000SqFt: 4,
     overseedLbPer1000SqFt: 2,
     region: 'Colorado; Kansas publishes 1-2 for the same grass',
+    rateBasis: 'bulk',
     note: 'A low-water native for the Great Plains. Sold as treated burs rather than bare seed.',
     source:
       'Colorado State, Buffalograss Lawns (3-5); Kansas State, Ford County, Buffalograss (1-2): https://extension.colostate.edu/resource/buffalograss-lawns/',
