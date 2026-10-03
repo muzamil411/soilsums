@@ -9,8 +9,8 @@
  *    a rule of thumb for screened compost at 50% moisture, with the full range
  *    running from 800 to more than 1,600 depending on moisture, particle size
  *    and compaction.
- *  - **Soil** has no entry, deliberately. No extension service publishes a
- *    weight per cubic yard for delivered topsoil, because it is not a property
+ *  - **Soil** has no entry, deliberately. We do not have a source supporting a
+ *    reliable delivered-topsoil weight, because it is not a property
  *    of soil: it is a property of one supplier's pile on one day.
  *
  * An earlier version of this file carried the USDA NRCS texture table (ideal

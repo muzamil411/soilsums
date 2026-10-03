@@ -17,13 +17,13 @@ import { COMPOST_SOURCE } from '@/data/densities';
 
 /**
  * Bulk soil and compost by the cubic yard.
- *
  * The volume half is exact arithmetic and behaves like every other calculator
  * here. The weight half is honest about what is published: compost gets a
  * range with its reason, because Oregon State publishes weight per cubic yard
- * as supplied. For soil there is no published delivered weight — it is a
- * property of one supplier's pile on one day — so the tool prints no weight
- * unless the reader enters their supplier's own figure per cubic yard.
+ * as supplied. For soil we do not have a source supporting a reliable
+ * delivered-topsoil weight for this calculator — it is a property of one
+ * supplier's pile on one day — so the tool prints no weight unless the reader
+ * enters their supplier's own figure per cubic yard.
  */
 
 const PARAMS = {
@@ -121,10 +121,10 @@ export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
             </p>
             {weight === null ? (
               <p>
-                There is <strong>no published weight</strong> for delivered topsoil — it depends on
-                your supplier&apos;s pile and how wet it is, so no calculator can honestly print
-                one. If your supplier quotes a weight per cubic yard, enter it above and the total
-                appears here.
+                We do not have a source supporting a reliable delivered-topsoil weight for this
+                calculator — it depends on your supplier&apos;s pile and how wet it is, so no
+                calculator can honestly print one. If your supplier quotes a weight per cubic
+                yard, enter it above and the total appears here.
               </p>
             ) : weight.supplierFigure ? (
               <p>
@@ -149,7 +149,7 @@ export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
       copyText={
         output
           ? weight === null
-            ? `${output.cubicYards} cubic yards (${output.cubicFeet} cu ft) of ${material}. No published delivered weight — ask your supplier. Calculated at soilsums.com`
+            ? `${output.cubicYards} cubic yards (${output.cubicFeet} cu ft) of ${material}. No sourced delivered weight — ask your supplier for their density. Calculated at soilsums.com`
             : `${output.cubicYards} cubic yards (${output.cubicFeet} cu ft) of ${material}, weighing roughly ${lb(weight.lowLb)}-${lb(weight.highLb)}${weight.highOpenEnded ? '+' : ''} lb. Calculated at soilsums.com`
           : ''
       }
@@ -207,7 +207,7 @@ export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
           hint={
             material === 'compost'
               ? 'Compost is published by weight per cubic yard, so its range is a real answer'
-              : 'No published weight for delivered soil — enter your supplier\u2019s figure below if you have one'
+              : 'No sourced weight for delivered soil — enter your supplier\u2019s figure below if you have one'
           }
         />
       </div>
@@ -356,13 +356,14 @@ export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
               </p>
             ) : (
               <p className="text-ink/90 mt-1 text-sm">
-                No extension service publishes a weight per cubic yard for delivered topsoil,
-                because it is not a property of soil — it is a property of one supplier&apos;s
-                pile on one day: the batch, the screening, and above all how wet it is. Figures
-                you may have seen elsewhere come from root-growth thresholds for undisturbed soil
-                in the ground, which describe compaction rather than weight and are measured
-                without the water a delivered pile carries. Where the weight matters — a truck
-                payload, a structural loading, an order priced by the ton — ask your supplier what
+                We do not have a source supporting a reliable delivered-topsoil weight for this
+                calculator, because it is not a property of soil — it is a property of one
+                supplier&apos;s pile on one day: the batch, the screening, and above all how wet
+                it is. Figures you may have seen elsewhere come from root-growth thresholds for
+                undisturbed soil in the ground, which describe compaction rather than weight and
+                are measured without the water a delivered pile carries. Where the weight matters
+                — a truck payload, a structural loading, an order priced by the ton — ask your
+                supplier what
                 their material weighs, and enter it above.
               </p>
             )}

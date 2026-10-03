@@ -68,7 +68,7 @@ export function GrassSeedCalculator({ toolSlug }: { toolSlug: string }) {
       sentence={
         output ? (
           <p>
-            Buy about{' '}
+            {output.rateBasis === 'pls' ? 'You need' : 'Buy about'}{' '}
             <strong>
               {imperial ? `${output.pounds} pounds` : `${output.kilograms} kilograms`}
               {output.rateBasis === 'pls' ? ' of pure live seed' : ''}
@@ -79,6 +79,7 @@ export function GrassSeedCalculator({ toolSlug }: { toolSlug: string }) {
               : `${output.areaSquareMeters} square meters`}
             . That is the {purpose === 'new-lawn' ? 'full establishment' : 'overseeding'} rate of{' '}
             {output.rateLbPer1000SqFt} lb per 1,000 sq ft
+            {output.rateBasis === 'pls' ? ' pure live seed' : ''}
             {imperial ? '' : ` (${output.rateKgPer100SqM} kg per 100 m²)`}
             {output.rateVerified ? null : (
               <Estimate
@@ -88,10 +89,9 @@ export function GrassSeedCalculator({ toolSlug }: { toolSlug: string }) {
             .{' '}
             {output.rateBasis === 'pls' ? (
               <>
-                That {imperial ? `${output.pounds} lb` : `${output.kilograms} kg`} is{' '}
-                <strong>pure live seed</strong>, not bulk weight — the University of Arkansas
-                publishes this rate as PLS. Divide by your bag&apos;s purity × germination (both
-                printed on the label) to get the bulk weight to buy.
+                The University of Arkansas publishes this rate as PLS, not bulk weight. To get the
+                bulk weight to buy, divide by your bag&apos;s purity × germination (both printed
+                on the label).
               </>
             ) : null}
             {/* A midpoint is arithmetic on a published range, not a

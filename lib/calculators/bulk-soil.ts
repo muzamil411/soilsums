@@ -10,10 +10,10 @@
  * feet.
  *
  * Weight is the opposite. Compost is published per cubic yard as supplied, so a
- * range there is a real answer. No extension service publishes a weight per
- * cubic yard for delivered topsoil — it is a property of one supplier's pile on
- * one day — so for soil the tool prints no weight unless the reader enters
- * their supplier's own figure. See data/densities.ts for why.
+ * range there is a real answer. We do not have a source supporting a reliable
+ * delivered-topsoil weight for this calculator — it is a property of one
+ * supplier's pile on one day — so for soil the tool prints no weight unless
+ * the reader enters their supplier's own figure. See data/densities.ts for why.
  */
 import { fillCubicFeet, footprintSquareFeet, type Footprint } from './shared/geometry';
 import {
@@ -142,7 +142,7 @@ function weightFor(input: BulkSoilInput, cubicYards: number): WeightRange | null
     };
   }
 
-  // Soil: no published delivered weight exists. A supplier's own figure is the
+  // Soil: we have no sourced delivered weight. A supplier's own figure is the
   // only defensible input, and without one the tool prints no weight.
   const supplierLbPerCubicYard = input.supplierLbPerCubicYard;
   if (supplierLbPerCubicYard === undefined) return null;
@@ -177,7 +177,10 @@ export function calculateBulkSoil(input: BulkSoilInput): Calculation<BulkSoilRes
       ? requirePositive(input.width, 'width', `width in ${spanUnit}`)
       : null,
     requirePositive(input.depth, 'depth', depthLabel),
-    input.supplierLbPerCubicYard === undefined
+    // Supplier density is meaningless for compost (the field is hidden and
+    // weightFor ignores it), so an invalid leftover value from soil must not
+    // block a compost calculation.
+    input.material === 'compost' || input.supplierLbPerCubicYard === undefined
       ? null
       : requirePositive(
           input.supplierLbPerCubicYard,

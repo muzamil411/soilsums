@@ -107,9 +107,22 @@ describe('bulk soil weight', () => {
     expect(weight.highOpenEnded).toBe(false);
   });
 
+  it('ignores an invalid supplier figure when compost is selected', () => {
+    // The supplier field is hidden for compost, but its value persists in the
+    // form state when the reader switches material. A leftover invalid entry
+    // from soil must not block the compost calculation.
+    const result = calculateBulkSoil({
+      ...BED,
+      material: 'compost',
+      supplierLbPerCubicYard: -50,
+    });
+    if (!result.ok) throw new Error(`compost blocked: ${JSON.stringify(result.errors)}`);
+    expect(result.value.weight?.highOpenEnded).toBe(true);
+  });
+
   it('prints no soil weight without a supplier figure', () => {
-    // No extension service publishes a delivered-topsoil weight, so the honest
-    // result is null rather than a range built from root-growth thresholds.
+    // We have no sourced delivered-topsoil weight, so the honest result is
+    // null rather than a range built from root-growth thresholds.
     const { weight } = run({ ...BED, material: 'soil' });
     expect(weight).toBe(null);
   });
