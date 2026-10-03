@@ -54,13 +54,24 @@ export function GrassSeedCalculator({ toolSlug }: { toolSlug: string }) {
       shareUrl={shareUrl}
       onReset={reset}
       headline={headline === null ? null : String(headline)}
-      headlineUnit={imperial ? 'lb of seed' : 'kg of seed'}
+      headlineUnit={
+        output === null
+          ? undefined
+          : output.rateBasis === 'pls'
+            ? imperial
+              ? 'lb pure live seed'
+              : 'kg pure live seed'
+            : imperial
+              ? 'lb of seed'
+              : 'kg of seed'
+      }
       sentence={
         output ? (
           <p>
             Buy about{' '}
             <strong>
               {imperial ? `${output.pounds} pounds` : `${output.kilograms} kilograms`}
+              {output.rateBasis === 'pls' ? ' of pure live seed' : ''}
             </strong>{' '}
             of {output.grassName.toLowerCase()} seed for{' '}
             {imperial
@@ -75,6 +86,14 @@ export function GrassSeedCalculator({ toolSlug }: { toolSlug: string }) {
               />
             )}
             .{' '}
+            {output.rateBasis === 'pls' ? (
+              <>
+                That {imperial ? `${output.pounds} lb` : `${output.kilograms} kg`} is{' '}
+                <strong>pure live seed</strong>, not bulk weight — the University of Arkansas
+                publishes this rate as PLS. Divide by your bag&apos;s purity × germination (both
+                printed on the label) to get the bulk weight to buy.
+              </>
+            ) : null}
             {/* A midpoint is arithmetic on a published range, not a
                 recommendation of its own, and the page has to say which it is
                 showing. */}
@@ -88,7 +107,7 @@ export function GrassSeedCalculator({ toolSlug }: { toolSlug: string }) {
       }
       copyText={
         output
-          ? `${output.pounds} lb (${output.kilograms} kg) of ${output.grassName} seed for ${output.areaSquareFeet} sq ft. Calculated at soilsums.com`
+          ? `${output.pounds} lb (${output.kilograms} kg)${output.rateBasis === 'pls' ? ' pure live seed' : ''} of ${output.grassName} seed for ${output.areaSquareFeet} sq ft. Calculated at soilsums.com`
           : ''
       }
       notes={output ? [output.note] : []}
