@@ -2,13 +2,18 @@
  * Bulk soil calculator.
  *
  * Volume for a bed or an area at a given depth, in cubic feet and cubic yards,
- * with bag counts, coverage, and a weight RANGE rather than a single figure.
+ * with bag counts, coverage, and weight where a defensible figure exists.
  *
  * The volume arithmetic is exact and needs no source: 27 cubic feet to the cubic
  * yard by definition, and 324 divided by the depth in inches is the square feet
  * one cubic yard covers, because 27 cubic feet spread an inch deep is 324 square
- * feet. The weight is the opposite — see data/densities.ts for why a single
- * number cannot honestly be printed, which is the whole point of this tool.
+ * feet.
+ *
+ * Weight is the opposite. Compost is published per cubic yard as supplied, so a
+ * range there is a real answer. No extension service publishes a weight per
+ * cubic yard for delivered topsoil — it is a property of one supplier's pile on
+ * one day — so for soil the tool prints no weight unless the reader enters
+ * their supplier's own figure. See data/densities.ts for why.
  */
 import { fillCubicFeet, footprintSquareFeet, type Footprint } from './shared/geometry';
 import {
@@ -28,12 +33,7 @@ import {
   type Calculation,
   type FieldError,
 } from './shared/validate';
-import {
-  COMPOST_DENSITY,
-  getSoilTexture,
-  gramsPerCm3ToLbPerCubicYard,
-  SOIL_TEXTURES,
-} from '@/data/densities';
+import { COMPOST_DENSITY } from '@/data/densities';
 
 /**
  * Square feet that one cubic yard covers at one inch deep.
@@ -64,8 +64,14 @@ export type BulkSoilInput = {
   /** Inches (imperial) or centimeters (metric). */
   readonly depth?: number;
   readonly material: BulkSoilMaterial;
-  /** Which NRCS texture row, for the soil case. */
-  readonly texture?: string;
+  /**
+   * Supplier-quoted weight in lb per cubic yard, for the soil case.
+   *
+   * No publication gives a delivered-topsoil weight, so the tool refuses to
+   * invent one: it only computes a soil weight from a figure the reader's own
+   * supplier supplied. Absent, there is no weight — see weightFor.
+   */
+  readonly supplierLbPerCubicYard?: number;
   /** Truck bed capacity in cubic yards, where the reader has measured one. */
   readonly truckCubicYards?: number;
 };
@@ -82,8 +88,14 @@ export type WeightRange = {
   readonly typicalLbPerCubicYard?: number;
   readonly lowLbPerCubicYard: number;
   readonly highLbPerCubicYard: number;
-  /** True where the range describes soil in the ground rather than as delivered. */
-  readonly inPlaceOnly: boolean;
+  /** True where the figures come from the reader's supplier rather than a publication. */
+  readonly supplierFigure: boolean;
+  /**
+   * True where the high end is open rather than a maximum. Compost only:
+   * Oregon State publishes "800 to more than 1,600", so 1,600 is where the
+   * published range stops, not where compost stops.
+   */
+  readonly highOpenEnded: boolean;
 };
 
 export type BulkSoilResult = {
@@ -94,40 +106,59 @@ export type BulkSoilResult = {
   /** Square feet one cubic yard covers at this depth. */
   readonly coveragePerYard: number;
   readonly bags: readonly { readonly cubicFeet: number; readonly count: number }[];
-  readonly weight: WeightRange;
+  /**
+   * Null for soil where no supplier figure was entered: there is no published
+   * delivered-topsoil weight, so the honest result is no weight at all rather
+   * than a range built from something else.
+   */
+  readonly weight: WeightRange | null;
   /** Whole truck loads, by volume only, where a capacity was given. */
   readonly truckLoads?: number;
 };
 
-function weightFor(input: BulkSoilInput, cubicYards: number): WeightRange {
-  const compost = input.material === 'compost';
-  const texture = getSoilTexture(input.texture ?? '') ?? SOIL_TEXTURES[1];
+function weightFor(input: BulkSoilInput, cubicYards: number): WeightRange | null {
+  if (input.material === 'compost') {
+    // Compost is published per cubic yard as supplied: a range with its reason.
+    const lowLbPerCubicYard = COMPOST_DENSITY.lowLbPerCubicYard;
+    const highLbPerCubicYard = COMPOST_DENSITY.highLbPerCubicYard;
 
-  // Compost is published per cubic yard as supplied. Soil is published in
-  // g/cm3 for soil in place, so it converts and carries the in-place warning.
-  const lowLbPerCubicYard = compost
-    ? COMPOST_DENSITY.lowLbPerCubicYard
-    : gramsPerCm3ToLbPerCubicYard(texture?.idealBelow ?? 1.4);
-  const highLbPerCubicYard = compost
-    ? COMPOST_DENSITY.highLbPerCubicYard
-    : gramsPerCm3ToLbPerCubicYard(texture?.restrictingAbove ?? 1.8);
+    const lowLb = cubicYards * lowLbPerCubicYard;
+    const highLb = cubicYards * highLbPerCubicYard;
 
-  const lowLb = cubicYards * lowLbPerCubicYard;
-  const highLb = cubicYards * highLbPerCubicYard;
+    return {
+      lowLb: Math.round(lowLb),
+      highLb: Math.round(highLb),
+      lowTons: toSignificant(lowLb / POUNDS_PER_TON, 3),
+      highTons: toSignificant(highLb / POUNDS_PER_TON, 3),
+      // Heavier material means fewer yards to the ton, so the high density gives
+      // the low yards-per-ton figure.
+      lowYardsPerTon: toSignificant(POUNDS_PER_TON / highLbPerCubicYard, 3),
+      highYardsPerTon: toSignificant(POUNDS_PER_TON / lowLbPerCubicYard, 3),
+      typicalLbPerCubicYard: COMPOST_DENSITY.typicalLbPerCubicYard,
+      lowLbPerCubicYard: Math.round(lowLbPerCubicYard),
+      highLbPerCubicYard: Math.round(highLbPerCubicYard),
+      supplierFigure: false,
+      highOpenEnded: true,
+    };
+  }
 
+  // Soil: no published delivered weight exists. A supplier's own figure is the
+  // only defensible input, and without one the tool prints no weight.
+  const supplierLbPerCubicYard = input.supplierLbPerCubicYard;
+  if (supplierLbPerCubicYard === undefined) return null;
+
+  const pounds = cubicYards * supplierLbPerCubicYard;
   return {
-    lowLb: Math.round(lowLb),
-    highLb: Math.round(highLb),
-    lowTons: toSignificant(lowLb / POUNDS_PER_TON, 3),
-    highTons: toSignificant(highLb / POUNDS_PER_TON, 3),
-    // Heavier material means fewer yards to the ton, so the high density gives
-    // the low yards-per-ton figure.
-    lowYardsPerTon: toSignificant(POUNDS_PER_TON / highLbPerCubicYard, 3),
-    highYardsPerTon: toSignificant(POUNDS_PER_TON / lowLbPerCubicYard, 3),
-    ...(compost ? { typicalLbPerCubicYard: COMPOST_DENSITY.typicalLbPerCubicYard } : {}),
-    lowLbPerCubicYard: Math.round(lowLbPerCubicYard),
-    highLbPerCubicYard: Math.round(highLbPerCubicYard),
-    inPlaceOnly: !compost,
+    lowLb: Math.round(pounds),
+    highLb: Math.round(pounds),
+    lowTons: toSignificant(pounds / POUNDS_PER_TON, 3),
+    highTons: toSignificant(pounds / POUNDS_PER_TON, 3),
+    lowYardsPerTon: toSignificant(POUNDS_PER_TON / supplierLbPerCubicYard, 3),
+    highYardsPerTon: toSignificant(POUNDS_PER_TON / supplierLbPerCubicYard, 3),
+    lowLbPerCubicYard: Math.round(supplierLbPerCubicYard),
+    highLbPerCubicYard: Math.round(supplierLbPerCubicYard),
+    supplierFigure: true,
+    highOpenEnded: false,
   };
 }
 
@@ -146,6 +177,13 @@ export function calculateBulkSoil(input: BulkSoilInput): Calculation<BulkSoilRes
       ? requirePositive(input.width, 'width', `width in ${spanUnit}`)
       : null,
     requirePositive(input.depth, 'depth', depthLabel),
+    input.supplierLbPerCubicYard === undefined
+      ? null
+      : requirePositive(
+          input.supplierLbPerCubicYard,
+          'supplierLbPerCubicYard',
+          'supplier weight in lb per cubic yard',
+        ),
     input.truckCubicYards === undefined
       ? null
       : requirePositive(input.truckCubicYards, 'truckCubicYards', 'truck capacity in cubic yards'),

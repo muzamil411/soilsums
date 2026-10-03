@@ -69,6 +69,12 @@ export type GrassSeedOutput = {
   readonly newLawnBasis: string;
   /** True when the rate shown is a midpoint rather than a published figure. */
   readonly rateIsMidpoint: boolean;
+  /**
+   * Whether the rate is denominated in bulk seed as sold or in pure live seed.
+   * Only zoysiagrass is PLS; the component labels it so the figure is never
+   * presented as bulk weight to buy.
+   */
+  readonly rateBasis: 'bulk' | 'pls';
 };
 
 export function calculateGrassSeed(input: GrassSeedInput): Calculation<GrassSeedOutput> {
@@ -113,6 +119,7 @@ export function calculateGrassSeed(input: GrassSeedInput): Calculation<GrassSeed
     note: rate.note,
     region: rate.region,
     rateVerified: input.purpose === 'new-lawn' ? rate.verified : rate.overseedVerified,
+    rateBasis: rate.rateBasis,
     source: rate.source,
   });
 }
