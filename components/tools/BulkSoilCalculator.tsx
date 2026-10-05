@@ -13,6 +13,12 @@ import {
   type BulkSoilEntryMode,
   type BulkSoilMaterial,
 } from '@/lib/calculators/bulk-soil';
+import {
+  cubicYardsToCubicMeters,
+  lbPerCubicYardToKgPerCubicMeter,
+  poundsToKilograms,
+} from '@/lib/calculators/shared/units';
+import { toSignificant } from '@/lib/calculators/shared/round';
 import { COMPOST_SOURCE } from '@/data/densities';
 
 /**
@@ -42,8 +48,8 @@ const KINDS: Record<string, FieldKind> = {
   length: 'span',
   width: 'span',
   depth: 'short',
-  supplier: 'none',
-  truck: 'none',
+  supplier: 'density',
+  truck: 'bulk-volume',
 };
 
 const IMPERIAL = {
@@ -92,8 +98,8 @@ export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
         length: num(values, 'length'),
         width: num(values, 'width'),
         depth: num(values, 'depth'),
-        ...(supplierRaw === '' ? {} : { supplierLbPerCubicYard: num(values, 'supplier') }),
-        ...(truckRaw === '' ? {} : { truckCubicYards: num(values, 'truck') }),
+        ...(supplierRaw === '' ? {} : { supplierDensity: num(values, 'supplier') }),
+        ...(truckRaw === '' ? {} : { truckCapacity: num(values, 'truck') }),
       }),
     [units, mode, material, values, supplierRaw, truckRaw],
   );
@@ -102,6 +108,37 @@ export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
   const output = result.ok ? result.value : null;
   const weight = output?.weight ?? null;
 
+  // Metric presentation of the imperial calculation. The arithmetic stays in
+  // imperial (exact definitions); only the displayed figures convert.
+  const cubicMeters = output ? toSignificant(cubicYardsToCubicMeters(output.cubicYards), 4) : null;
+  const wm =
+    weight && !imperial
+      ? {
+          lowKg: Math.round(poundsToKilograms(weight.lowLb)),
+          highKg: Math.round(poundsToKilograms(weight.highLb)),
+          lowTonnes: toSignificant(poundsToKilograms(weight.lowLb) / 1000, 3),
+          highTonnes: toSignificant(poundsToKilograms(weight.highLb) / 1000, 3),
+          lowKgPerCubicMeter: Math.round(
+            lbPerCubicYardToKgPerCubicMeter(weight.lowLbPerCubicYard),
+          ),
+          highKgPerCubicMeter: Math.round(
+            lbPerCubicYardToKgPerCubicMeter(weight.highLbPerCubicYard),
+          ),
+          lowCubicMetersPerTonne: toSignificant(
+            1000 / lbPerCubicYardToKgPerCubicMeter(weight.highLbPerCubicYard),
+            3,
+          ),
+          highCubicMetersPerTonne: toSignificant(
+            1000 / lbPerCubicYardToKgPerCubicMeter(weight.lowLbPerCubicYard),
+            3,
+          ),
+          typicalKgPerCubicMeter:
+            weight.typicalLbPerCubicYard === undefined
+              ? undefined
+              : Math.round(lbPerCubicYardToKgPerCubicMeter(weight.typicalLbPerCubicYard)),
+        }
+      : null;
+
   return (
     <CalculatorFrame
       toolSlug={toolSlug}
@@ -109,38 +146,66 @@ export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
       onUnitsChange={setUnits}
       shareUrl={shareUrl}
       onReset={reset}
-      headline={output ? String(output.cubicYards) : null}
-      headlineUnit={output ? (output.cubicYards === 1 ? 'cubic yard' : 'cubic yards') : undefined}
+      headline={output ? String(imperial ? output.cubicYards : cubicMeters) : null}
+      headlineUnit={
+        output
+          ? imperial
+            ? output.cubicYards === 1
+              ? 'cubic yard'
+              : 'cubic yards'
+            : 'cubic metres'
+          : undefined
+      }
       sentence={
         output ? (
           <>
             <p>
-              You need <strong>{output.cubicYards} cubic yards</strong> — that is {output.cubicFeet}{' '}
-              cubic feet — to cover {output.squareFeet} square feet at {output.depthInches} inches
-              deep. One cubic yard covers about {output.coveragePerYard} square feet at that depth.
+              You need{' '}
+              <strong>
+                {imperial ? output.cubicYards : cubicMeters}{' '}
+                {imperial ? (output.cubicYards === 1 ? 'cubic yard' : 'cubic yards') : 'cubic metres'}
+              </strong>{' '}
+              — that is {output.cubicFeet} cubic feet — to cover {output.squareFeet} square feet at{' '}
+              {output.depthInches} inches deep. One cubic yard covers about {output.coveragePerYard}{' '}
+              square feet at that depth.
             </p>
             {weight === null ? (
               <p>
                 We do not have a source supporting a reliable delivered-topsoil weight for this
                 calculator — it depends on your supplier&apos;s pile and how wet it is, so no
-                calculator can honestly print one. If your supplier quotes a weight per cubic
-                yard, enter it above and the total appears here.
+                calculator can honestly print one. If your supplier quotes a weight per{' '}
+                {imperial ? 'cubic yard' : 'cubic metre'}, enter it above and the total appears
+                here.
               </p>
             ) : weight.supplierFigure ? (
               <p>
-                At your supplier&apos;s figure of <strong>{lb(weight.lowLbPerCubicYard)} lb per
-                cubic yard</strong>, that is about <strong>{lb(weight.lowLb)} lb</strong> (
-                {weight.lowTons} tons). Their figure is the only one that describes their pile.
+                At your supplier&apos;s figure of{' '}
+                <strong>
+                  {imperial
+                    ? `${lb(weight.lowLbPerCubicYard)} lb per cubic yard`
+                    : `${wm?.lowKgPerCubicMeter} kg per cubic metre`}
+                </strong>
+                , that is about{' '}
+                <strong>
+                  {imperial ? `${lb(weight.lowLb)} lb` : `${lb(wm?.lowKg ?? 0)} kg`}
+                </strong>{' '}
+                ({imperial ? `${weight.lowTons} tons` : `${wm?.lowTonnes} tonnes`}). Their figure is
+                the only one that describes their pile.
               </p>
             ) : (
               <p>
                 <strong>
-                  It will weigh somewhere between {lb(weight.lowLb)} and {lb(weight.highLb)}
-                  {weight.highOpenEnded ? '+' : ''} lb
+                  It will weigh somewhere between{' '}
+                  {imperial
+                    ? `${lb(weight.lowLb)} and ${lb(weight.highLb)}${weight.highOpenEnded ? '+' : ''} lb`
+                    : `${lb(wm?.lowKg ?? 0)} and ${lb(wm?.highKg ?? 0)}${weight.highOpenEnded ? '+' : ''} kg`}
                 </strong>{' '}
-                ({weight.lowTons} to {weight.highTons}
-                {weight.highOpenEnded ? '+' : ''} tons), and that range is the honest answer
-                rather than a hedge — see below for why no calculator can give you one number.
+                (
+                {imperial
+                  ? `${weight.lowTons} to ${weight.highTons}${weight.highOpenEnded ? '+' : ''} tons`
+                  : `${wm?.lowTonnes} to ${wm?.highTonnes}${weight.highOpenEnded ? '+' : ''} tonnes`}
+                ), and that range is the honest answer rather than a hedge — see below for why no
+                calculator can give you one number.
               </p>
             )}
           </>
@@ -149,8 +214,12 @@ export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
       copyText={
         output
           ? weight === null
-            ? `${output.cubicYards} cubic yards (${output.cubicFeet} cu ft) of ${material}. No sourced delivered weight — ask your supplier for their density. Calculated at soilsums.com`
-            : `${output.cubicYards} cubic yards (${output.cubicFeet} cu ft) of ${material}, weighing roughly ${lb(weight.lowLb)}-${lb(weight.highLb)}${weight.highOpenEnded ? '+' : ''} lb. Calculated at soilsums.com`
+            ? imperial
+              ? `${output.cubicYards} cubic yards (${output.cubicFeet} cu ft) of ${material}. No sourced delivered weight — ask your supplier for their density. Calculated at soilsums.com`
+              : `${cubicMeters} cubic metres of ${material}. No sourced delivered weight — ask your supplier for their density. Calculated at soilsums.com`
+            : imperial
+              ? `${output.cubicYards} cubic yards (${output.cubicFeet} cu ft) of ${material}, weighing roughly ${lb(weight.lowLb)}-${lb(weight.highLb)}${weight.highOpenEnded ? '+' : ''} lb. Calculated at soilsums.com`
+              : `${cubicMeters} cubic metres of ${material}, weighing roughly ${lb(wm?.lowKg ?? 0)}-${lb(wm?.highKg ?? 0)}${weight.highOpenEnded ? '+' : ''} kg. Calculated at soilsums.com`
           : ''
       }
     >
@@ -215,22 +284,38 @@ export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
       {material === 'soil' ? (
         <div className="col-span-2">
           <NumberField
-            label="Supplier's weight, in lb per cubic yard (optional)"
+            label={
+              imperial
+                ? "Supplier's weight, in lb per cubic yard (optional)"
+                : "Supplier's weight, in kg per cubic metre (optional)"
+            }
             value={values.supplier ?? ''}
             onChange={(next) => setValue('supplier', next)}
-            error={errors.supplierLbPerCubicYard}
-            hint="Ask your supplier what their screened topsoil weighs per cubic yard — it varies by pile and by how wet it is"
+            error={errors.supplierDensity}
+            hint={
+              imperial
+                ? 'Ask your supplier what their screened topsoil weighs per cubic yard — it varies by pile and by how wet it is'
+                : 'Ask your supplier what their screened topsoil weighs per cubic metre — it varies by pile and by how wet it is'
+            }
           />
         </div>
       ) : null}
 
       <div className="col-span-2">
         <NumberField
-          label="Your truck or trailer, in cubic yards (optional)"
+          label={
+            imperial
+              ? 'Your truck or trailer, in cubic yards (optional)'
+              : 'Your truck or trailer, in cubic metres (optional)'
+          }
           value={values.truck ?? ''}
           onChange={(next) => setValue('truck', next)}
-          error={errors.truckCubicYards}
-          hint="Measure the bed: length × width × loaded depth in feet, divided by 27"
+          error={errors.truckCapacity}
+          hint={
+            imperial
+              ? 'Measure the bed: length × width × loaded depth in feet, divided by 27'
+              : 'Measure the bed: length × width × loaded depth in metres'
+          }
         />
       </div>
 
@@ -279,10 +364,14 @@ export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
                 {
                   key: 'peryard',
                   cells: [
-                    'Pounds per cubic yard',
+                    imperial ? 'Pounds per cubic yard' : 'Kilograms per cubic metre',
                     weight.supplierFigure
-                      ? lb(weight.lowLbPerCubicYard)
-                      : `${lb(weight.lowLbPerCubicYard)} to ${lb(weight.highLbPerCubicYard)}${weight.highOpenEnded ? '+' : ''}`,
+                      ? imperial
+                        ? lb(weight.lowLbPerCubicYard)
+                        : String(wm?.lowKgPerCubicMeter)
+                      : imperial
+                        ? `${lb(weight.lowLbPerCubicYard)} to ${lb(weight.highLbPerCubicYard)}${weight.highOpenEnded ? '+' : ''}`
+                        : `${wm?.lowKgPerCubicMeter} to ${wm?.highKgPerCubicMeter}${weight.highOpenEnded ? '+' : ''}`,
                   ],
                 },
                 {
@@ -290,28 +379,42 @@ export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
                   cells: [
                     'Total weight',
                     weight.supplierFigure
-                      ? `${lb(weight.lowLb)} lb`
-                      : `${lb(weight.lowLb)} to ${lb(weight.highLb)}${weight.highOpenEnded ? '+' : ''} lb`,
+                      ? imperial
+                        ? `${lb(weight.lowLb)} lb`
+                        : `${lb(wm?.lowKg ?? 0)} kg`
+                      : imperial
+                        ? `${lb(weight.lowLb)} to ${lb(weight.highLb)}${weight.highOpenEnded ? '+' : ''} lb`
+                        : `${lb(wm?.lowKg ?? 0)} to ${lb(wm?.highKg ?? 0)}${weight.highOpenEnded ? '+' : ''} kg`,
                   ],
                 },
                 {
                   key: 'tons',
                   cells: [
-                    'Tons (US short)',
+                    imperial ? 'Tons (US short)' : 'Tonnes',
                     weight.supplierFigure
-                      ? String(weight.lowTons)
-                      : `${weight.lowTons} to ${weight.highTons}${weight.highOpenEnded ? '+' : ''}`,
+                      ? imperial
+                        ? String(weight.lowTons)
+                        : String(wm?.lowTonnes)
+                      : imperial
+                        ? `${weight.lowTons} to ${weight.highTons}${weight.highOpenEnded ? '+' : ''}`
+                        : `${wm?.lowTonnes} to ${wm?.highTonnes}${weight.highOpenEnded ? '+' : ''}`,
                   ],
                 },
                 {
                   key: 'yardsperton',
                   cells: [
-                    'Cubic yards you get per ton',
+                    imperial ? 'Cubic yards you get per ton' : 'Cubic metres you get per tonne',
                     weight.supplierFigure
-                      ? String(weight.lowYardsPerTon)
+                      ? imperial
+                        ? String(weight.lowYardsPerTon)
+                        : String(wm?.lowCubicMetersPerTonne)
                       : weight.highOpenEnded
-                        ? `${weight.lowYardsPerTon} to ${weight.highYardsPerTon}, fewer when very wet`
-                        : `${weight.lowYardsPerTon} to ${weight.highYardsPerTon}`,
+                        ? imperial
+                          ? `${weight.lowYardsPerTon} to ${weight.highYardsPerTon}, fewer when very wet`
+                          : `${wm?.lowCubicMetersPerTonne} to ${wm?.highCubicMetersPerTonne}, fewer when very wet`
+                        : imperial
+                          ? `${weight.lowYardsPerTon} to ${weight.highYardsPerTon}`
+                          : `${wm?.lowCubicMetersPerTonne} to ${wm?.highCubicMetersPerTonne}`,
                   ],
                 },
                 ...(weight.typicalLbPerCubicYard === undefined
@@ -321,7 +424,9 @@ export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
                         key: 'typical',
                         cells: [
                           'Rule of thumb, screened at 50% moisture',
-                          `${lb(weight.typicalLbPerCubicYard)} lb per cubic yard`,
+                          imperial
+                            ? `${lb(weight.typicalLbPerCubicYard)} lb per cubic yard`
+                            : `${wm?.typicalKgPerCubicMeter} kg per cubic metre`,
                         ],
                       },
                     ]),

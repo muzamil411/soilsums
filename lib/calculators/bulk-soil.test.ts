@@ -102,7 +102,7 @@ describe('bulk soil weight', () => {
   });
 
   it('marks a supplier figure as closed', () => {
-    const { weight } = run({ ...BED, material: 'soil', supplierLbPerCubicYard: 2200 });
+    const { weight } = run({ ...BED, material: 'soil', supplierDensity: 2200 });
     if (weight === null) throw new Error('supplier figure must produce a weight');
     expect(weight.highOpenEnded).toBe(false);
   });
@@ -114,7 +114,7 @@ describe('bulk soil weight', () => {
     const result = calculateBulkSoil({
       ...BED,
       material: 'compost',
-      supplierLbPerCubicYard: -50,
+      supplierDensity: -50,
     });
     if (!result.ok) throw new Error(`compost blocked: ${JSON.stringify(result.errors)}`);
     expect(result.value.weight?.highOpenEnded).toBe(true);
@@ -128,7 +128,7 @@ describe('bulk soil weight', () => {
   });
 
   it('computes a soil weight from the supplier figure alone', () => {
-    const { weight } = run({ ...BED, material: 'soil', supplierLbPerCubicYard: 2200 });
+    const { weight } = run({ ...BED, material: 'soil', supplierDensity: 2200 });
     if (weight === null) throw new Error('supplier figure must produce a weight');
     // 100 sq ft x 3 in = 25 cu ft = 25/27 cu yd; at 2200 lb/yd that is one figure.
     expect(weight.lowLbPerCubicYard).toBe(2200);
@@ -143,10 +143,10 @@ describe('bulk soil weight', () => {
 
   it('rejects a non-positive supplier figure', () => {
     expect(
-      calculateBulkSoil({ ...BED, material: 'soil', supplierLbPerCubicYard: 0 }).ok,
+      calculateBulkSoil({ ...BED, material: 'soil', supplierDensity: 0 }).ok,
     ).toBe(false);
     expect(
-      calculateBulkSoil({ ...BED, material: 'soil', supplierLbPerCubicYard: -50 }).ok,
+      calculateBulkSoil({ ...BED, material: 'soil', supplierDensity: -50 }).ok,
     ).toBe(false);
   });
 
@@ -162,12 +162,108 @@ describe('bulk soil weight', () => {
   });
 
   it('counts whole truck loads, rounding up', () => {
-    const result = run({ ...BED, material: 'soil', truckCubicYards: 0.5 });
+    const result = run({ ...BED, material: 'soil', truckCapacity: 0.5 });
     // 0.926 cubic yards into a 0.5 yard bed is two trips, not one and a bit.
     expect(result.truckLoads).toBe(2);
   });
 
   it('omits truck loads where no capacity was given', () => {
     expect(run({ ...BED, material: 'compost' }).truckLoads).toBe(undefined);
+  });
+});
+
+describe('bulk soil metric inputs', () => {
+  it('preserves volume across exact unit conversion', () => {
+    // 20 ft x 10 ft x 3 in = 6.096 m x 3.048 m x 7.62 cm. The audit found the
+    // unit toggle replacing these with rounded 6/3/7.5, dropping the result
+    // from 1.852 to 1.766 cubic yards (~5%). Exact conversion must preserve it.
+    const imperial = run({
+      units: 'imperial',
+      mode: 'rectangle',
+      material: 'soil',
+      length: 20,
+      width: 10,
+      depth: 3,
+    });
+    const metric = run({
+      units: 'metric',
+      mode: 'rectangle',
+      material: 'soil',
+      length: 6.096,
+      width: 3.048,
+      depth: 7.62,
+    });
+    expect(imperial.cubicYards).toBeCloseTo(1.85185, 3);
+    expect(metric.cubicYards).toBeCloseTo(imperial.cubicYards, 4);
+  });
+
+  it('converts supplier density at the calculation boundary', () => {
+    // 2000 lb/yd³ = 1186.55 kg/m³. A metric reader entering the latter must
+    // get the same weight as an imperial reader entering the former.
+    const imperial = run({ ...BED, material: 'soil', supplierDensity: 2000 });
+    const metric = run({
+      ...BED,
+      units: 'metric',
+      material: 'soil',
+      length: 3.048,
+      width: 3.048,
+      depth: 7.62,
+      supplierDensity: 1186.55,
+    });
+    if (imperial.weight === null || metric.weight === null) {
+      throw new Error('supplier figure must produce a weight');
+    }
+    expect(metric.weight.lowLb).toBeCloseTo(imperial.weight.lowLb, 0);
+  });
+
+  it('converts truck capacity at the calculation boundary', () => {
+    // 0.5 yd³ = 0.3823 m³. Same truck, same loads, either unit system.
+    const imperial = run({ ...BED, material: 'soil', truckCapacity: 0.5 });
+    const metric = run({
+      ...BED,
+      units: 'metric',
+      material: 'soil',
+      length: 3.048,
+      width: 3.048,
+      depth: 7.62,
+      truckCapacity: 0.3823,
+    });
+    expect(metric.truckLoads).toBe(imperial.truckLoads);
+  });
+
+  it('validates metric density and capacity with metric messages', () => {
+    const badDensity = calculateBulkSoil({
+      ...BED,
+      units: 'metric',
+      material: 'soil',
+      supplierDensity: -5,
+    });
+    expect(badDensity.ok).toBe(false);
+    if (!badDensity.ok) {
+      expect(badDensity.errors[0]?.message).toContain('kg per cubic metre');
+    }
+    const badTruck = calculateBulkSoil({
+      ...BED,
+      units: 'metric',
+      material: 'soil',
+      truckCapacity: 0,
+    });
+    expect(badTruck.ok).toBe(false);
+    if (!badTruck.ok) {
+      expect(badTruck.errors[0]?.message).toContain('cubic metres');
+    }
+  });
+
+  it('ignores invalid supplier density for compost in metric too', () => {
+    // The supplier field is hidden for compost; a leftover invalid value
+    // must not block the calculation, whichever system is active.
+    expect(
+      calculateBulkSoil({
+        ...BED,
+        units: 'metric',
+        material: 'compost',
+        supplierDensity: -50,
+      }).ok,
+    ).toBe(true);
   });
 });

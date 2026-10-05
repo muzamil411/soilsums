@@ -43,6 +43,14 @@ export const KILOGRAMS_PER_POUND = 0.45359237;
 export const GRAMS_PER_OUNCE = 28.349523125;
 export const OUNCES_PER_POUND = 16;
 
+// Bulk volume: a cubic yard is 27 cubic feet, each 0.3048 m on a side.
+export const CUBIC_METERS_PER_CUBIC_YARD =
+  METERS_PER_FOOT ** 3 * CUBIC_FEET_PER_CUBIC_YARD;
+
+// Bulk density: 1 lb/yd³ in kg/m³. Exact, from the 1959 definitions above.
+export const KG_PER_CUBIC_METER_PER_LB_PER_CUBIC_YARD =
+  KILOGRAMS_PER_POUND / CUBIC_METERS_PER_CUBIC_YARD;
+
 /**
  * Gallons of water to put one inch over one square foot: 144 cubic inches,
  * divided by 231 cubic inches per gallon. The widely quoted 0.623 is this
@@ -109,6 +117,22 @@ export function kilogramsToPounds(kilograms: number): number {
 
 export function poundsToGrams(pounds: number): number {
   return pounds * KILOGRAMS_PER_POUND * 1000;
+}
+
+export function cubicYardsToCubicMeters(cubicYards: number): number {
+  return cubicYards * CUBIC_METERS_PER_CUBIC_YARD;
+}
+
+export function cubicMetersToCubicYards(cubicMeters: number): number {
+  return cubicMeters / CUBIC_METERS_PER_CUBIC_YARD;
+}
+
+export function lbPerCubicYardToKgPerCubicMeter(lbPerCubicYard: number): number {
+  return lbPerCubicYard * KG_PER_CUBIC_METER_PER_LB_PER_CUBIC_YARD;
+}
+
+export function kgPerCubicMeterToLbPerCubicYard(kgPerCubicMeter: number): number {
+  return kgPerCubicMeter / KG_PER_CUBIC_METER_PER_LB_PER_CUBIC_YARD;
 }
 
 /** Area in square feet, whichever system the user is working in. */

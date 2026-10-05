@@ -8,10 +8,14 @@ import {
   US_DRY_QUARTS_PER_CUBIC_FOOT,
   centimetersToInches,
   cubicFeetToLiters,
+  cubicMetersToCubicYards,
+  cubicYardsToCubicMeters,
   feetToMeters,
   inchesToCentimeters,
+  kgPerCubicMeterToLbPerCubicYard,
   kilogramsToPounds,
   lbPer1000SqFtToKgPer100SqM,
+  lbPerCubicYardToKgPerCubicMeter,
   metersToFeet,
   poundsToKilograms,
   squareFeetToSquareMeters,
@@ -46,6 +50,8 @@ export type FieldKind =
   | 'mass' // pounds <-> kilograms
   | 'rainfall' // inches <-> millimeters
   | 'rate' // lb per 1,000 sq ft <-> kg per 100 m2
+  | 'density' // lb per cubic yard <-> kg per cubic meter
+  | 'bulk-volume' // cubic yards <-> cubic meters
   | 'none';
 
 function convert(value: number, kind: FieldKind, to: UnitSystem): number {
@@ -72,6 +78,12 @@ function convert(value: number, kind: FieldKind, to: UnitSystem): number {
       return toMetric
         ? lbPer1000SqFtToKgPer100SqM(value)
         : value * KG_PER_100SQM_TO_LB_PER_1000SQFT;
+    case 'density':
+      return toMetric
+        ? lbPerCubicYardToKgPerCubicMeter(value)
+        : kgPerCubicMeterToLbPerCubicYard(value);
+    case 'bulk-volume':
+      return toMetric ? cubicYardsToCubicMeters(value) : cubicMetersToCubicYards(value);
   }
 }
 
@@ -220,21 +232,38 @@ export function useToolState(options: ToolStateOptions): ToolState {
       appliedUnits.current = next;
       setTouched(true);
       setUnitsPreference(next);
-      // Only the fields that were actually set are carried across, converted so
-      // the quantities are unchanged. Untouched fields fall back to the metric
-      // defaults, which keeps a bare unit switch down to `?u=metric`.
+      // Convert every current value so the physical quantity is preserved.
+      // Previously only explicitly-touched fields were converted; untouched
+      // fields fell back to the other system's defaults, which are rounded
+      // for readability (20 ft -> 6 m instead of 6.096 m) and silently
+      // changed the result by ~5% on bulk soil.
       setEdits(() => {
         const converted: ToolValues = {};
-        for (const [field, value] of Object.entries(explicit)) {
+        const current: ToolValues = { ...defaultsFor(from), ...explicit };
+        const targetDefaults = defaultsFor(next);
+        for (const [field, raw] of Object.entries(current)) {
           const kind = kinds[field] ?? 'none';
-          if (kind === 'none' || value.trim() === '') {
-            converted[field] = value;
+          const value = raw.trim();
+          if (kind === 'none' || value === '') {
+            // Non-quantities (modes, materials, selects) and emptied fields
+            // carry over only if explicitly set; untouched ones fall back to
+            // the target defaults.
+            if (field in explicit) converted[field] = raw;
             continue;
           }
           const numeric = Number(value);
-          converted[field] = Number.isFinite(numeric)
-            ? display(convert(numeric, kind, next))
-            : value;
+          if (!Number.isFinite(numeric)) {
+            if (field in explicit) converted[field] = raw;
+            continue;
+          }
+          const newValue = display(convert(numeric, kind, next));
+          // Omit untouched fields whose converted value matches the target
+          // default, keeping a bare toggle's URL clean. Converted values that
+          // differ (the common case, since defaults are rounded) are carried
+          // over so the quantity — and the result — is unchanged.
+          if (field in explicit || newValue !== targetDefaults[field]) {
+            converted[field] = newValue;
+          }
         }
         return converted;
       });

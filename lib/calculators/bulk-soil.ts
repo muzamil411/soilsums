@@ -19,8 +19,10 @@ import { fillCubicFeet, footprintSquareFeet, type Footprint } from './shared/geo
 import {
   areaToSquareFeet,
   CUBIC_FEET_PER_CUBIC_YARD,
+  cubicMetersToCubicYards,
   depthToInches,
   INCHES_PER_FOOT,
+  kgPerCubicMeterToLbPerCubicYard,
   lengthToFeet,
   type UnitSystem,
 } from './shared/units';
@@ -65,15 +67,20 @@ export type BulkSoilInput = {
   readonly depth?: number;
   readonly material: BulkSoilMaterial;
   /**
-   * Supplier-quoted weight in lb per cubic yard, for the soil case.
+   * Supplier-quoted bulk density, for the soil case.
    *
-   * We have no sourced delivered-topsoil weight, so the tool refuses to
-   * invent one: it only computes a soil weight from a figure the reader's own
-   * supplier supplied. Absent, there is no weight — see weightFor.
+   * In lb per cubic yard (imperial) or kg per cubic metre (metric), per
+   * `units`; converted to lb/yd³ at the calculation boundary. We have no
+   * sourced delivered-topsoil weight, so the tool refuses to invent one: it
+   * only computes a soil weight from a figure the reader's own supplier
+   * supplied. Absent, there is no weight — see weightFor.
    */
-  readonly supplierLbPerCubicYard?: number;
-  /** Truck bed capacity in cubic yards, where the reader has measured one. */
-  readonly truckCubicYards?: number;
+  readonly supplierDensity?: number;
+  /**
+   * Truck bed capacity where the reader has measured one: cubic yards
+   * (imperial) or cubic metres (metric), per `units`.
+   */
+  readonly truckCapacity?: number;
 };
 
 export type WeightRange = {
@@ -117,6 +124,7 @@ export type BulkSoilResult = {
 };
 
 function weightFor(input: BulkSoilInput, cubicYards: number): WeightRange | null {
+  const imperial = input.units === 'imperial';
   if (input.material === 'compost') {
     // Compost is published per cubic yard as supplied: a range with its reason.
     const lowLbPerCubicYard = COMPOST_DENSITY.lowLbPerCubicYard;
@@ -144,7 +152,12 @@ function weightFor(input: BulkSoilInput, cubicYards: number): WeightRange | null
 
   // Soil: we have no sourced delivered weight. A supplier's own figure is the
   // only defensible input, and without one the tool prints no weight.
-  const supplierLbPerCubicYard = input.supplierLbPerCubicYard;
+  const supplierLbPerCubicYard =
+    input.supplierDensity === undefined
+      ? undefined
+      : imperial
+        ? input.supplierDensity
+        : kgPerCubicMeterToLbPerCubicYard(input.supplierDensity);
   if (supplierLbPerCubicYard === undefined) return null;
 
   const pounds = cubicYards * supplierLbPerCubicYard;
@@ -180,16 +193,20 @@ export function calculateBulkSoil(input: BulkSoilInput): Calculation<BulkSoilRes
     // Supplier density is meaningless for compost (the field is hidden and
     // weightFor ignores it), so an invalid leftover value from soil must not
     // block a compost calculation.
-    input.material === 'compost' || input.supplierLbPerCubicYard === undefined
+    input.material === 'compost' || input.supplierDensity === undefined
       ? null
       : requirePositive(
-          input.supplierLbPerCubicYard,
-          'supplierLbPerCubicYard',
-          'supplier weight in lb per cubic yard',
+          input.supplierDensity,
+          'supplierDensity',
+          imperial ? 'supplier weight in lb per cubic yard' : 'supplier weight in kg per cubic metre',
         ),
-    input.truckCubicYards === undefined
+    input.truckCapacity === undefined
       ? null
-      : requirePositive(input.truckCubicYards, 'truckCubicYards', 'truck capacity in cubic yards'),
+      : requirePositive(
+          input.truckCapacity,
+          'truckCapacity',
+          imperial ? 'truck capacity in cubic yards' : 'truck capacity in cubic metres',
+        ),
   ]);
   if (errors.length > 0) return fail(errors);
 
@@ -210,6 +227,13 @@ export function calculateBulkSoil(input: BulkSoilInput): Calculation<BulkSoilRes
 
   const weight = weightFor(input, cubicYards);
 
+  const truckCubicYards =
+    input.truckCapacity === undefined
+      ? undefined
+      : imperial
+        ? input.truckCapacity
+        : cubicMetersToCubicYards(input.truckCapacity);
+
   return ok({
     squareFeet: toSignificant(squareFeet, 4),
     cubicFeet: toSignificant(cubicFeet, 4),
@@ -221,8 +245,8 @@ export function calculateBulkSoil(input: BulkSoilInput): Calculation<BulkSoilRes
       count: roundUp(cubicFeet / size),
     })),
     weight,
-    ...(input.truckCubicYards === undefined
+    ...(truckCubicYards === undefined
       ? {}
-      : { truckLoads: roundUp(cubicYards / input.truckCubicYards) }),
+      : { truckLoads: roundUp(cubicYards / truckCubicYards) }),
   });
 }
