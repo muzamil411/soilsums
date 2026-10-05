@@ -443,7 +443,7 @@ export const WOOD_ASH = {
   /** Apply none at or above this soil pH. */
   doNotApplyAbovePh: 7,
   source:
-    'Iowa State University Extension and Outreach, Using Wood Ashes in the Home Garden: https://yardandgarden.extension.iastate.edu/encyclopedia/using-wood-ashes-home-garden',
+    'Iowa State University Extension and Outreach, Using Wood Ashes in the Home Garden: https://yardandgarden.extension.iastate.edu/how-to/using-wood-ashes-home-garden',
   verified: true,
 } as const;
 

@@ -38,10 +38,16 @@ export const MISSOURI_WATER: LawnSource = {
   url: 'https://extension.missouri.edu/publications/g6720',
 };
 
-export const IOWA_STATE_LAWN: LawnSource = {
+export const IOWA_STATE_FERTILIZER_RATES: LawnSource = {
   institution: 'Iowa State University Extension',
-  title: 'Lawn Fertilization',
-  url: 'https://yardandgarden.extension.iastate.edu/how-to/fertilizing-lawn',
+  title: 'Fertilizer Rates and Requirements for the Home Garden',
+  url: 'https://yardandgarden.extension.iastate.edu/how-to/fertilizer-rates-and-requirements-home-garden',
+};
+
+export const IOWA_STATE_SUMMER_CARE: LawnSource = {
+  institution: 'Iowa State University Extension',
+  title: 'Summer Lawn Care',
+  url: 'https://yardandgarden.extension.iastate.edu/how-to/summer-lawn-care',
 };
 
 /** Pounds of nitrogen per 1,000 sq ft per year, by grass. Missouri G6705. */
@@ -117,7 +123,7 @@ export const NITROGEN_CUTOFFS = [
   },
   {
     rule: 'Do not fertilize Kentucky bluegrass and other cool-season grasses during the summer months (June, July, and August).',
-    source: IOWA_STATE_LAWN,
+    source: IOWA_STATE_SUMMER_CARE,
   },
 ] as const;
 
