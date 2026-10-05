@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { CalculatorFrame } from './CalculatorFrame';
 import { errorMap } from './errors';
 import { NumberField } from '@/components/ui/NumberField';
@@ -14,6 +14,8 @@ import {
   type BulkSoilMaterial,
 } from '@/lib/calculators/bulk-soil';
 import {
+  CUBIC_METERS_PER_CUBIC_YARD,
+  SQUARE_FEET_PER_SQUARE_METER,
   cubicYardsToCubicMeters,
   lbPerCubicYardToKgPerCubicMeter,
   poundsToKilograms,
@@ -41,6 +43,7 @@ const PARAMS = {
   material: 'm',
   supplier: 's',
   truck: 'tr',
+  version: 'v',
 } as const;
 
 const KINDS: Record<string, FieldKind> = {
@@ -75,12 +78,53 @@ function lb(value: number): string {
 }
 
 export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
-  const { values, units, setValue, setUnits, reset, shareUrl } = useToolState({
+  const {
+    values,
+    units,
+    setValue,
+    setUnits,
+    reset,
+    shareUrl: baseShareUrl,
+  } = useToolState({
     imperialDefaults: IMPERIAL,
     metricDefaults: METRIC,
     params: PARAMS,
     kinds: KINDS,
+    // Legacy share links (no v=2) stored supplier/truck in imperial —
+    // lb/yd³ and yd³ — even when u=metric, because the fields were
+    // kind:'none' and the labels never changed. v=2 links store them in the
+    // link's unit system. Migrate legacy metric values to the new semantics
+    // on restore so a saved link keeps meaning what its author entered.
+    migrateSearchValues: (parsed, linkUnits) => {
+      if (parsed.version === '2' || linkUnits !== 'metric') return parsed;
+      const migrated: Record<string, string> = { ...parsed, version: '2' };
+      const supplier = parsed.supplier;
+      if (supplier !== undefined && supplier.trim() !== '') {
+        const lb = Number(supplier);
+        if (Number.isFinite(lb)) {
+          migrated.supplier = String(
+            toSignificant(lbPerCubicYardToKgPerCubicMeter(lb), 10),
+          );
+        }
+      }
+      const truck = parsed.truck;
+      if (truck !== undefined && truck.trim() !== '') {
+        const yd3 = Number(truck);
+        if (Number.isFinite(yd3)) {
+          migrated.truck = String(toSignificant(cubicYardsToCubicMeters(yd3), 10));
+        }
+      }
+      return migrated;
+    },
   });
+
+  // New share links carry v=2 so future restores know s/tr are in the link's
+  // unit system, not legacy imperial.
+  const shareUrl = useCallback(() => {
+    const url = new URL(baseShareUrl());
+    url.searchParams.set('v', '2');
+    return url.toString();
+  }, [baseShareUrl]);
 
   const imperial = units === 'imperial';
   const mode: BulkSoilEntryMode = values.mode === 'area' ? 'area' : 'rectangle';
@@ -111,6 +155,15 @@ export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
   // Metric presentation of the imperial calculation. The arithmetic stays in
   // imperial (exact definitions); only the displayed figures convert.
   const cubicMeters = output ? toSignificant(cubicYardsToCubicMeters(output.cubicYards), 4) : null;
+  const squareMetres = output ? toSignificant(output.squareFeet / SQUARE_FEET_PER_SQUARE_METER, 4) : null;
+  const depthCm = output ? toSignificant(output.depthInches * 2.54, 3) : null;
+  const litres = output ? toSignificant(cubicYardsToCubicMeters(output.cubicYards) * 1000, 4) : null;
+  const coveragePerCubicMeter = output
+    ? toSignificant(
+        output.coveragePerYard / SQUARE_FEET_PER_SQUARE_METER / CUBIC_METERS_PER_CUBIC_YARD,
+        4,
+      )
+    : null;
   const wm =
     weight && !imperial
       ? {
@@ -165,9 +218,12 @@ export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
                 {imperial ? output.cubicYards : cubicMeters}{' '}
                 {imperial ? (output.cubicYards === 1 ? 'cubic yard' : 'cubic yards') : 'cubic metres'}
               </strong>{' '}
-              — that is {output.cubicFeet} cubic feet — to cover {output.squareFeet} square feet at{' '}
-              {output.depthInches} inches deep. One cubic yard covers about {output.coveragePerYard}{' '}
-              square feet at that depth.
+              — that is {imperial ? `${output.cubicFeet} cubic feet` : `${litres} litres`}{' '}
+              — to cover {imperial ? `${output.squareFeet} square feet` : `${squareMetres} square metres`} at{' '}
+              {imperial ? `${output.depthInches} inches` : `${depthCm} centimetres`} deep. One{' '}
+              {imperial ? 'cubic yard' : 'cubic metre'} covers about{' '}
+              {imperial ? output.coveragePerYard : coveragePerCubicMeter}{' '}
+              {imperial ? 'square feet' : 'square metres'} at that depth.
             </p>
             {weight === null ? (
               <p>

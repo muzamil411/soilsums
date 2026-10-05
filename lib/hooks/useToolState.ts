@@ -102,6 +102,15 @@ export type ToolStateOptions = {
   readonly params: ParamMap;
   /** What each numeric field measures, for unit conversion. */
   readonly kinds: Readonly<Record<string, FieldKind>>;
+  /**
+   * Transforms values parsed from a shared link before use, e.g. to migrate
+   * legacy URL semantics. Receives the raw parsed values and the link's unit
+   * system (null if the link carried none).
+   */
+  readonly migrateSearchValues?: (
+    values: ToolValues,
+    units: UnitSystem | null,
+  ) => ToolValues;
 };
 
 export type ToolState = {
@@ -134,6 +143,41 @@ function display(value: number): string {
 }
 
 /**
+ * Formats a converted number for state storage, preserving enough precision
+ * that calculations (including discrete ceil/roundUp boundaries) are not
+ * affected by the conversion.
+ *
+ * 4 significant figures (display) can err by 5e-4 relative, which flips a
+ * truck-load ceiling when the true ratio sits near an integer. 10 figures
+ * err by 5e-10 relative — far below the 5e-7 absolute tolerance that
+ * roundUp()'s 6-decimal pre-rounding absorbs — so repeated toggles neither
+ * change discrete results nor accumulate drift.
+ *
+ * The input shows the stored string; common values (6.096, 3.048) render
+ * cleanly, and longer ones trade a few digits for correctness.
+ */
+function displayPrecise(value: number): string {
+  if (!Number.isFinite(value)) return '';
+  return String(toSignificant(value, 10));
+}
+
+/**
+ * Converts a single field value string across unit systems, preserving
+ * precision for state storage. Exported for regression testing.
+ */
+export function convertFieldForUnits(
+  value: string,
+  kind: FieldKind,
+  to: UnitSystem,
+): string {
+  const trimmed = value.trim();
+  if (kind === 'none' || trimmed === '') return value;
+  const numeric = Number(trimmed);
+  if (!Number.isFinite(numeric)) return value;
+  return displayPrecise(convert(numeric, kind, to));
+}
+
+/**
  * Holds a tool's inputs, converts them when the reader switches units, and
  * keeps a shareable link of them.
  *
@@ -147,7 +191,7 @@ function display(value: number): string {
  * that has just loaded keeps the clean URL it was opened with.
  */
 export function useToolState(options: ToolStateOptions): ToolState {
-  const { imperialDefaults, metricDefaults, params, kinds } = options;
+  const { imperialDefaults, metricDefaults, params, kinds, migrateSearchValues } = options;
   const [units, setUnitsPreference] = useUnits();
   const search = useCapturedBrowserValue(readInitialSearch);
 
@@ -179,11 +223,12 @@ export function useToolState(options: ToolStateOptions): ToolState {
   );
 
   /** Values the shared link carried, and the unit system it was shared in. */
-  const fromSearch = useMemo(
-    () => parseQuery(search, params),
+  const fromSearch = useMemo(() => {
+    const parsed = parseQuery(search, params);
+    const values = migrateSearchValues ? migrateSearchValues(parsed.values, parsed.units) : parsed.values;
+    return { values, units: parsed.units };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [search],
-  );
+  }, [search]);
 
   // A link shared in metric opens in metric, whatever the local preference.
   const sharedUnits = ignoreSearch ? null : fromSearch.units;
@@ -256,7 +301,7 @@ export function useToolState(options: ToolStateOptions): ToolState {
             if (field in explicit) converted[field] = raw;
             continue;
           }
-          const newValue = display(convert(numeric, kind, next));
+          const newValue = convertFieldForUnits(raw, kind, next);
           // Omit untouched fields whose converted value matches the target
           // default, keeping a bare toggle's URL clean. Converted values that
           // differ (the common case, since defaults are rounded) are carried
