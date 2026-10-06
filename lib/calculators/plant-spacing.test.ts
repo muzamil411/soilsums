@@ -190,3 +190,125 @@ describe('calculatePlantSpacing', () => {
     expect(Number.isNaN(result.totalPlants)).toBe(false);
   });
 });
+
+describe('floating-point boundary correction', () => {
+  // Regression for the production bug where toggling 3.5 ft / 6 in to metric
+  // dropped the count from 28 to 24 plants: fitAlong() floored 6.999999999999999.
+  // (Browser repro used default 12 in row spacing: 7 per row x 4 rows = 28.)
+  const reported = {
+    units: 'imperial',
+    bedLength: 3.5,
+    bedWidth: 4,
+    plantSpacing: 6,
+    rowSpacing: 12,
+    layout: 'square',
+  } as const;
+
+  it('keeps 28 plants for the reported 3.5-ft case in imperial', () => {
+    const result = value(calculatePlantSpacing(reported));
+    expect(result.plantsPerRow).toBe(7);
+    expect(result.rows).toBe(4);
+    expect(result.totalPlants).toBe(28);
+  });
+
+  it('keeps 28 plants for equivalent metric inputs', () => {
+    // 3.5 ft = 1.0668 m, 6 in = 15.24 cm, 12 in = 30.48 cm (exact conversions).
+    const result = value(
+      calculatePlantSpacing({
+        units: 'metric',
+        bedLength: 1.0668,
+        bedWidth: 1.2192,
+        plantSpacing: 15.24,
+        rowSpacing: 30.48,
+        layout: 'square',
+      }),
+    );
+    expect(result.totalPlants).toBe(28);
+  });
+
+  it('keeps 28 plants for the reported 4.5-ft case in both systems', () => {
+    // 4.5 ft / 6 in: 9 per row x 4 rows = 36... wait, 4.5ft=54in/6=9, 4ft/12in=4 rows -> 36
+    const imp = value(
+      calculatePlantSpacing({ ...reported, bedLength: 4.5 }),
+    );
+    expect(imp.plantsPerRow).toBe(9);
+    expect(imp.totalPlants).toBe(36);
+    const met = value(
+      calculatePlantSpacing({
+        units: 'metric',
+        bedLength: 1.3716, // 4.5 ft in meters
+        bedWidth: 1.2192,
+        plantSpacing: 15.24,
+        rowSpacing: 30.48,
+        layout: 'square',
+      }),
+    );
+    expect(met.totalPlants).toBe(36);
+  });
+
+  it('gives the same count in triangular layout for equivalent inputs', () => {
+    const imp = value(calculatePlantSpacing({ ...reported, layout: 'triangular' }));
+    const met = value(
+      calculatePlantSpacing({
+        units: 'metric',
+        bedLength: 1.0668,
+        bedWidth: 1.2192,
+        plantSpacing: 15.24,
+        rowSpacing: 30.48,
+        layout: 'triangular',
+      }),
+    );
+    expect(met.totalPlants).toBe(imp.totalPlants);
+  });
+
+  it('still fits fewer plants in a genuinely undersized bed', () => {
+    // 3.4 ft at 6 in spacing: true ratio 6.8, must NOT snap to 7.
+    const result = value(calculatePlantSpacing({ ...reported, bedLength: 3.4 }));
+    expect(result.plantsPerRow).toBe(6);
+    // 3.49 ft: ratio 6.98, still clearly below 7.
+    const result2 = value(calculatePlantSpacing({ ...reported, bedLength: 3.49 }));
+    expect(result2.plantsPerRow).toBe(6);
+  });
+
+  it('fits more plants when clearly above the boundary', () => {
+    // 3.6 ft at 6 in: ratio 7.2, floors to 7.
+    const result = value(calculatePlantSpacing({ ...reported, bedLength: 3.6 }));
+    expect(result.plantsPerRow).toBe(7);
+  });
+
+  it('matches across the scanned vulnerable combinations', () => {
+    // The audit scanned ft in [1, 20] step 0.5 and spacing in [4, 24] step 1;
+    // 56/819 combos flipped on toggle within that set. Spot-check the pattern:
+    // half-foot lengths that previously lost a plant now hold.
+    const cases: Array<[number, number, number]> = [
+      [3.5, 6, 7],
+      [3.5, 7, 6],
+      [4.5, 6, 9],
+      [4.5, 9, 6],
+      [5.5, 6, 11],
+    ];
+    for (const [ft, spIn, expectedPerRow] of cases) {
+      const imp = value(
+        calculatePlantSpacing({
+          ...reported,
+          bedLength: ft,
+          plantSpacing: spIn,
+          rowSpacing: spIn,
+        }),
+      );
+      expect(imp.plantsPerRow).toBe(expectedPerRow);
+      // Equivalent metric inputs (10-sig-fig, as the toggle produces).
+      const met = value(
+        calculatePlantSpacing({
+          units: 'metric',
+          bedLength: Number((ft * 0.3048).toPrecision(10)),
+          bedWidth: 1.2192,
+          plantSpacing: Number((spIn * 2.54).toPrecision(10)),
+          rowSpacing: 30.48,
+          layout: 'square',
+        }),
+      );
+      expect(met.plantsPerRow).toBe(expectedPerRow);
+    }
+  });
+});
