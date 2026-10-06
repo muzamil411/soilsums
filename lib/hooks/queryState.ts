@@ -23,6 +23,7 @@ export function buildQuery({
   params,
   units,
   includeAll = false,
+  alwaysInclude = [],
 }: {
   values: ToolValues;
   defaults: ToolValues;
@@ -36,13 +37,20 @@ export function buildQuery({
    * the link keeps meaning what it meant even if a default changes later.
    */
   includeAll?: boolean;
+  /**
+   * Param keys always written, even when matching defaults. Used for URL
+   * version markers (e.g. bulk soil's v=2): once the page has migrated legacy
+   * semantics, every generated URL must carry the marker, or a reload would
+   * reinterpret the values as legacy.
+   */
+  alwaysInclude?: string[];
 }): URLSearchParams {
   const query = new URLSearchParams();
 
   for (const [field, key] of Object.entries(params)) {
     const value = values[field];
     if (value === undefined || value === '') continue;
-    if (!includeAll && value === defaults[field]) continue;
+    if (!includeAll && !alwaysInclude.includes(key) && value === defaults[field]) continue;
     query.set(key, value);
   }
 

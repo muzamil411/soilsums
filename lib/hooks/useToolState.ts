@@ -111,6 +111,12 @@ export type ToolStateOptions = {
     values: ToolValues,
     units: UnitSystem | null,
   ) => ToolValues;
+  /**
+   * Param keys always written to generated URLs, even when matching defaults.
+   * For URL version markers: ensures the address bar, copy links, unit
+   * switches, and resets all carry the marker.
+   */
+  readonly alwaysIncludeParams?: string[];
 };
 
 export type ToolState = {
@@ -191,7 +197,7 @@ export function convertFieldForUnits(
  * that has just loaded keeps the clean URL it was opened with.
  */
 export function useToolState(options: ToolStateOptions): ToolState {
-  const { imperialDefaults, metricDefaults, params, kinds, migrateSearchValues } = options;
+  const { imperialDefaults, metricDefaults, params, kinds, migrateSearchValues, alwaysIncludeParams } = options;
   const [units, setUnitsPreference] = useUnits();
   const search = useCapturedBrowserValue(readInitialSearch);
 
@@ -258,7 +264,13 @@ export function useToolState(options: ToolStateOptions): ToolState {
   useEffect(() => {
     if (!touched) return;
     const timer = window.setTimeout(() => {
-      const query = buildQuery({ values, defaults, params, units: effectiveUnits });
+      const query = buildQuery({
+        values,
+        defaults,
+        params,
+        units: effectiveUnits,
+        alwaysInclude: alwaysIncludeParams,
+      });
       window.history.replaceState(null, '', pathWithQuery(window.location.pathname, query));
     }, URL_DEBOUNCE_MS);
     return () => window.clearTimeout(timer);
@@ -333,6 +345,7 @@ export function useToolState(options: ToolStateOptions): ToolState {
       params,
       units: effectiveUnits,
       includeAll: true,
+      alwaysInclude: alwaysIncludeParams,
     });
     return `${window.location.origin}${pathWithQuery(window.location.pathname, query)}`;
     // eslint-disable-next-line react-hooks/exhaustive-deps

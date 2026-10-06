@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { CalculatorFrame } from './CalculatorFrame';
 import { errorMap } from './errors';
 import { NumberField } from '@/components/ui/NumberField';
@@ -64,6 +64,10 @@ const IMPERIAL = {
   material: 'soil',
   supplier: '',
   truck: '',
+  // URL version marker: v=2 means s/tr are in the link's unit system.
+  // In defaults so every generated URL (address bar, copy link, switches,
+  // resets) carries it; legacy links without it restore per original semantics.
+  version: '2',
 };
 
 const METRIC = { ...IMPERIAL, area: '18.6', length: '6', width: '3', depth: '7.5' };
@@ -84,12 +88,15 @@ export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
     setValue,
     setUnits,
     reset,
-    shareUrl: baseShareUrl,
+    shareUrl,
   } = useToolState({
     imperialDefaults: IMPERIAL,
     metricDefaults: METRIC,
     params: PARAMS,
     kinds: KINDS,
+    // v=2 is in the defaults and always written to generated URLs, so the
+    // address bar, copy links, unit switches, and resets all carry it.
+    alwaysIncludeParams: ['v'],
     // Legacy share links (no v=2) stored supplier/truck in imperial —
     // lb/yd³ and yd³ — even when u=metric, because the fields were
     // kind:'none' and the labels never changed. v=2 links store them in the
@@ -97,7 +104,7 @@ export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
     // on restore so a saved link keeps meaning what its author entered.
     migrateSearchValues: (parsed, linkUnits) => {
       if (parsed.version === '2' || linkUnits !== 'metric') return parsed;
-      const migrated: Record<string, string> = { ...parsed, version: '2' };
+      const migrated: Record<string, string> = { ...parsed };
       const supplier = parsed.supplier;
       if (supplier !== undefined && supplier.trim() !== '') {
         const lb = Number(supplier);
@@ -117,14 +124,6 @@ export function BulkSoilCalculator({ toolSlug }: { toolSlug: string }) {
       return migrated;
     },
   });
-
-  // New share links carry v=2 so future restores know s/tr are in the link's
-  // unit system, not legacy imperial.
-  const shareUrl = useCallback(() => {
-    const url = new URL(baseShareUrl());
-    url.searchParams.set('v', '2');
-    return url.toString();
-  }, [baseShareUrl]);
 
   const imperial = units === 'imperial';
   const mode: BulkSoilEntryMode = values.mode === 'area' ? 'area' : 'rectangle';
