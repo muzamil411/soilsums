@@ -20,6 +20,12 @@ export function GrassSeedRateTable() {
   return (
     <DataTable
       columns={['Grass', 'Season', 'New lawn, as published', 'Overseeding', 'Rate written for']}
+      // Fixed layout: with table-layout: auto, this table's content-driven
+      // width (507px) leaks into the document's scroll width on narrow screens
+      // even inside the overflow-x-auto wrapper, scrolling the whole page.
+      // Fixed columns keep it scrollable inside its own container.
+      widths={['112px', '64px', '92px', '100px', '140px']}
+      scrollLabel="Seeding rates by grass type"
     >
       {ordered.map((grass) => (
         <tr key={grass.slug}>

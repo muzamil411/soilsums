@@ -163,21 +163,25 @@ export function PlantingDateCalculator({ toolSlug, linkedCrops }: ToolProps) {
         ) : null
       }
     >
-      <DateField
-        label="Average last spring frost"
-        value={values.lastFrost ?? ''}
-        onChange={(value) => setValue('lastFrost', value)}
-        error={(values.lastFrost ?? '') !== '' ? dateError : undefined}
-        hint={<a href="#faq">Not sure? Where to find your frost date</a>}
-      />
+      <div className="col-span-2 sm:col-span-1">
+        <DateField
+          label="Average last spring frost"
+          value={values.lastFrost ?? ''}
+          onChange={(value) => setValue('lastFrost', value)}
+          error={(values.lastFrost ?? '') !== '' ? dateError : undefined}
+          hint={<a href="#faq">Not sure? Where to find your frost date</a>}
+        />
+      </div>
 
-      <DateField
-        label="Average first fall frost (optional)"
-        value={values.fallFrost ?? ''}
-        onChange={(value) => setValue('fallFrost', value)}
-        error={fallError}
-        hint="Adding it flags anything that will not ripen in time"
-      />
+      <div className="col-span-2 sm:col-span-1">
+        <DateField
+          label="Average first fall frost (optional)"
+          value={values.fallFrost ?? ''}
+          onChange={(value) => setValue('fallFrost', value)}
+          error={fallError}
+          hint="Adding it flags anything that will not ripen in time"
+        />
+      </div>
 
       <div className="col-span-2">
         <CropPicker

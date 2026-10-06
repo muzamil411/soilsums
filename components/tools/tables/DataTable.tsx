@@ -7,20 +7,58 @@ import type { ReactNode } from 'react';
  * mdx-components.tsx. These components render their own `<table>`, so they
  * have to carry the same wrapper or they would be the only tables on the site
  * that overflow a phone screen instead of scrolling.
+ *
+ * A wide table with `table-layout: auto` can force page-level horizontal
+ * overflow in some browsers even inside an `overflow-x: auto` wrapper, because
+ * the auto layout's content-driven width leaks into the document's scroll
+ * width. Passing `widths` switches the table to `table-layout: fixed` with
+ * explicit column widths, which keeps the table scrollable inside its own
+ * container without affecting the page.
  */
 export function DataTable({
   columns,
   align = [],
+  widths = [],
   children,
+  scrollLabel,
 }: {
   columns: readonly string[];
   /** Per-column alignment; anything omitted is left-aligned. */
   align?: readonly ('left' | 'right')[];
+  /**
+   * Fixed column widths (e.g. ['112px', '64px']). Implies table-layout: fixed,
+   * which prevents wide content from forcing page-level overflow on narrow
+   * screens. Omit for the default auto layout.
+   */
+  widths?: readonly string[];
+  /**
+   * Accessible label for the scrollable region, e.g. "Seeding rates by grass
+   * type". Makes the container focusable so keyboard users can scroll it.
+   */
+  scrollLabel?: string;
   children: ReactNode;
 }) {
+  const fixed = widths.length > 0;
   return (
-    <div className="my-5 overflow-x-auto">
-      <table>
+    <div
+      className="my-5 overflow-x-auto"
+      {...(scrollLabel
+        ? { role: 'region', 'aria-label': scrollLabel, tabIndex: 0 }
+        : {})}
+    >
+      <table
+        className={fixed ? 'table-fixed' : undefined}
+        // Contain layout so a wide table's content-driven width does not leak
+        // into the document's scroll width on narrow screens (Firefox quirk).
+        style={fixed ? { contain: 'layout' } : undefined}
+      >
+        {fixed ? (
+          <colgroup>
+            {widths.map((width, index) => (
+              <col key={columns[index] ?? index} style={{ width }} />
+            ))}
+          </colgroup>
+        ) : null}
         <thead>
           <tr>
             {columns.map((column, index) => (
