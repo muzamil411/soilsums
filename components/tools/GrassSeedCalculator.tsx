@@ -54,13 +54,24 @@ export function GrassSeedCalculator({ toolSlug }: { toolSlug: string }) {
       shareUrl={shareUrl}
       onReset={reset}
       headline={headline === null ? null : String(headline)}
-      headlineUnit={imperial ? 'lb of seed' : 'kg of seed'}
+      headlineUnit={
+        output === null
+          ? undefined
+          : output.rateBasis === 'pls'
+            ? imperial
+              ? 'lb pure live seed'
+              : 'kg pure live seed'
+            : imperial
+              ? 'lb of seed'
+              : 'kg of seed'
+      }
       sentence={
         output ? (
           <p>
-            Buy about{' '}
+            {output.rateBasis === 'pls' ? 'You need' : 'Buy about'}{' '}
             <strong>
               {imperial ? `${output.pounds} pounds` : `${output.kilograms} kilograms`}
+              {output.rateBasis === 'pls' ? ' of pure live seed' : ''}
             </strong>{' '}
             of {output.grassName.toLowerCase()} seed for{' '}
             {imperial
@@ -68,6 +79,7 @@ export function GrassSeedCalculator({ toolSlug }: { toolSlug: string }) {
               : `${output.areaSquareMeters} square meters`}
             . That is the {purpose === 'new-lawn' ? 'full establishment' : 'overseeding'} rate of{' '}
             {output.rateLbPer1000SqFt} lb per 1,000 sq ft
+            {output.rateBasis === 'pls' ? ' pure live seed' : ''}
             {imperial ? '' : ` (${output.rateKgPer100SqM} kg per 100 m²)`}
             {output.rateVerified ? null : (
               <Estimate
@@ -75,6 +87,13 @@ export function GrassSeedCalculator({ toolSlug }: { toolSlug: string }) {
               />
             )}
             .{' '}
+            {output.rateBasis === 'pls' ? (
+              <>
+                The University of Arkansas publishes this rate as PLS, not bulk weight. To get the
+                bulk weight to buy, divide by your bag&apos;s purity × germination (both printed
+                on the label).
+              </>
+            ) : null}
             {/* A midpoint is arithmetic on a published range, not a
                 recommendation of its own, and the page has to say which it is
                 showing. */}
@@ -88,7 +107,7 @@ export function GrassSeedCalculator({ toolSlug }: { toolSlug: string }) {
       }
       copyText={
         output
-          ? `${output.pounds} lb (${output.kilograms} kg) of ${output.grassName} seed for ${output.areaSquareFeet} sq ft. Calculated at soilsums.com`
+          ? `${output.pounds} lb (${output.kilograms} kg)${output.rateBasis === 'pls' ? ' pure live seed' : ''} of ${output.grassName} seed for ${output.areaSquareFeet} sq ft. Calculated at soilsums.com`
           : ''
       }
       notes={output ? [output.note] : []}

@@ -115,3 +115,49 @@ describe('pathWithQuery', () => {
     );
   });
 });
+
+describe('buildQuery version marker', () => {
+  const vParams = { supplier: 's', truck: 'tr', version: 'v' } as const;
+  const vDefaults = { supplier: '', truck: '', version: '2' };
+
+  it('writes v=2 to the address-bar query even when it matches defaults', () => {
+    // includeAll=false is the address-bar path. Regression for the 29ba79e
+    // bug: only Copy link added v=2, so a reload reinterpreted metric s/tr
+    // values as legacy imperial.
+    const query = buildQuery({
+      values: { supplier: '1200', truck: '0.7', version: '2' },
+      defaults: vDefaults,
+      params: vParams,
+      units: 'metric',
+      alwaysInclude: ['v'],
+    });
+    expect(query.get('v')).toBe('2');
+    expect(query.get('s')).toBe('1200');
+    expect(query.get('tr')).toBe('0.7');
+    expect(query.get('u')).toBe('metric');
+  });
+
+  it('omits v when not in alwaysInclude and matching defaults', () => {
+    // Tools without a version marker keep clean URLs.
+    const query = buildQuery({
+      values: { supplier: '1200', version: '2' },
+      defaults: vDefaults,
+      params: vParams,
+      units: 'metric',
+    });
+    expect(query.get('v')).toBeNull();
+    expect(query.get('s')).toBe('1200');
+  });
+
+  it('writes v=2 after reset (all values at defaults)', () => {
+    const query = buildQuery({
+      values: { ...vDefaults },
+      defaults: vDefaults,
+      params: vParams,
+      units: 'metric',
+      alwaysInclude: ['v'],
+    });
+    expect(query.get('v')).toBe('2');
+    expect(query.get('s')).toBeNull();
+  });
+});
