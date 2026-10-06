@@ -170,11 +170,29 @@ function findLimit(
 export const TRIANGULAR_ROW_FACTOR = Math.sqrt(3) / 2;
 
 /**
+ * Relative tolerance for floating-point boundary corrections.
+ *
+ * Unit conversion stores 10 significant figures (relative error < 5e-10), so a
+ * converted ratio carries absolute error below R * 1e-9. Snapping only within
+ * this band fixes conversions landing at 6.999999999999999 instead of 7,
+ * while a genuinely undersized input (e.g. 6.99 vs 7.0, off by 1e-2) is far
+ * outside it and keeps normal floor behavior. Not a claim of exactness for
+ * all inputs — only that conversion/state noise cannot flip a boundary.
+ */
+const FP_RELATIVE_TOLERANCE = 1e-9;
+
+/**
  * Plants that fit along a span, with half the spacing left at each end so the
  * outermost plants are not jammed against the sides of the bed.
  */
 function fitAlong(spanInches: number, spacingInches: number): number {
-  return Math.floor(spanInches / spacingInches);
+  const ratio = spanInches / spacingInches;
+  const nearest = Math.round(ratio);
+  // Snap to a nearby integer only within FP noise; otherwise floor normally.
+  if (nearest > 0 && Math.abs(ratio - nearest) <= nearest * FP_RELATIVE_TOLERANCE) {
+    return nearest;
+  }
+  return Math.floor(ratio);
 }
 
 function squareLayout(
@@ -194,9 +212,14 @@ function triangularLayout(lengthInches: number, widthInches: number, plantSpacin
   const plantsPerRow = fitAlong(lengthInches, plantSpacing);
   // An offset row is shifted half a spacing along, so it loses its last plant
   // unless there is at least half a spacing of slack at the end of the row.
+  // The half-spacing edge convention is preserved; the tolerance only absorbs
+  // FP noise from conversion (e.g. slack computing as 2.999999999999983
+  // instead of 3.0), not a genuinely shortfall.
   const slack = lengthInches - plantsPerRow * plantSpacing;
+  const halfSpacing = plantSpacing / 2;
+  const meetsHalfSpacing = slack / halfSpacing >= 1 - FP_RELATIVE_TOLERANCE;
   const plantsPerOffsetRow =
-    plantsPerRow === 0 ? 0 : slack >= plantSpacing / 2 ? plantsPerRow : plantsPerRow - 1;
+    plantsPerRow === 0 ? 0 : meetsHalfSpacing ? plantsPerRow : plantsPerRow - 1;
   const fullRows = Math.ceil(rows / 2);
   const offsetRows = Math.floor(rows / 2);
   return {
