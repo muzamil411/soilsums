@@ -190,3 +190,182 @@ describe('calculatePlantSpacing', () => {
     expect(Number.isNaN(result.totalPlants)).toBe(false);
   });
 });
+
+describe('floating-point boundary correction', () => {
+  // Regression for the production bug where toggling 3.5 ft / 6 in to metric
+  // dropped the count from 28 to 24 plants: fitAlong() floored 6.999999999999999.
+  // (Browser repro used default 12 in row spacing: 7 per row x 4 rows = 28.)
+  const reported = {
+    units: 'imperial',
+    bedLength: 3.5,
+    bedWidth: 4,
+    plantSpacing: 6,
+    rowSpacing: 12,
+    layout: 'square',
+  } as const;
+
+  it('keeps 28 plants for the reported 3.5-ft case in imperial', () => {
+    const result = value(calculatePlantSpacing(reported));
+    expect(result.plantsPerRow).toBe(7);
+    expect(result.rows).toBe(4);
+    expect(result.totalPlants).toBe(28);
+  });
+
+  it('keeps 28 plants for equivalent metric inputs', () => {
+    // 3.5 ft = 1.0668 m, 6 in = 15.24 cm, 12 in = 30.48 cm (exact conversions).
+    const result = value(
+      calculatePlantSpacing({
+        units: 'metric',
+        bedLength: 1.0668,
+        bedWidth: 1.2192,
+        plantSpacing: 15.24,
+        rowSpacing: 30.48,
+        layout: 'square',
+      }),
+    );
+    expect(result.totalPlants).toBe(28);
+  });
+
+  it('keeps 36 plants for the reported 4.5-ft case in both systems', () => {
+    const imp = value(
+      calculatePlantSpacing({ ...reported, bedLength: 4.5 }),
+    );
+    expect(imp.plantsPerRow).toBe(9);
+    expect(imp.totalPlants).toBe(36);
+    const met = value(
+      calculatePlantSpacing({
+        units: 'metric',
+        bedLength: 1.3716, // 4.5 ft in meters
+        bedWidth: 1.2192,
+        plantSpacing: 15.24,
+        rowSpacing: 30.48,
+        layout: 'square',
+      }),
+    );
+    expect(met.totalPlants).toBe(36);
+  });
+
+  it('gives the same count in triangular layout for equivalent inputs', () => {
+    const imp = value(calculatePlantSpacing({ ...reported, layout: 'triangular' }));
+    const met = value(
+      calculatePlantSpacing({
+        units: 'metric',
+        bedLength: 1.0668,
+        bedWidth: 1.2192,
+        plantSpacing: 15.24,
+        rowSpacing: 30.48,
+        layout: 'triangular',
+      }),
+    );
+    expect(met.totalPlants).toBe(imp.totalPlants);
+  });
+
+  it('still fits fewer plants in a genuinely undersized bed', () => {
+    // 3.4 ft at 6 in spacing: true ratio 6.8, must NOT snap to 7.
+    const result = value(calculatePlantSpacing({ ...reported, bedLength: 3.4 }));
+    expect(result.plantsPerRow).toBe(6);
+    // 3.49 ft: ratio 6.98, still clearly below 7.
+    const result2 = value(calculatePlantSpacing({ ...reported, bedLength: 3.49 }));
+    expect(result2.plantsPerRow).toBe(6);
+  });
+
+  it('fits more plants when clearly above the boundary', () => {
+    // 3.6 ft at 6 in: ratio 7.2, floors to 7.
+    const result = value(calculatePlantSpacing({ ...reported, bedLength: 3.6 }));
+    expect(result.plantsPerRow).toBe(7);
+  });
+
+  it('matches across all 819 scanned combinations in both layouts', () => {
+    // Full scan from the audit: bedLength 1–20 ft (step 0.5), plantSpacing
+    // 4–24 in (step 1), bedWidth 4 ft, rowSpacing 12 in. Each imperial input
+    // is compared against its 10-sig-fig metric equivalent (as the unit toggle
+    // produces), in both square and triangular layouts. All dimensions convert
+    // consistently: ft→m (×0.3048), in→cm (×2.54).
+    let checked = 0;
+    for (let ft = 1; ft <= 20; ft += 0.5) {
+      for (let spIn = 4; spIn <= 24; spIn += 1) {
+        for (const layout of ['square', 'triangular'] as const) {
+          const imp = value(
+            calculatePlantSpacing({
+              units: 'imperial',
+              bedLength: ft,
+              bedWidth: 4,
+              plantSpacing: spIn,
+              rowSpacing: 12,
+              layout,
+            }),
+          );
+          const met = value(
+            calculatePlantSpacing({
+              units: 'metric',
+              bedLength: Number((ft * 0.3048).toPrecision(10)),
+              bedWidth: Number((4 * 0.3048).toPrecision(10)),
+              plantSpacing: Number((spIn * 2.54).toPrecision(10)),
+              rowSpacing: Number((12 * 2.54).toPrecision(10)),
+              layout,
+            }),
+          );
+          expect(
+            { plantsPerRow: met.plantsPerRow, rows: met.rows, total: met.totalPlants },
+            `ft=${ft} spacing=${spIn}in layout=${layout}`,
+          ).toEqual({
+            plantsPerRow: imp.plantsPerRow,
+            rows: imp.rows,
+            total: imp.totalPlants,
+          });
+          checked++;
+        }
+      }
+    }
+    // 39 lengths × 21 spacings × 2 layouts = 1638 comparisons.
+    expect(checked).toBe(1638);
+  });
+
+  describe('triangular half-spacing slack boundaries', () => {
+    // 3.75 ft bed at 6 in spacing: 7 plants use 42 in, leaving exactly 3 in
+    // slack = half the 6 in spacing, so the offset row keeps all 7.
+    const boundary = {
+      units: 'imperial',
+      bedLength: 3.75,
+      bedWidth: 4,
+      plantSpacing: 6,
+      rowSpacing: 12,
+      layout: 'triangular',
+    } as const;
+
+    it('keeps the offset row at exactly the half-spacing boundary', () => {
+      const result = value(calculatePlantSpacing(boundary));
+      expect(result.plantsPerRow).toBe(7);
+      expect(result.plantsPerOffsetRow).toBe(7);
+    });
+
+    it('keeps the offset row for conversion-rounded boundary equivalents', () => {
+      // 3.75 ft → 1.143 m via 10-sig-fig toggle; slack computes near 3.0 in.
+      const result = value(
+        calculatePlantSpacing({
+          units: 'metric',
+          bedLength: Number((3.75 * 0.3048).toPrecision(10)),
+          bedWidth: Number((4 * 0.3048).toPrecision(10)),
+          plantSpacing: Number((6 * 2.54).toPrecision(10)),
+          rowSpacing: Number((12 * 2.54).toPrecision(10)),
+          layout: 'triangular',
+        }),
+      );
+      expect(result.plantsPerOffsetRow).toBe(7);
+    });
+
+    it('drops the offset plant when clearly below half-spacing', () => {
+      // 3.7 ft: 44.4 in - 42 in = 2.4 in slack < 3 in half-spacing.
+      const result = value(calculatePlantSpacing({ ...boundary, bedLength: 3.7 }));
+      expect(result.plantsPerRow).toBe(7);
+      expect(result.plantsPerOffsetRow).toBe(6);
+    });
+
+    it('keeps the offset row when clearly above half-spacing', () => {
+      // 3.8 ft: 45.6 in - 42 in = 3.6 in slack > 3 in half-spacing.
+      const result = value(calculatePlantSpacing({ ...boundary, bedLength: 3.8 }));
+      expect(result.plantsPerRow).toBe(7);
+      expect(result.plantsPerOffsetRow).toBe(7);
+    });
+  });
+});
