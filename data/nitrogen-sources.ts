@@ -181,6 +181,6 @@ export const LAWN_NITROGEN = {
   /** Never exceed this in a single application of water-soluble nitrogen. */
   maxSingleApplicationLbPer1000SqFt: 1,
   source:
-    'University of Connecticut Extension, Suggested Fertilizer Practices for Lawns (Pettinelli, 2001, rev. 2015): https://homegarden.cahnr.uconn.edu/factsheets/suggested-fertilizer-practices-for-lawns/',
+    'University of Connecticut Extension, Suggested Fertilizer Practices for Lawns (Pettinelli, 2001, rev. 2015): https://homegarden-cahnr.media.uconn.edu/wp-content/uploads/sites/3479/2022/07/suggfertpraclawn6-16-1.pdf',
   verified: true,
 } as const;

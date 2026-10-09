@@ -2,7 +2,7 @@ import {
   ANNUAL_NITROGEN,
   FEED_WINDOWS,
   FOLK_FIGURE_INCHES_PER_WEEK,
-  IOWA_STATE_LAWN,
+  IOWA_STATE_FERTILIZER_RATES,
   MISSOURI_FERTILIZER,
   MISSOURI_WATER,
   WATER_NEEDS,
@@ -65,10 +65,10 @@ export function FeedCalendarTable() {
         , {MISSOURI_FERTILIZER.title}. Where the rate reads &ldquo;a moderate rate&rdquo;, that is
         what the publication says — it gives no figure for those two, so neither do we. How many of
         these a lawn needs is from{' '}
-        <a href={IOWA_STATE_LAWN.url} rel="nofollow">
-          {IOWA_STATE_LAWN.institution}
+        <a href={IOWA_STATE_FERTILIZER_RATES.url} rel="nofollow">
+          {IOWA_STATE_FERTILIZER_RATES.institution}
         </a>
-        , {IOWA_STATE_LAWN.title}.
+        , {IOWA_STATE_FERTILIZER_RATES.title}.
       </p>
     </>
   );
