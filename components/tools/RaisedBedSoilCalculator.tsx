@@ -122,8 +122,8 @@ export function RaisedBedSoilCalculator({ toolSlug }: { toolSlug: string }) {
         {output.bags} bag{output.bags === 1 ? '' : 's'}
       </strong>{' '}
       of {output.bagSize} {bagUnit}, or {output.cubicYards} cubic yards loose.
-      {num(values, 'beds') > 1 ? ` Each bed takes ${output.cubicFeetPerBed} cubic feet.` : ''} Buy
-      about 10% extra — fresh mixes settle as they break down.
+      {num(values, 'beds') > 1 ? ` Each bed takes ${output.cubicFeetPerBed} cubic feet.` : ''} Consider
+      buying about 10% extra as an optional allowance — fresh mixes settle as they break down.
     </p>
   ) : null;
 
@@ -168,6 +168,10 @@ export function RaisedBedSoilCalculator({ toolSlug }: { toolSlug: string }) {
                   />
                 ))}
               </div>
+
+              <p className="mt-2 text-sm text-muted">
+                Starting example only — adjust the percentages to suit your materials and crops.
+              </p>
 
               {output && output.mix.length > 0 ? (
                 <div className="mt-4">
