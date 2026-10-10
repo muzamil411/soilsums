@@ -169,6 +169,10 @@ export function RaisedBedSoilCalculator({ toolSlug }: { toolSlug: string }) {
                 ))}
               </div>
 
+              <p className="mt-2 text-sm text-muted">
+                Starting example only — adjust the percentages to suit your materials and crops.
+              </p>
+
               {output && output.mix.length > 0 ? (
                 <div className="mt-4">
                   <ResultTable
