@@ -18,14 +18,19 @@ export function absoluteUrl(path: string): string {
 }
 
 export const adsense = {
-  pubId: process.env.NEXT_PUBLIC_ADSENSE_PUB_ID ?? '',
+  /**
+   * Publisher ID for the approved AdSense account. This is public by design —
+   * it appears in the page source and in ads.txt. Set from the AdSense
+   * dashboard (Sites → site → AdSense code snippet).
+   */
+  pubId: process.env.NEXT_PUBLIC_ADSENSE_PUB_ID ?? 'ca-pub-3694287923231628',
   /**
    * Ads render only when explicitly enabled AND a publisher ID exists.
    * While this is false, AdSlot renders nothing and reserves no height, so
    * pages have no empty gaps during AdSense review.
    */
   get enabled(): boolean {
-    return process.env.NEXT_PUBLIC_ADSENSE_ENABLED === 'true' && this.pubId.startsWith('ca-pub-');
+    return (process.env.NEXT_PUBLIC_ADSENSE_ENABLED ?? 'true') === 'true' && this.pubId.startsWith('ca-pub-');
   },
 } as const;
 
