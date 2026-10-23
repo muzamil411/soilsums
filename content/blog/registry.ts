@@ -20,6 +20,7 @@ import HowMuchPottingSoilAContainerNeeds from './how-much-potting-soil-a-contain
 import HowMuchSulfurToLowerSoilPh from './how-much-sulfur-to-lower-soil-ph.mdx';
 import HowMuchToWaterAVegetableGarden from './how-much-to-water-a-vegetable-garden.mdx';
 import HowOftenShouldYouFertilizeVegetables from './how-often-should-you-fertilize-vegetables.mdx';
+import HowToStartSeedsIndoors from './how-to-start-seeds-indoors.mdx';
 import PlanningAVegetableGardenLayout from './planning-a-vegetable-garden-layout.mdx';
 import StartingSeedsIndoorsWeeksBeforeFrost from './starting-seeds-indoors-weeks-before-frost.mdx';
 import SuccessionPlantingSchedule from './succession-planting-schedule.mdx';
@@ -55,6 +56,7 @@ export const articleContent: Record<string, ComponentType> = {
   'how-much-sulfur-to-lower-soil-ph': HowMuchSulfurToLowerSoilPh,
   'how-much-to-water-a-vegetable-garden': HowMuchToWaterAVegetableGarden,
   'how-often-should-you-fertilize-vegetables': HowOftenShouldYouFertilizeVegetables,
+  'how-to-start-seeds-indoors': HowToStartSeedsIndoors,
   'planning-a-vegetable-garden-layout': PlanningAVegetableGardenLayout,
   'starting-seeds-indoors-weeks-before-frost': StartingSeedsIndoorsWeeksBeforeFrost,
   'succession-planting-schedule': SuccessionPlantingSchedule,
