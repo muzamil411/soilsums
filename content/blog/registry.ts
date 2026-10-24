@@ -28,6 +28,7 @@ import WhatDoesLastFrostDateMean from './what-does-last-frost-date-mean.mdx';
 import WhatTheThreeNumbersOnFertilizerMean from './what-the-three-numbers-on-fertilizer-mean.mdx';
 import WhatToFillRaisedGardenBedsWith from './what-to-fill-raised-garden-beds-with.mdx';
 import WhyIsMyCompostNotBreakingDown from './why-is-my-compost-not-breaking-down.mdx';
+import WhenToPlantGarlic from './when-to-plant-garlic.mdx';
 
 /**
  * Slug to article. Static imports, so the bundler resolves every file at build
@@ -70,4 +71,5 @@ export const articleContent: Record<string, ComponentType> = {
   'lime-for-your-lawn': LimeForYourLawn,
   'fall-lawn-fertilizer': FallLawnFertilizer,
   'best-times-to-water-grass': BestTimesToWaterGrass,
+  'when-to-plant-garlic': WhenToPlantGarlic,
 };
