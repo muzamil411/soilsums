@@ -29,6 +29,7 @@ import WhatTheThreeNumbersOnFertilizerMean from './what-the-three-numbers-on-fer
 import WhatToFillRaisedGardenBedsWith from './what-to-fill-raised-garden-beds-with.mdx';
 import WhyIsMyCompostNotBreakingDown from './why-is-my-compost-not-breaking-down.mdx';
 import WhenToPlantGarlic from './when-to-plant-garlic.mdx';
+import PerliteVsVermiculite from './perlite-vs-vermiculite.mdx';
 
 /**
  * Slug to article. Static imports, so the bundler resolves every file at build
@@ -72,4 +73,5 @@ export const articleContent: Record<string, ComponentType> = {
   'fall-lawn-fertilizer': FallLawnFertilizer,
   'best-times-to-water-grass': BestTimesToWaterGrass,
   'when-to-plant-garlic': WhenToPlantGarlic,
+  'perlite-vs-vermiculite': PerliteVsVermiculite,
 };
