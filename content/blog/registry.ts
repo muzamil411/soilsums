@@ -30,6 +30,7 @@ import WhatToFillRaisedGardenBedsWith from './what-to-fill-raised-garden-beds-wi
 import WhyIsMyCompostNotBreakingDown from './why-is-my-compost-not-breaking-down.mdx';
 import WhenToPlantGarlic from './when-to-plant-garlic.mdx';
 import PerliteVsVermiculite from './perlite-vs-vermiculite.mdx';
+import HowToGetRidOfFungusGnats from './how-to-get-rid-of-fungus-gnats.mdx';
 
 /**
  * Slug to article. Static imports, so the bundler resolves every file at build
@@ -74,4 +75,5 @@ export const articleContent: Record<string, ComponentType> = {
   'best-times-to-water-grass': BestTimesToWaterGrass,
   'when-to-plant-garlic': WhenToPlantGarlic,
   'perlite-vs-vermiculite': PerliteVsVermiculite,
+  'how-to-get-rid-of-fungus-gnats': HowToGetRidOfFungusGnats,
 };
