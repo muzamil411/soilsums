@@ -31,6 +31,7 @@ import WhyIsMyCompostNotBreakingDown from './why-is-my-compost-not-breaking-down
 import WhenToPlantGarlic from './when-to-plant-garlic.mdx';
 import PerliteVsVermiculite from './perlite-vs-vermiculite.mdx';
 import HowToGetRidOfFungusGnats from './how-to-get-rid-of-fungus-gnats.mdx';
+import HowToDryHerbs from './how-to-dry-herbs.mdx';
 
 /**
  * Slug to article. Static imports, so the bundler resolves every file at build
@@ -76,4 +77,5 @@ export const articleContent: Record<string, ComponentType> = {
   'when-to-plant-garlic': WhenToPlantGarlic,
   'perlite-vs-vermiculite': PerliteVsVermiculite,
   'how-to-get-rid-of-fungus-gnats': HowToGetRidOfFungusGnats,
+  'how-to-dry-herbs': HowToDryHerbs,
 };
