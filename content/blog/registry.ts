@@ -33,6 +33,7 @@ import PerliteVsVermiculite from './perlite-vs-vermiculite.mdx';
 import HowToGetRidOfFungusGnats from './how-to-get-rid-of-fungus-gnats.mdx';
 import HowToDryHerbs from './how-to-dry-herbs.mdx';
 import WhenToHarvestPotatoes from './when-to-harvest-potatoes.mdx';
+import HowToCompostLeaves from './how-to-compost-leaves.mdx';
 
 /**
  * Slug to article. Static imports, so the bundler resolves every file at build
@@ -80,4 +81,5 @@ export const articleContent: Record<string, ComponentType> = {
   'how-to-get-rid-of-fungus-gnats': HowToGetRidOfFungusGnats,
   'how-to-dry-herbs': HowToDryHerbs,
   'when-to-harvest-potatoes': WhenToHarvestPotatoes,
+  'how-to-compost-leaves': HowToCompostLeaves,
 };
