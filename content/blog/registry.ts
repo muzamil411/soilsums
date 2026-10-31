@@ -35,6 +35,7 @@ import HowToDryHerbs from './how-to-dry-herbs.mdx';
 import WhenToHarvestPotatoes from './when-to-harvest-potatoes.mdx';
 import HowToCompostLeaves from './how-to-compost-leaves.mdx';
 import HowToSaveTomatoSeeds from './how-to-save-tomato-seeds.mdx';
+import WhenToPruneRoses from './when-to-prune-roses.mdx';
 
 /**
  * Slug to article. Static imports, so the bundler resolves every file at build
@@ -84,4 +85,5 @@ export const articleContent: Record<string, ComponentType> = {
   'when-to-harvest-potatoes': WhenToHarvestPotatoes,
   'how-to-compost-leaves': HowToCompostLeaves,
   'how-to-save-tomato-seeds': HowToSaveTomatoSeeds,
+  'when-to-prune-roses': WhenToPruneRoses,
 };
