@@ -39,6 +39,7 @@ import WhenToPruneRoses from './when-to-prune-roses.mdx';
 import HowToMakePottingSoil from './how-to-make-potting-soil.mdx';
 import HowToAmendClaySoil from './how-to-amend-clay-soil.mdx';
 import CanYouReusePottingSoil from './can-you-reuse-potting-soil.mdx';
+import HowToWinterizeAGarden from './how-to-winterize-a-garden.mdx';
 
 /**
  * Slug to article. Static imports, so the bundler resolves every file at build
@@ -92,4 +93,5 @@ export const articleContent: Record<string, ComponentType> = {
   'how-to-make-potting-soil': HowToMakePottingSoil,
   'how-to-amend-clay-soil': HowToAmendClaySoil,
   'can-you-reuse-potting-soil': CanYouReusePottingSoil,
+  'how-to-winterize-a-garden': HowToWinterizeAGarden,
 };
