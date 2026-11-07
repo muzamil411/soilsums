@@ -42,6 +42,7 @@ import CanYouReusePottingSoil from './can-you-reuse-potting-soil.mdx';
 import HowToWinterizeAGarden from './how-to-winterize-a-garden.mdx';
 import HowToTransplantSeedlings from './how-to-transplant-seedlings.mdx';
 import HowToStorePotatoes from './how-to-store-potatoes.mdx';
+import WhenToPlantTulipBulbs from './when-to-plant-tulip-bulbs.mdx';
 
 /**
  * Slug to article. Static imports, so the bundler resolves every file at build
@@ -98,4 +99,5 @@ export const articleContent: Record<string, ComponentType> = {
   'how-to-winterize-a-garden': HowToWinterizeAGarden,
   'how-to-transplant-seedlings': HowToTransplantSeedlings,
   'how-to-store-potatoes': HowToStorePotatoes,
+  'when-to-plant-tulip-bulbs': WhenToPlantTulipBulbs,
 };
