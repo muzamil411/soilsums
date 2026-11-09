@@ -44,6 +44,7 @@ import HowToTransplantSeedlings from './how-to-transplant-seedlings.mdx';
 import HowToStorePotatoes from './how-to-store-potatoes.mdx';
 import WhenToPlantTulipBulbs from './when-to-plant-tulip-bulbs.mdx';
 import HowToStoreDahliasForWinter from './how-to-store-dahlias-for-winter.mdx';
+import HowToOverwinterRosemary from './how-to-overwinter-rosemary.mdx';
 
 /**
  * Slug to article. Static imports, so the bundler resolves every file at build
@@ -102,4 +103,5 @@ export const articleContent: Record<string, ComponentType> = {
   'how-to-store-potatoes': HowToStorePotatoes,
   'when-to-plant-tulip-bulbs': WhenToPlantTulipBulbs,
   'how-to-store-dahlias-for-winter': HowToStoreDahliasForWinter,
+  'how-to-overwinter-rosemary': HowToOverwinterRosemary,
 };
