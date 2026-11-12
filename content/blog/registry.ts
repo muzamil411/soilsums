@@ -47,6 +47,7 @@ import HowToStoreDahliasForWinter from './how-to-store-dahlias-for-winter.mdx';
 import HowToOverwinterRosemary from './how-to-overwinter-rosemary.mdx';
 import HowToOverwinterGeraniums from './how-to-overwinter-geraniums.mdx';
 import HowToForcePaperwhiteBulbs from './how-to-force-paperwhite-bulbs.mdx';
+import HowToStoreOnions from './how-to-store-onions.mdx';
 
 /**
  * Slug to article. Static imports, so the bundler resolves every file at build
@@ -108,4 +109,5 @@ export const articleContent: Record<string, ComponentType> = {
   'how-to-overwinter-rosemary': HowToOverwinterRosemary,
   'how-to-overwinter-geraniums': HowToOverwinterGeraniums,
   'how-to-force-paperwhite-bulbs': HowToForcePaperwhiteBulbs,
+  'how-to-store-onions': HowToStoreOnions,
 };
