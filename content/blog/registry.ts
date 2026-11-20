@@ -55,6 +55,7 @@ import HowToCareForAmaryllis from './how-to-care-for-amaryllis.mdx';
 import HowToCareForNorfolkIslandPine from './how-to-care-for-norfolk-island-pine.mdx';
 import HowToCareForPeaceLily from './how-to-care-for-peace-lily.mdx';
 import HowToCareForSpiderPlant from './how-to-care-for-spider-plant.mdx';
+import HowToCareForAloeVera from './how-to-care-for-aloe-vera.mdx';
 
 /**
  * Slug to article. Static imports, so the bundler resolves every file at build
@@ -124,4 +125,5 @@ export const articleContent: Record<string, ComponentType> = {
   'how-to-care-for-norfolk-island-pine': HowToCareForNorfolkIslandPine,
   'how-to-care-for-peace-lily': HowToCareForPeaceLily,
   'how-to-care-for-spider-plant': HowToCareForSpiderPlant,
+  'how-to-care-for-aloe-vera': HowToCareForAloeVera,
 };
